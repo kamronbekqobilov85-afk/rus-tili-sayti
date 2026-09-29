@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Rus tilini bepul o'rganing — so'zlar, grammatika, video",
   description: "Rus tilini noldan o'rganing: 500dan ortiq so'z, grammatika mashqlari, testlar va ruscha qo'shiqlar bilan. Bepul va oson.",
+  verification: {
+    google: "dPnmDXi4Wv_2J6GQivJHKkOS4hWbSPP7qmkSe4Yrk4I",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
