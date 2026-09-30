@@ -1,10 +1,21 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "../components/Header";
 import { videos } from "../data/videos";
 
+const STORAGE_KEY = "rus-tili-video-index";
+
 export default function VideoPage() {
   const [selectedId, setSelectedId] = useState(videos[0].id);
+
+  useEffect(() => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    const lastIndex = stored ? parseInt(stored, 10) : -1;
+    const nextIndex = (lastIndex + 1) % videos.length;
+    setSelectedId(videos[nextIndex].id);
+    localStorage.setItem(STORAGE_KEY, String(nextIndex));
+  }, []);
+
   const selected = videos.find((v) => v.id === selectedId) || videos[0];
 
   const embedSrc = selected.playlistId
