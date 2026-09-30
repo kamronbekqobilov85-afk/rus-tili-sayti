@@ -11,6 +11,7 @@ export default function Header() {
           <a href="/grammatika" className="hover:text-blue-600 whitespace-nowrap">Grammatika</a>
           <a href="/video" className="hover:text-blue-600 whitespace-nowrap">Video</a>
           <a href="/yozish" className="hover:text-blue-600 whitespace-nowrap">Yozish</a>
+          <a href="/tinglash" className="hover:text-blue-600 whitespace-nowrap">Tinglash</a>
         </div>
       </nav>
     </header>
