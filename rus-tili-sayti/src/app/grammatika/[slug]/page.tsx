@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Header from "../../components/Header";
 import { recordActivity } from "../../data/stats";
+import { saveTopicScore } from "../../data/grammarProgress";
 
 export default function GrammarTopicPage({
   params,
@@ -52,6 +53,10 @@ export default function GrammarTopicPage({
     } else {
       setPhase("result");
       recordActivity("test");
+      const finalPercentage = Math.round(
+        (correctCount / topic.exercises.length) * 100
+      );
+      saveTopicScore(topic.slug, finalPercentage);
     }
   };
 
