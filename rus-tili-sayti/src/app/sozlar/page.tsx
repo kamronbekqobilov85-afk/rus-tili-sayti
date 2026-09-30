@@ -12,6 +12,11 @@ export default function SozlarPage() {
 
   const isFirst = index === 0;
 
+  const checkpoints: number[] = [];
+  for (let i = 0; i * 100 < words.length; i++) {
+    checkpoints.push(i * 100);
+  }
+
   const handleAnswer = (known: boolean) => {
     if (known) setKnownCount((prev) => prev + 1);
 
@@ -26,6 +31,11 @@ export default function SozlarPage() {
     if (!isFirst) {
       setIndex((prev) => prev - 1);
     }
+  };
+
+  const handleJump = (targetIndex: number) => {
+    setIndex(targetIndex);
+    setFinished(false);
   };
 
   const restart = () => {
@@ -59,9 +69,25 @@ export default function SozlarPage() {
             <h1 className="text-3xl font-bold text-blue-900 mb-2">
               So'zlarni yodlash
             </h1>
-            <p className="text-gray-500 mb-8">
+            <p className="text-gray-500 mb-4">
               {index + 1} / {words.length}
             </p>
+
+            <div className="flex flex-wrap gap-2 justify-center mb-6 max-w-2xl">
+              {checkpoints.map((cp) => (
+                <button
+                  key={cp}
+                  onClick={() => handleJump(cp)}
+                  className={`py-1 px-3 rounded-full text-sm font-semibold transition ${
+                    index >= cp && index < cp + 100
+                      ? "bg-blue-600 text-white"
+                      : "bg-white text-blue-900 border border-blue-200 hover:bg-blue-50"
+                  }`}
+                >
+                  {cp + 1}
+                </button>
+              ))}
+            </div>
 
             <Flashcard key={word.id} word={word} />
 
