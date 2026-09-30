@@ -4,6 +4,7 @@ import { useState } from "react";
 import Header from "../components/Header";
 import Flashcard from "../components/Flashcard";
 import { words } from "../data/words";
+import { recordActivity } from "../data/stats";
 
 export default function SozlarPage() {
   const [index, setIndex] = useState(0);
@@ -19,6 +20,7 @@ export default function SozlarPage() {
 
   const handleAnswer = (known: boolean) => {
     if (known) setKnownCount((prev) => prev + 1);
+    recordActivity("word");
 
     if (index + 1 < words.length) {
       setIndex((prev) => prev + 1);

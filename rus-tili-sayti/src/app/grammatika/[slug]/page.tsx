@@ -5,6 +5,7 @@ import { grammarTopics } from "../../data/grammar";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Header from "../../components/Header";
+import { recordActivity } from "../../data/stats";
 
 export default function GrammarTopicPage({
   params,
@@ -50,6 +51,7 @@ export default function GrammarTopicPage({
       setCurrentIndex((prev) => prev + 1);
     } else {
       setPhase("result");
+      recordActivity("test");
     }
   };
 

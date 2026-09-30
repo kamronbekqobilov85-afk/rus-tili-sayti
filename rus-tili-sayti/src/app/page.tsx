@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Header from "./components/Header";
+import StatsPanel from "./components/StatsPanel";
 import { quotes } from "./data/quotes";
 
 const QUOTE_INDEX_KEY = "rus-tili-quote-index";
@@ -42,6 +43,9 @@ export default function Home() {
           Noldan boshlab, tez va samarali tarzda rus tilini o'rganing —
           so'zlar, grammatika, testlar va tinglash mashqlari bilan.
         </p>
+
+        <StatsPanel />
+
         <button
           onClick={handleStart}
           className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-full text-lg transition"

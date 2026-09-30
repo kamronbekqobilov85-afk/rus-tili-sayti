@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import Header from "../components/Header";
 import { words } from "../data/words";
+import { recordActivity } from "../data/stats";
 
 const SESSION_SIZE = 20;
 
@@ -43,6 +44,7 @@ export default function YozishPage() {
     const isCorrect = normalize(input) === normalize(word.russian);
     setFeedback(isCorrect ? "correct" : "incorrect");
     if (isCorrect) setCorrectCount((prev) => prev + 1);
+    recordActivity("word");
   };
 
   const handleNext = () => {
@@ -52,6 +54,7 @@ export default function YozishPage() {
       setIndex((prev) => prev + 1);
     } else {
       setFinished(true);
+      recordActivity("test");
     }
   };
 
