@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, use } from "react";
+import { useState, useMemo, use } from "react";
 import { grammarTopics } from "../../data/grammar";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -24,6 +24,15 @@ export default function GrammarTopicPage({
   const exercise = topic.exercises[currentIndex];
   const isLast = currentIndex === topic.exercises.length - 1;
   const isFirst = currentIndex === 0;
+
+  const shuffledOptions = useMemo(() => {
+    const arr = [...exercise.options];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }, [currentIndex, slug]);
 
   const handleSelect = (option: string) => {
     if (selected) return;
@@ -60,7 +69,7 @@ export default function GrammarTopicPage({
           <p className="text-lg font-semibold mb-6">{exercise.question}</p>
 
           <div className="flex flex-col gap-3">
-            {exercise.options.map((option) => {
+            {shuffledOptions.map((option) => {
               const isCorrect = option === exercise.correctAnswer;
               const isSelected = option === selected;
 
