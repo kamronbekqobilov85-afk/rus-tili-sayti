@@ -1,17 +1,32 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Header from "../components/Header";
 import Flashcard from "../components/Flashcard";
-import { words } from "../data/words";
+import { words, Word } from "../data/words";
 import { recordActivity } from "../data/stats";
 import { getCategoryLabel } from "../data/categories";
+import { recordResult, getDueWordIds, getSrsStats } from "../data/srs";
+
+type Mode = "srs" | "all" | string; // string = category slug
 
 export default function SozlarPage() {
-  const [category, setCategory] = useState<string | null>(null);
+  const [mode, setMode] = useState<Mode | null>(null);
+  const [srsWords, setSrsWords] = useState<Word[]>([]);
+  const [srsStats, setSrsStats] = useState<{
+    dueCount: number;
+    newCount: number;
+    learnedCount: number;
+  } | null>(null);
   const [index, setIndex] = useState(0);
   const [knownCount, setKnownCount] = useState(0);
   const [finished, setFinished] = useState(false);
+
+  const allWordIds = useMemo(() => words.map((w) => w.id), []);
+
+  useEffect(() => {
+    setSrsStats(getSrsStats(allWordIds));
+  }, [allWordIds]);
 
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -21,10 +36,11 @@ export default function SozlarPage() {
     return Object.entries(counts).sort((a, b) => b[1] - a[1]);
   }, []);
 
-  const activeWords = useMemo(
-    () => (category ? words.filter((w) => w.category === category) : words),
-    [category]
-  );
+  const activeWords = useMemo(() => {
+    if (mode === "srs") return srsWords;
+    if (mode === "all" || mode === null) return words;
+    return words.filter((w) => w.category === mode);
+  }, [mode, srsWords]);
 
   const isFirst = index === 0;
 
@@ -36,6 +52,11 @@ export default function SozlarPage() {
   const handleAnswer = (known: boolean) => {
     if (known) setKnownCount((prev) => prev + 1);
     recordActivity("word");
+
+    const word = activeWords[index];
+    if (mode === "srs") {
+      recordResult(word.id, known);
+    }
 
     if (index + 1 < activeWords.length) {
       setIndex((prev) => prev + 1);
@@ -61,15 +82,22 @@ export default function SozlarPage() {
     setFinished(false);
   };
 
-  const selectCategory = (cat: string | null) => {
-    setCategory(cat);
+  const selectMode = (m: Mode | null) => {
+    if (m === "srs") {
+      const { dueIds, newIds } = getDueWordIds(allWordIds);
+      const idsToStudy = [...dueIds, ...newIds];
+      const wordsToStudy = words.filter((w) => idsToStudy.includes(w.id));
+      setSrsWords(wordsToStudy);
+    }
+    setMode(m);
     setIndex(0);
     setKnownCount(0);
     setFinished(false);
   };
 
-  // Kategoriya tanlanmagan bo'lsa, tanlash ekranini ko'rsatamiz
-  if (category === null) {
+  // Mode tanlanmagan bo'lsa, tanlash ekranini ko'rsatamiz
+  if (mode === null) {
+    const srsTotal = srsStats ? srsStats.dueCount + srsStats.newCount : 0;
     return (
       <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col">
         <Header />
@@ -78,11 +106,23 @@ export default function SozlarPage() {
             So'zlarni yodlash
           </h1>
           <p className="text-gray-500 text-center mb-8">
-            Barcha so'zlarni ketma-ket o'rganing yoki mavzu tanlang
+            Har kuni takrorlang, barchasini ko'rib chiqing yoki mavzu tanlang
           </p>
 
           <button
-            onClick={() => selectCategory("__all__")}
+            onClick={() => selectMode("srs")}
+            disabled={srsTotal === 0}
+            className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-4 rounded-2xl text-lg transition mb-3 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            🔥 Bugungi takrorlash{" "}
+            {srsStats ? `(${srsTotal} ta so'z)` : ""}
+          </button>
+          <p className="text-xs text-gray-400 text-center mb-8">
+            Aqlli takrorlash tizimi — unutilayotgan so'zlarni o'z vaqtida qayta ko'rsatadi
+          </p>
+
+          <button
+            onClick={() => selectMode("all")}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-2xl text-lg transition mb-8"
           >
             Barcha so'zlar ({words.length} ta)
@@ -93,7 +133,7 @@ export default function SozlarPage() {
             {categoryCounts.map(([cat, count]) => (
               <button
                 key={cat}
-                onClick={() => selectCategory(cat)}
+                onClick={() => selectMode(cat)}
                 className="bg-white rounded-xl shadow-sm ring-1 ring-gray-100 p-4 text-left hover:ring-blue-300 hover:shadow-md transition"
               >
                 <p className="font-semibold text-blue-900">
@@ -108,9 +148,32 @@ export default function SozlarPage() {
     );
   }
 
+  if (activeWords.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col">
+        <Header />
+        <div className="flex flex-col items-center justify-center flex-1 p-8 text-center">
+          <p className="text-xl text-gray-600 mb-6">
+            Hozircha bu bo'limda so'z yo'q.
+          </p>
+          <button
+            onClick={() => selectMode(null)}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-full text-lg transition"
+          >
+            Orqaga
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const word = activeWords[index];
-  const displayCategory =
-    category === "__all__" ? "Barcha so'zlar" : getCategoryLabel(category);
+  const displayTitle =
+    mode === "srs"
+      ? "Bugungi takrorlash"
+      : mode === "all"
+      ? "Barcha so'zlar"
+      : getCategoryLabel(mode as string);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col">
@@ -132,23 +195,23 @@ export default function SozlarPage() {
                 Qaytadan boshlash
               </button>
               <button
-                onClick={() => selectCategory(null)}
+                onClick={() => selectMode(null)}
                 className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-8 rounded-full text-lg transition"
               >
-                Boshqa mavzu
+                Boshqa rejim
               </button>
             </div>
           </div>
         ) : (
           <>
             <button
-              onClick={() => selectCategory(null)}
+              onClick={() => selectMode(null)}
               className="text-blue-600 text-sm mb-3 hover:underline"
             >
-              ← Mavzu tanlashga qaytish
+              ← Orqaga
             </button>
             <h1 className="text-3xl font-bold text-blue-900 mb-1">
-              {displayCategory}
+              {displayTitle}
             </h1>
             <p className="text-gray-500 mb-4">
               {index + 1} / {activeWords.length}
