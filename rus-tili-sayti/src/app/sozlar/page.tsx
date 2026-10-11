@@ -7,8 +7,9 @@ import { words, Word } from "../data/words";
 import { recordActivity } from "../data/stats";
 import { getCategoryLabel } from "../data/categories";
 import { recordResult, getDueWordIds, getSrsStats } from "../data/srs";
+import { getMistakeIds, addMistake, removeMistake } from "../data/mistakes";
 
-type Mode = "srs" | "all" | string; // string = category slug
+type Mode = "srs" | "mistakes" | "all" | string; // string = category slug
 
 export default function SozlarPage() {
   const [mode, setMode] = useState<Mode | null>(null);
@@ -18,6 +19,8 @@ export default function SozlarPage() {
     newCount: number;
     learnedCount: number;
   } | null>(null);
+  const [mistakeWords, setMistakeWords] = useState<Word[]>([]);
+  const [mistakeCount, setMistakeCount] = useState(0);
   const [index, setIndex] = useState(0);
   const [knownCount, setKnownCount] = useState(0);
   const [finished, setFinished] = useState(false);
@@ -26,6 +29,7 @@ export default function SozlarPage() {
 
   useEffect(() => {
     setSrsStats(getSrsStats(allWordIds));
+    setMistakeCount(getMistakeIds().length);
   }, [allWordIds]);
 
   const categoryCounts = useMemo(() => {
@@ -38,9 +42,10 @@ export default function SozlarPage() {
 
   const activeWords = useMemo(() => {
     if (mode === "srs") return srsWords;
+    if (mode === "mistakes") return mistakeWords;
     if (mode === "all" || mode === null) return words;
     return words.filter((w) => w.category === mode);
-  }, [mode, srsWords]);
+  }, [mode, srsWords, mistakeWords]);
 
   const isFirst = index === 0;
 
@@ -54,6 +59,11 @@ export default function SozlarPage() {
     recordActivity("word");
 
     const word = activeWords[index];
+    if (known) {
+      removeMistake(word.id);
+    } else {
+      addMistake(word.id);
+    }
     if (mode === "srs") {
       recordResult(word.id, known);
     }
@@ -89,6 +99,13 @@ export default function SozlarPage() {
       const wordsToStudy = words.filter((w) => idsToStudy.includes(w.id));
       setSrsWords(wordsToStudy);
     }
+    if (m === "mistakes") {
+      const ids = getMistakeIds();
+      setMistakeWords(words.filter((w) => ids.includes(w.id)));
+    }
+    if (m === null) {
+      setMistakeCount(getMistakeIds().length);
+    }
     setMode(m);
     setIndex(0);
     setKnownCount(0);
@@ -119,6 +136,17 @@ export default function SozlarPage() {
           </button>
           <p className="text-xs text-gray-400 text-center mb-8">
             Aqlli takrorlash tizimi — unutilayotgan so'zlarni o'z vaqtida qayta ko'rsatadi
+          </p>
+
+          <button
+            onClick={() => selectMode("mistakes")}
+            disabled={mistakeCount === 0}
+            className="w-full bg-white hover:bg-red-50 text-red-600 ring-1 ring-red-200 font-semibold py-4 rounded-2xl text-lg transition mb-3 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            ❌ Xatolarim ({mistakeCount} ta)
+          </button>
+          <p className="text-xs text-gray-400 text-center mb-8">
+            "Bilmadim" bosgan so'zlaringiz shu yerga tushadi. "Bilaman" desangiz, ro'yxatdan chiqadi
           </p>
 
           <button
@@ -171,6 +199,8 @@ export default function SozlarPage() {
   const displayTitle =
     mode === "srs"
       ? "Bugungi takrorlash"
+      : mode === "mistakes"
+      ? "Xatolarim"
       : mode === "all"
       ? "Barcha so'zlar"
       : getCategoryLabel(mode as string);
