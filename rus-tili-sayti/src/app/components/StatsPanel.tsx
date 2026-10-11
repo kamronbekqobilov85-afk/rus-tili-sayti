@@ -12,23 +12,24 @@ export default function StatsPanel() {
 
   if (!stats) return null;
 
+  const items = [
+    { icon: "🔥", value: stats.streak, label: "kun ketma-ket", color: "text-orange-500", hex: "#f97316" },
+    { icon: "📚", value: stats.todayWords, label: "bugun so'z", color: "text-sky-500", hex: "#0ea5e9" },
+    { icon: "✅", value: stats.todayTests, label: "bugun test", color: "text-green-600", hex: "#16a34a" },
+  ];
+
   return (
     <div className="grid grid-cols-3 gap-3 w-full max-w-md mx-auto mb-8">
-      <div className="bg-white rounded-xl shadow-sm ring-1 ring-gray-100 p-4 text-center">
-        <p className="text-2xl">🔥</p>
-        <p className="text-xl font-bold text-blue-900">{stats.streak}</p>
-        <p className="text-xs text-gray-500">kun ketma-ket</p>
-      </div>
-      <div className="bg-white rounded-xl shadow-sm ring-1 ring-gray-100 p-4 text-center">
-        <p className="text-2xl">📚</p>
-        <p className="text-xl font-bold text-blue-900">{stats.todayWords}</p>
-        <p className="text-xs text-gray-500">bugun so'z</p>
-      </div>
-      <div className="bg-white rounded-xl shadow-sm ring-1 ring-gray-100 p-4 text-center">
-        <p className="text-2xl">✅</p>
-        <p className="text-xl font-bold text-blue-900">{stats.todayTests}</p>
-        <p className="text-xs text-gray-500">bugun test</p>
-      </div>
+      {items.map((it) => (
+        <div
+          key={it.label}
+          className="rounded-2xl border-2 border-b-4 border-gray-200 bg-white p-3 text-center"
+        >
+          <p className="text-2xl">{it.icon}</p>
+          <p className="text-2xl font-extrabold" style={{ color: it.hex }}>{it.value}</p>
+          <p className="text-xs font-bold text-gray-400">{it.label}</p>
+        </div>
+      ))}
     </div>
   );
 }

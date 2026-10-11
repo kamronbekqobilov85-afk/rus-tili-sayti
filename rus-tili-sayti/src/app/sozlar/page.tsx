@@ -112,62 +112,69 @@ export default function SozlarPage() {
     setFinished(false);
   };
 
+  const btn =
+    "w-full rounded-2xl border-b-4 py-4 text-lg font-extrabold uppercase tracking-wide transition active:translate-y-1 active:border-b-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:translate-y-0 disabled:active:border-b-4";
+
   // Mode tanlanmagan bo'lsa, tanlash ekranini ko'rsatamiz
   if (mode === null) {
     const srsTotal = srsStats ? srsStats.dueCount + srsStats.newCount : 0;
     return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col">
+      <div className="min-h-screen bg-white flex flex-col">
         <Header />
-        <div className="max-w-3xl mx-auto py-12 px-4 w-full">
-          <h1 className="text-3xl font-bold text-blue-900 mb-2 text-center">
+        <div className="mx-auto w-full max-w-2xl px-4 py-8">
+          <h1 className="mb-1 text-center text-3xl font-extrabold text-gray-800">
             So'zlarni yodlash
           </h1>
-          <p className="text-gray-500 text-center mb-8">
+          <p className="mb-8 text-center font-medium text-gray-500">
             Har kuni takrorlang, barchasini ko'rib chiqing yoki mavzu tanlang
           </p>
 
-          <button
-            onClick={() => selectMode("srs")}
-            disabled={srsTotal === 0}
-            className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-4 rounded-2xl text-lg transition mb-3 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            🔥 Bugungi takrorlash{" "}
-            {srsStats ? `(${srsTotal} ta so'z)` : ""}
-          </button>
-          <p className="text-xs text-gray-400 text-center mb-8">
-            Aqlli takrorlash tizimi — unutilayotgan so'zlarni o'z vaqtida qayta ko'rsatadi
+          <div className="space-y-3">
+            <button
+              onClick={() => selectMode("srs")}
+              disabled={srsTotal === 0}
+              className={`${btn} text-white hover:opacity-90`}
+              style={{ backgroundColor: "#f97316", borderColor: "#c2410c", color: "#ffffff" }}
+            >
+              🔥 Bugungi takrorlash {srsStats ? `(${srsTotal})` : ""}
+            </button>
+            <p className="text-center text-xs font-medium text-gray-400">
+              Aqlli takrorlash: unutilayotgan so'zlar o'z vaqtida qayta ko'rsatiladi
+            </p>
+
+            <button
+              onClick={() => selectMode("mistakes")}
+              disabled={mistakeCount === 0}
+              className={`${btn} border-2 border-b-4 border-red-200 bg-white text-red-500 hover:bg-red-50`}
+            >
+              ❌ Xatolarim ({mistakeCount})
+            </button>
+            <p className="text-center text-xs font-medium text-gray-400">
+              "Bilmadim" bosgan so'zlaringiz shu yerga tushadi. "Bilaman" desangiz, ro'yxatdan chiqadi
+            </p>
+
+            <button
+              onClick={() => selectMode("all")}
+              className={`${btn} border-sky-700 bg-sky-500 text-white hover:bg-sky-400`}
+            >
+              Barcha so'zlar ({words.length})
+            </button>
+          </div>
+
+          <p className="mb-3 mt-8 text-sm font-extrabold uppercase tracking-wide text-gray-400">
+            Mavzu bo'yicha
           </p>
-
-          <button
-            onClick={() => selectMode("mistakes")}
-            disabled={mistakeCount === 0}
-            className="w-full bg-white hover:bg-red-50 text-red-600 ring-1 ring-red-200 font-semibold py-4 rounded-2xl text-lg transition mb-3 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            ❌ Xatolarim ({mistakeCount} ta)
-          </button>
-          <p className="text-xs text-gray-400 text-center mb-8">
-            "Bilmadim" bosgan so'zlaringiz shu yerga tushadi. "Bilaman" desangiz, ro'yxatdan chiqadi
-          </p>
-
-          <button
-            onClick={() => selectMode("all")}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-2xl text-lg transition mb-8"
-          >
-            Barcha so'zlar ({words.length} ta)
-          </button>
-
-          <p className="text-gray-500 font-semibold mb-3">Yoki mavzu bo'yicha:</p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             {categoryCounts.map(([cat, count]) => (
               <button
                 key={cat}
                 onClick={() => selectMode(cat)}
-                className="bg-white rounded-xl shadow-sm ring-1 ring-gray-100 p-4 text-left hover:ring-blue-300 hover:shadow-md transition"
+                className="rounded-2xl border-2 border-b-4 border-gray-200 bg-white p-4 text-left transition hover:border-sky-300 hover:bg-sky-50 active:translate-y-0.5 active:border-b-2"
               >
-                <p className="font-semibold text-blue-900">
+                <p className="font-extrabold text-gray-700">
                   {getCategoryLabel(cat)}
                 </p>
-                <p className="text-xs text-gray-500">{count} ta so'z</p>
+                <p className="text-xs font-bold text-gray-400">{count} ta so'z</p>
               </button>
             ))}
           </div>
@@ -178,15 +185,16 @@ export default function SozlarPage() {
 
   if (activeWords.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col">
+      <div className="min-h-screen bg-white flex flex-col">
         <Header />
-        <div className="flex flex-col items-center justify-center flex-1 p-8 text-center">
-          <p className="text-xl text-gray-600 mb-6">
+        <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
+          <div className="mb-3 text-6xl">🎉</div>
+          <p className="mb-6 text-xl font-bold text-gray-600">
             Hozircha bu bo'limda so'z yo'q.
           </p>
           <button
             onClick={() => selectMode(null)}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-full text-lg transition"
+            className="rounded-2xl border-b-4 border-sky-700 bg-sky-500 px-8 py-3 text-lg font-extrabold uppercase tracking-wide text-white transition hover:bg-sky-400 active:translate-y-1 active:border-b-0"
           >
             Orqaga
           </button>
@@ -204,29 +212,34 @@ export default function SozlarPage() {
       : mode === "all"
       ? "Barcha so'zlar"
       : getCategoryLabel(mode as string);
+  const progress = finished
+    ? 100
+    : Math.round((index / activeWords.length) * 100);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       <Header />
-      <div className="flex flex-col items-center justify-center flex-1 p-8">
+      <div className="mx-auto flex w-full max-w-xl flex-1 flex-col items-center px-4 py-6">
         {finished ? (
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-blue-900 mb-4">
-              Tugatdingiz! 🎉
+          <div className="mt-10 text-center">
+            <div className="mb-3 text-7xl">🎉</div>
+            <h1 className="mb-2 text-3xl font-extrabold text-gray-800">
+              Tugatdingiz!
             </h1>
-            <p className="text-xl text-gray-600 mb-8">
-              {activeWords.length} so'zdan {knownCount} tasini bilasiz
+            <p className="mb-8 text-xl font-bold text-gray-500">
+              {activeWords.length} so'zdan{" "}
+              <span className="text-green-600">{knownCount}</span> tasini bilasiz
             </p>
-            <div className="flex gap-3 justify-center">
+            <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
               <button
                 onClick={restart}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-full text-lg transition"
+                className="rounded-2xl border-b-4 border-green-700 bg-green-500 px-8 py-3 text-lg font-extrabold uppercase tracking-wide text-white transition hover:bg-green-400 active:translate-y-1 active:border-b-0"
               >
-                Qaytadan boshlash
+                Qaytadan
               </button>
               <button
                 onClick={() => selectMode(null)}
-                className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-8 rounded-full text-lg transition"
+                className="rounded-2xl border-b-4 border-gray-300 bg-gray-200 px-8 py-3 text-lg font-extrabold uppercase tracking-wide text-gray-600 transition hover:bg-gray-100 active:translate-y-1 active:border-b-0"
               >
                 Boshqa rejim
               </button>
@@ -234,29 +247,39 @@ export default function SozlarPage() {
           </div>
         ) : (
           <>
-            <button
-              onClick={() => selectMode(null)}
-              className="text-blue-600 text-sm mb-3 hover:underline"
-            >
-              ← Orqaga
-            </button>
-            <h1 className="text-3xl font-bold text-blue-900 mb-1">
+            <div className="mb-4 flex w-full items-center gap-3">
+              <button
+                onClick={() => selectMode(null)}
+                className="text-2xl font-extrabold text-gray-400 hover:text-gray-600"
+                aria-label="Orqaga"
+              >
+                ✕
+              </button>
+              <div className="h-4 flex-1 overflow-hidden rounded-full bg-gray-200">
+                <div
+                  className="h-full rounded-full bg-green-500 transition-all"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <span className="text-sm font-extrabold text-gray-400">
+                {index + 1}/{activeWords.length}
+              </span>
+            </div>
+
+            <h1 className="mb-4 text-lg font-extrabold uppercase tracking-wide text-gray-400">
               {displayTitle}
             </h1>
-            <p className="text-gray-500 mb-4">
-              {index + 1} / {activeWords.length}
-            </p>
 
             {checkpoints.length > 1 && (
-              <div className="flex flex-wrap gap-2 justify-center mb-6 max-w-2xl">
+              <div className="mb-5 flex max-w-xl flex-wrap justify-center gap-2">
                 {checkpoints.map((cp) => (
                   <button
                     key={cp}
                     onClick={() => handleJump(cp)}
-                    className={`py-1 px-3 rounded-full text-sm font-semibold transition ${
+                    className={`rounded-xl border-2 px-3 py-1 text-sm font-extrabold transition ${
                       index >= cp && index < cp + 100
-                        ? "bg-blue-600 text-white"
-                        : "bg-white text-blue-900 border border-blue-200 hover:bg-blue-50"
+                        ? "border-sky-300 bg-sky-100 text-sky-600"
+                        : "border-gray-200 bg-white text-gray-400 hover:bg-gray-50"
                     }`}
                   >
                     {cp + 1}
@@ -267,27 +290,27 @@ export default function SozlarPage() {
 
             <Flashcard key={word.id} word={word} />
 
-            <div className="flex gap-4 mt-8 items-center">
-              <button
-                onClick={handlePrev}
-                disabled={isFirst}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-full text-lg transition disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                ← Oldingi
-              </button>
+            <div className="mt-8 grid w-full grid-cols-2 gap-3">
               <button
                 onClick={() => handleAnswer(false)}
-                className="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-8 rounded-full text-lg transition"
+                className="rounded-2xl border-b-4 border-red-700 bg-red-500 py-4 text-lg font-extrabold uppercase tracking-wide text-white transition hover:bg-red-400 active:translate-y-1 active:border-b-0"
               >
                 Bilmadim
               </button>
               <button
                 onClick={() => handleAnswer(true)}
-                className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-full text-lg transition"
+                className="rounded-2xl border-b-4 border-green-700 bg-green-500 py-4 text-lg font-extrabold uppercase tracking-wide text-white transition hover:bg-green-400 active:translate-y-1 active:border-b-0"
               >
                 Bilaman
               </button>
             </div>
+            <button
+              onClick={handlePrev}
+              disabled={isFirst}
+              className="mt-3 w-full rounded-2xl border-b-4 border-gray-300 bg-gray-200 py-3 font-extrabold uppercase tracking-wide text-gray-600 transition hover:bg-gray-100 active:translate-y-1 active:border-b-0 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              ← Oldingi
+            </button>
           </>
         )}
       </div>

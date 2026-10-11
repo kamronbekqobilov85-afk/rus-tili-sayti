@@ -22,6 +22,8 @@ self.addEventListener("fetch", (event) => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
+  // Versiya tekshiruvi va boshqa API so'rovlari doim to'g'ridan-to'g'ri tarmoqdan
+  if (url.pathname.startsWith("/api/")) return;
 
   event.respondWith(
     fetch(req)

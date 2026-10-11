@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Header from "./components/Header";
 import StatsPanel from "./components/StatsPanel";
@@ -32,40 +33,66 @@ export default function Home() {
     router.push("/sozlar");
   };
 
+  const shortcuts = [
+    { href: "/sozlar", icon: "📚", title: "So'zlar", bg: "#e0f2fe", border: "#bae6fd", text: "#0369a1" },
+    { href: "/tinglash", icon: "🎧", title: "Tinglash", bg: "#f3e8ff", border: "#e9d5ff", text: "#7e22ce" },
+    { href: "/grammatika", icon: "📖", title: "Grammatika", bg: "#ffedd5", border: "#fed7aa", text: "#c2410c" },
+    { href: "/yozish", icon: "✍️", title: "Yozish", bg: "#dcfce7", border: "#bbf7d0", text: "#15803d" },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       <Header />
-      <div className="flex flex-col items-center justify-center flex-1 p-8">
-        <h1 className="text-5xl font-bold text-blue-900 mb-4">
+      <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center px-4 py-8">
+        <div className="mb-2 text-7xl">🐻</div>
+        <h1 className="mb-2 text-center text-4xl font-extrabold text-gray-800 sm:text-5xl">
           Rus tilini o'rganing
         </h1>
-        <p className="text-xl text-gray-600 mb-8 text-center max-w-2xl">
-          Noldan boshlab, tez va samarali tarzda rus tilini o'rganing —
-          so'zlar, grammatika, testlar va tinglash mashqlari bilan.
+        <p className="mb-8 max-w-md text-center text-lg font-medium text-gray-500">
+          Kuniga bir necha daqiqa, har kuni. So'zlar, grammatika, tinglash va yozish mashqlari.
         </p>
 
         <StatsPanel />
 
         <button
           onClick={handleStart}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-full text-lg transition"
+          className="mb-8 w-full max-w-md rounded-2xl border-b-4 border-green-700 bg-green-500 py-4 text-lg font-extrabold uppercase tracking-wide text-white transition hover:bg-green-400 active:translate-y-1 active:border-b-0"
         >
           Boshlash
         </button>
+
+        <div className="grid w-full max-w-md grid-cols-2 gap-3">
+          {shortcuts.map((c) => (
+            <Link
+              key={c.href}
+              href={c.href}
+              className="rounded-2xl border-2 border-b-4 p-4 text-center transition active:translate-y-0.5 active:border-b-2"
+              style={{ backgroundColor: c.bg, borderColor: c.border, color: c.text }}
+            >
+              <div className="text-3xl">{c.icon}</div>
+              <div className="mt-1 text-sm font-extrabold uppercase tracking-wide">
+                {c.title}
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-8 max-w-lg w-full shadow-xl">
-            <p className="text-xl font-semibold text-blue-900 mb-3 text-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-3xl border-2 border-b-4 border-gray-200 bg-white p-6 shadow-xl">
+            <p className="mb-1 text-center text-sm font-extrabold uppercase tracking-wide text-green-600">
+              Kun hikmati
+            </p>
+            <p className="mb-3 text-center text-xl font-extrabold text-gray-800">
               {currentQuote.russian}
             </p>
-            <p className="text-lg text-gray-600 mb-6 text-center">
+            <p className="mb-6 text-center text-lg font-medium text-gray-500">
               {currentQuote.uzbek}
             </p>
             <button
               onClick={handleContinue}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-full text-lg transition"
+              className="w-full rounded-2xl border-b-4 border-green-700 bg-green-500 py-3 text-lg font-extrabold uppercase tracking-wide text-white transition hover:bg-green-400 active:translate-y-1 active:border-b-0"
             >
               Davom etish
             </button>
