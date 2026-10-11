@@ -1,6 +1,9 @@
+import ServiceWorkerRegister from "./ServiceWorkerRegister";
+
 export default function Header() {
   return (
     <header className="bg-white shadow-md">
+      <ServiceWorkerRegister />
       <nav className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-y-2 px-4 py-3 sm:px-6 sm:py-4">
         <div className="text-xl sm:text-2xl font-bold text-blue-900 whitespace-nowrap">
           Rus tili
