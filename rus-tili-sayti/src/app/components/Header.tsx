@@ -7,6 +7,7 @@ import UpdateBanner from "./UpdateBanner";
 
 const links = [
   { href: "/", label: "Bosh sahifa", short: "Bosh", icon: "🏠" },
+  { href: "/yol", label: "Gaplar yo'li", short: "Gaplar", icon: "🛤️" },
   { href: "/sozlar", label: "So'zlar", short: "So'zlar", icon: "📚" },
   { href: "/grammatika", label: "Grammatika", short: "Qoida", icon: "📖" },
   { href: "/tinglash", label: "Tinglash", short: "Tinglash", icon: "🎧" },
@@ -37,19 +38,19 @@ export default function Header() {
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-green-500 text-xl font-extrabold text-white border-b-4 border-green-700">
               Р
             </span>
-            <span className="text-2xl font-extrabold tracking-tight text-green-600">
+            <span className="whitespace-nowrap text-2xl font-extrabold tracking-tight text-green-600">
               Rus tili
             </span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-0.5">
             {links.map((l) => {
               const active = isActive(pathname, l.href);
               return (
                 <Link
                   key={l.href}
                   href={l.href}
-                  className={`rounded-xl px-4 py-2 text-sm font-extrabold uppercase tracking-wide border-2 transition ${
+                  className={`whitespace-nowrap rounded-xl px-3 py-2 text-xs lg:text-sm lg:px-4 font-extrabold uppercase tracking-wide border-2 transition ${
                     active
                       ? "bg-sky-100 text-sky-600 border-sky-300"
                       : "border-transparent text-gray-500 hover:bg-gray-100"
@@ -74,13 +75,13 @@ export default function Header() {
             <Link
               key={l.href}
               href={l.href}
-              className={`flex flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5 text-[11px] font-bold transition ${
+              className={`flex flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5 text-[10px] font-bold transition ${
                 active
                   ? "bg-sky-100 text-sky-600"
                   : "text-gray-400 active:bg-gray-100"
               }`}
             >
-              <span className="text-xl leading-none">{l.icon}</span>
+              <span className="text-lg leading-none">{l.icon}</span>
               <span>{l.short}</span>
             </Link>
           );
