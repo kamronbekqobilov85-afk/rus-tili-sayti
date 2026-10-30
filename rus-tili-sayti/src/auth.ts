@@ -21,10 +21,12 @@ const GoogleProvider: OAuthConfig<GoogleProfile> = {
   type: "oauth",
   authorization: {
     url: "https://accounts.google.com/o/oauth2/v2/auth",
-    params: { scope: "openid email profile" },
+    // "openid" yo'q — shunda Google id_token qaytarmaydi va next-auth
+    // OIDC/"iss" tekshiruviga umuman o'tmaydi, faqat userinfo chaqiradi
+    params: { scope: "email profile" },
   },
   token: "https://oauth2.googleapis.com/token",
-  userinfo: "https://openidconnect.googleapis.com/v1/userinfo",
+  userinfo: "https://www.googleapis.com/oauth2/v3/userinfo",
   clientId: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   checks: ["pkce", "state"],
