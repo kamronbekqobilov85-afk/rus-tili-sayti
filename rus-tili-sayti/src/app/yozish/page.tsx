@@ -2,6 +2,8 @@
 
 import { useState, useMemo } from "react";
 import Header from "../components/Header";
+import PageHero, { SessionBar } from "../components/PageHero";
+import { card, pageShell, btnPrimary } from "../components/ui";
 import { words } from "../data/words";
 import { recordActivity } from "../data/stats";
 
@@ -83,25 +85,23 @@ export default function YozishPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+    <div className={pageShell}>
       <Header />
-      <div className="max-w-xl mx-auto py-12 px-4">
-        <h1 className="text-3xl font-bold text-blue-900 mb-2 text-center">
-          Yozish mashqi
-        </h1>
-        <p className="text-gray-500 text-center mb-8">
-          So'zning ruscha tarjimasini yozing
-        </p>
+      <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-6 sm:py-8">
+        <PageHero
+          icon="✍️"
+          title="Yozish mashqi"
+          desc="O'zbekcha so'zni o'qing va uning ruscha tarjimasini kirill harflarida yozing. Har mashqda 20 ta so'z."
+        />
 
         {!finished ? (
-          <div className="bg-white rounded-2xl shadow-lg p-8">
-            <p className="text-gray-500 text-sm mb-6">
-              {index + 1} / {sessionWords.length}
-            </p>
+          <div className={`${card} mt-4 p-5 sm:p-6`}>
+            <SessionBar current={index + 1} total={sessionWords.length} />
 
-            <p className="text-2xl font-bold text-blue-900 mb-6 text-center">
-              {word.uzbek}
+            <p className="mt-6 text-center text-xs font-bold uppercase tracking-wide text-slate-400">
+              Ruschasini yozing
             </p>
+            <p className="mt-1 mb-6 text-center text-3xl font-extrabold text-slate-800">{word.uzbek}</p>
 
             <input
               type="text"
@@ -110,64 +110,60 @@ export default function YozishPage() {
               onKeyDown={handleKeyDown}
               disabled={!!feedback}
               autoFocus
+              lang="ru"
               placeholder="Ruscha yozing..."
-              className={`w-full border-2 rounded-xl py-3 px-4 text-lg text-center mb-4 outline-none transition ${
+              className={`w-full rounded-xl border-2 px-4 py-3 text-center text-xl outline-none transition ${
                 feedback === "correct"
-                  ? "border-green-500 bg-green-50"
+                  ? "border-emerald-500 bg-emerald-50"
                   : feedback === "incorrect"
-                  ? "border-red-500 bg-red-50"
-                  : "border-gray-200 focus:border-blue-400"
+                  ? "border-rose-500 bg-rose-50"
+                  : "border-slate-200 focus:border-emerald-500"
               }`}
             />
+            <p className="mt-2 text-center text-xs text-slate-400">
+              Klaviaturani rus tiliga o'tkazing (Alt+Shift) · Enter — tekshirish
+            </p>
 
             {feedback === "incorrect" && (
-              <p className="text-red-600 text-center mb-4">
-                To'g'ri javob:{" "}
-                <span className="font-bold">{word.russian}</span>
-              </p>
+              <div className="mt-4 rounded-xl bg-rose-50 p-3 text-center ring-1 ring-rose-200">
+                <p className="text-sm font-bold text-rose-700">Noto'g'ri</p>
+                <p className="text-slate-600">
+                  To'g'ri javob: <span className="text-lg font-extrabold text-slate-800">{word.russian}</span>
+                </p>
+              </div>
             )}
             {feedback === "correct" && (
-              <p className="text-green-600 text-center mb-4 font-semibold">
+              <div className="mt-4 rounded-xl bg-emerald-50 p-3 text-center font-extrabold text-emerald-700 ring-1 ring-emerald-200">
                 To'g'ri! 🎉
-              </p>
+              </div>
             )}
 
             {!feedback ? (
-              <button
-                onClick={handleCheck}
-                disabled={input.trim() === ""}
-                className="w-full bg-blue-600 text-white font-semibold py-3 rounded-xl hover:bg-blue-700 transition disabled:opacity-40"
-              >
+              <button onClick={handleCheck} disabled={input.trim() === ""} className={`${btnPrimary} mt-4 w-full`}>
                 Tekshirish
               </button>
             ) : (
-              <button
-                onClick={handleNext}
-                className="w-full bg-blue-600 text-white font-semibold py-3 rounded-xl hover:bg-blue-700 transition"
-              >
-                {isLast ? "Natijani ko'rish" : "Keyingisi"}
+              <button onClick={handleNext} className={`${btnPrimary} mt-4 w-full`}>
+                {isLast ? "Natijani ko'rish" : "Keyingisi →"}
               </button>
             )}
           </div>
         ) : (
-          <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
-            <p className="text-gray-500 mb-2">Sizning natijangiz</p>
-            <p className="text-6xl font-bold text-blue-900 mb-2">
+          <div className={`${card} mt-4 p-8 text-center`}>
+            <p className="text-5xl">{percentage >= 70 ? "🎉" : "💪"}</p>
+            <p className="mt-3 text-sm font-bold uppercase tracking-wide text-slate-400">Sizning natijangiz</p>
+            <p className={`text-6xl font-extrabold ${percentage >= 70 ? "text-emerald-600" : "text-amber-500"}`}>
               {percentage}%
             </p>
-            <p className="text-gray-600 mb-8">
-              {sessionWords.length} tadan {correctCount} tasini to'g'ri
-              yozdingiz
+            <p className="mt-2 mb-8 text-lg text-slate-600">
+              {sessionWords.length} ta so'zdan {correctCount} tasini to'g'ri yozdingiz
             </p>
-            <button
-              onClick={restart}
-              className="w-full bg-blue-600 text-white font-semibold py-3 rounded-xl hover:bg-blue-700 transition"
-            >
+            <button onClick={restart} className={`${btnPrimary} w-full sm:w-auto`}>
               Yangi mashq boshlash
             </button>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }

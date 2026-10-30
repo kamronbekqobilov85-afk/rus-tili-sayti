@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Header from "../components/Header";
+import PageHero, { HeroChip } from "../components/PageHero";
+import { card, pageShell } from "../components/ui";
 import { grammarTopics } from "../data/grammar";
 import { getProgress, ProgressMap } from "../data/grammarProgress";
 
@@ -18,34 +20,35 @@ export default function GrammatikaPage() {
   const overallPercent = Math.round((completedCount / totalCount) * 100);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+    <div className={pageShell}>
       <Header />
-      <div className="max-w-3xl mx-auto py-12 px-4">
-        <h1 className="text-4xl font-extrabold text-blue-900 mb-2 text-center tracking-tight">
-          Grammatika
-        </h1>
-        <p className="text-gray-500 text-center mb-6">
-          Mavzuni tanlang, darsni o'qing va testdan o'ting
-        </p>
+      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-6 sm:py-8">
+        <PageHero
+          icon="📖"
+          title="Grammatika"
+          desc="Har mavzuda qoida o'zbekcha tushuntirilgan, misollar va mashqlar bor. 70% dan yuqori natija — mavzu o'tildi."
+        >
+          <HeroChip>{totalCount} ta mavzu</HeroChip>
+          <HeroChip>
+            ✅ {completedCount} / {totalCount} o'tildi
+          </HeroChip>
+        </PageHero>
 
-        <div className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 p-5 mb-8">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-semibold text-gray-700">
-              Umumiy progress
-            </p>
-            <p className="text-sm font-semibold text-blue-700">
-              {completedCount} / {totalCount} mavzu
-            </p>
+        <div className={`${card} mt-4 p-4`}>
+          <div className="mb-2 flex items-center justify-between text-sm font-bold">
+            <span className="text-slate-600">Umumiy natija</span>
+            <span className="text-emerald-700">{overallPercent}%</span>
           </div>
-          <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
+          <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
             <div
-              className="h-full bg-blue-600 rounded-full transition-all"
+              className="h-full rounded-full bg-emerald-500 transition-all"
               style={{ width: `${overallPercent}%` }}
             />
           </div>
         </div>
 
-        <div className="grid gap-5 sm:grid-cols-2">
+        <h2 className="mt-8 text-lg font-extrabold text-slate-800">Mavzular</h2>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
           {grammarTopics.map((topic, i) => {
             const score = progress[topic.slug];
             const isCompleted = score !== undefined && score >= 70;
@@ -53,42 +56,44 @@ export default function GrammatikaPage() {
               <Link
                 key={topic.id}
                 href={`/grammatika/${topic.slug}`}
-                className="group relative bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 p-6 hover:shadow-lg hover:ring-blue-200 hover:-translate-y-0.5 transition-all duration-200 block"
+                className={`${card} group flex items-start gap-4 p-5 transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md`}
               >
-                {isCompleted && (
-                  <div className="absolute top-4 right-4 w-7 h-7 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold">
-                    ✓
-                  </div>
-                )}
-                <div className="flex items-start gap-4">
-                  <div className="shrink-0 w-10 h-10 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                    {i + 1}
-                  </div>
-                  <div className="min-w-0">
-                    <h2 className="text-lg font-bold text-blue-900 mb-1.5 leading-snug pr-6">
-                      {topic.title}
-                    </h2>
-                    <p className="text-gray-500 text-sm leading-relaxed line-clamp-3">
-                      {topic.description}
-                    </p>
-                    <div className="mt-3 flex items-center gap-2 text-xs font-semibold text-blue-600">
-                      <span>{topic.exercises.length} ta mashq</span>
-                      <span className="text-gray-300">•</span>
-                      {score !== undefined ? (
-                        <span>Eng yaxshi natija: {score}%</span>
-                      ) : (
-                        <span className="group-hover:underline">
-                          Boshlash →
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
+                <span
+                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-extrabold ring-1 transition ${
+                    isCompleted
+                      ? "bg-emerald-500 text-white ring-emerald-500"
+                      : "bg-emerald-50 text-emerald-700 ring-emerald-200 group-hover:bg-emerald-500 group-hover:text-white"
+                  }`}
+                >
+                  {isCompleted ? "✓" : i + 1}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-extrabold leading-snug text-slate-800">{topic.title}</span>
+                  <span className="mt-1 block text-sm leading-relaxed text-slate-500 line-clamp-2">
+                    {topic.description}
+                  </span>
+                  <span className="mt-3 flex flex-wrap items-center gap-2 text-xs font-bold">
+                    <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-slate-600">
+                      {topic.exercises.length} ta mashq
+                    </span>
+                    {score !== undefined ? (
+                      <span
+                        className={`rounded-full px-2.5 py-0.5 ${
+                          isCompleted ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"
+                        }`}
+                      >
+                        Eng yaxshi natija: {score}%
+                      </span>
+                    ) : (
+                      <span className="text-emerald-600 group-hover:underline">Boshlash →</span>
+                    )}
+                  </span>
+                </span>
               </Link>
             );
           })}
         </div>
-      </div>
+      </main>
     </div>
   );
 }

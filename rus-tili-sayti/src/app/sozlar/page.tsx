@@ -3,6 +3,8 @@
 import { useState, useMemo, useEffect } from "react";
 import Header from "../components/Header";
 import Flashcard from "../components/Flashcard";
+import PageHero, { HeroChip, SessionBar } from "../components/PageHero";
+import { card, pageShell, btnPrimary, btnSecondary, btnDanger } from "../components/ui";
 import { words, Word } from "../data/words";
 import { recordActivity } from "../data/stats";
 import { getCategoryLabel } from "../data/categories";
@@ -112,93 +114,115 @@ export default function SozlarPage() {
     setFinished(false);
   };
 
-  const btn =
-    "w-full rounded-2xl border-b-4 py-4 text-lg font-extrabold uppercase tracking-wide transition active:translate-y-1 active:border-b-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:translate-y-0 disabled:active:border-b-4";
-
   // Mode tanlanmagan bo'lsa, tanlash ekranini ko'rsatamiz
   if (mode === null) {
     const srsTotal = srsStats ? srsStats.dueCount + srsStats.newCount : 0;
+    const modes = [
+      {
+        key: "srs" as Mode,
+        icon: "🔥",
+        title: "Bugungi takrorlash",
+        count: srsStats ? srsTotal : null,
+        hint: srsStats
+          ? `${srsStats.dueCount} ta takrorlash va ${srsStats.newCount} ta yangi so'z`
+          : "Unutilayotgan so'zlar o'z vaqtida qayta chiqadi",
+        disabled: srsTotal === 0,
+        tint: "bg-orange-50 ring-orange-200",
+        accent: "text-orange-600",
+      },
+      {
+        key: "mistakes" as Mode,
+        icon: "❌",
+        title: "Xatolarim",
+        count: mistakeCount,
+        hint: "«Bilmadim» bosgan so'zlar. «Bilaman» desangiz, ro'yxatdan chiqadi",
+        disabled: mistakeCount === 0,
+        tint: "bg-rose-50 ring-rose-200",
+        accent: "text-rose-600",
+      },
+      {
+        key: "all" as Mode,
+        icon: "📚",
+        title: "Barcha so'zlar",
+        count: words.length,
+        hint: "Hammasini tartib bilan, 100 tadan bo'lib ko'rib chiqing",
+        disabled: false,
+        tint: "bg-sky-50 ring-sky-200",
+        accent: "text-sky-600",
+      },
+    ];
+
     return (
-      <div className="min-h-screen bg-white flex flex-col">
+      <div className={pageShell}>
         <Header />
-        <div className="mx-auto w-full max-w-2xl px-4 py-8">
-          <h1 className="mb-1 text-center text-3xl font-extrabold text-gray-800">
-            So'zlarni yodlash
-          </h1>
-          <p className="mb-8 text-center font-medium text-gray-500">
-            Har kuni takrorlang, barchasini ko'rib chiqing yoki mavzu tanlang
-          </p>
+        <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-6 sm:py-8">
+          <PageHero
+            icon="📚"
+            title="So'zlarni yodlash"
+            desc="Kartochkadagi so'zni o'qing, tarjimasini eslang va tekshiring. Har kuni ozgina — eng samarali usul."
+          >
+            <HeroChip>{words.length.toLocaleString("ru-RU")} ta so'z</HeroChip>
+            {srsStats && <HeroChip>✅ {srsStats.learnedCount} ta o'rganilgan</HeroChip>}
+          </PageHero>
 
-          <div className="space-y-3">
-            <button
-              onClick={() => selectMode("srs")}
-              disabled={srsTotal === 0}
-              className={`${btn} text-white hover:opacity-90`}
-              style={{ backgroundColor: "#f97316", borderColor: "#c2410c", color: "#ffffff" }}
-            >
-              🔥 Bugungi takrorlash {srsStats ? `(${srsTotal})` : ""}
-            </button>
-            <p className="text-center text-xs font-medium text-gray-400">
-              Aqlli takrorlash: unutilayotgan so'zlar o'z vaqtida qayta ko'rsatiladi
-            </p>
-
-            <button
-              onClick={() => selectMode("mistakes")}
-              disabled={mistakeCount === 0}
-              className={`${btn} border-2 border-b-4 border-red-200 bg-white text-red-500 hover:bg-red-50`}
-            >
-              ❌ Xatolarim ({mistakeCount})
-            </button>
-            <p className="text-center text-xs font-medium text-gray-400">
-              "Bilmadim" bosgan so'zlaringiz shu yerga tushadi. "Bilaman" desangiz, ro'yxatdan chiqadi
-            </p>
-
-            <button
-              onClick={() => selectMode("all")}
-              className={`${btn} border-sky-700 bg-sky-500 text-white hover:bg-sky-400`}
-            >
-              Barcha so'zlar ({words.length})
-            </button>
+          <h2 className="mt-8 text-lg font-extrabold text-slate-800">Qanday mashq qilasiz?</h2>
+          <div className="mt-3 grid gap-3 sm:grid-cols-3">
+            {modes.map((m) => (
+              <button
+                key={m.key}
+                onClick={() => selectMode(m.key)}
+                disabled={m.disabled}
+                className={`${card} flex flex-col p-4 text-left transition hover:-translate-y-0.5 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-sm`}
+              >
+                <span className="flex items-center gap-3">
+                  <span className={`flex h-11 w-11 items-center justify-center rounded-xl text-2xl ring-1 ${m.tint}`}>
+                    {m.icon}
+                  </span>
+                  <span className="font-extrabold text-slate-800">{m.title}</span>
+                </span>
+                <span className={`mt-3 text-3xl font-extrabold ${m.accent}`}>
+                  {m.count ?? "–"}
+                  <span className="ml-1 text-sm font-semibold text-slate-400">ta so'z</span>
+                </span>
+                <span className="mt-1 text-sm leading-snug text-slate-500">{m.hint}</span>
+              </button>
+            ))}
           </div>
 
-          <p className="mb-3 mt-8 text-sm font-extrabold uppercase tracking-wide text-gray-400">
-            Mavzu bo'yicha
-          </p>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <h2 className="mt-8 text-lg font-extrabold text-slate-800">Mavzu bo'yicha</h2>
+          <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {categoryCounts.map(([cat, count]) => (
               <button
                 key={cat}
                 onClick={() => selectMode(cat)}
-                className="rounded-2xl border-2 border-b-4 border-gray-200 bg-white p-4 text-left transition hover:border-sky-300 hover:bg-sky-50 active:translate-y-0.5 active:border-b-2"
+                className={`${card} group flex items-center justify-between gap-2 p-4 text-left transition hover:border-emerald-300 hover:bg-emerald-50/50`}
               >
-                <p className="font-extrabold text-gray-700">
-                  {getCategoryLabel(cat)}
-                </p>
-                <p className="text-xs font-bold text-gray-400">{count} ta so'z</p>
+                <span className="min-w-0">
+                  <span className="block truncate font-extrabold text-slate-700">{getCategoryLabel(cat)}</span>
+                  <span className="block text-xs font-bold text-slate-400">{count} ta so'z</span>
+                </span>
+                <span className="text-slate-300 transition group-hover:text-emerald-500">→</span>
               </button>
             ))}
           </div>
-        </div>
+        </main>
       </div>
     );
   }
 
   if (activeWords.length === 0) {
     return (
-      <div className="min-h-screen bg-white flex flex-col">
+      <div className={pageShell}>
         <Header />
-        <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
-          <div className="mb-3 text-6xl">🎉</div>
-          <p className="mb-6 text-xl font-bold text-gray-600">
-            Hozircha bu bo'limda so'z yo'q.
-          </p>
-          <button
-            onClick={() => selectMode(null)}
-            className="rounded-2xl border-b-4 border-sky-700 bg-sky-500 px-8 py-3 text-lg font-extrabold uppercase tracking-wide text-white transition hover:bg-sky-400 active:translate-y-1 active:border-b-0"
-          >
-            Orqaga
-          </button>
-        </div>
+        <main className="mx-auto flex w-full max-w-xl flex-1 items-center px-4 py-8">
+          <div className={`${card} w-full p-8 text-center`}>
+            <div className="mb-3 text-6xl">🎉</div>
+            <p className="mb-6 text-xl font-bold text-slate-600">Hozircha bu bo'limda so'z yo'q.</p>
+            <button onClick={() => selectMode(null)} className={btnPrimary}>
+              Orqaga
+            </button>
+          </div>
+        </main>
       </div>
     );
   }
@@ -212,108 +236,76 @@ export default function SozlarPage() {
       : mode === "all"
       ? "Barcha so'zlar"
       : getCategoryLabel(mode as string);
-  const progress = finished
-    ? 100
-    : Math.round((index / activeWords.length) * 100);
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className={pageShell}>
       <Header />
-      <div className="mx-auto flex w-full max-w-xl flex-1 flex-col items-center px-4 py-6">
+      <main className="mx-auto flex w-full max-w-xl flex-1 flex-col items-center px-4 py-6">
         {finished ? (
-          <div className="mt-10 text-center">
+          <div className={`${card} mt-6 w-full p-8 text-center`}>
             <div className="mb-3 text-7xl">🎉</div>
-            <h1 className="mb-2 text-3xl font-extrabold text-gray-800">
-              Tugatdingiz!
-            </h1>
-            <p className="mb-8 text-xl font-bold text-gray-500">
-              {activeWords.length} so'zdan{" "}
-              <span className="text-green-600">{knownCount}</span> tasini bilasiz
+            <h1 className="mb-2 text-3xl font-extrabold text-slate-800">Tugatdingiz!</h1>
+            <p className="mb-8 text-lg font-bold text-slate-500">
+              {activeWords.length} ta so'zdan{" "}
+              <span className="text-emerald-600">{knownCount}</span> tasini bilasiz
             </p>
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-              <button
-                onClick={restart}
-                className="rounded-2xl border-b-4 border-green-700 bg-green-500 px-8 py-3 text-lg font-extrabold uppercase tracking-wide text-white transition hover:bg-green-400 active:translate-y-1 active:border-b-0"
-              >
+              <button onClick={restart} className={btnPrimary}>
                 Qaytadan
               </button>
-              <button
-                onClick={() => selectMode(null)}
-                className="rounded-2xl border-b-4 border-gray-300 bg-gray-200 px-8 py-3 text-lg font-extrabold uppercase tracking-wide text-gray-600 transition hover:bg-gray-100 active:translate-y-1 active:border-b-0"
-              >
-                Boshqa rejim
+              <button onClick={() => selectMode(null)} className={btnSecondary}>
+                Boshqa mashq
               </button>
             </div>
           </div>
         ) : (
           <>
-            <div className="mb-4 flex w-full items-center gap-3">
-              <button
-                onClick={() => selectMode(null)}
-                className="text-2xl font-extrabold text-gray-400 hover:text-gray-600"
-                aria-label="Orqaga"
-              >
-                ✕
-              </button>
-              <div className="h-4 flex-1 overflow-hidden rounded-full bg-gray-200">
-                <div
-                  className="h-full rounded-full bg-green-500 transition-all"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-              <span className="text-sm font-extrabold text-gray-400">
-                {index + 1}/{activeWords.length}
-              </span>
-            </div>
+            <SessionBar
+              current={index + 1}
+              total={activeWords.length}
+              onExit={() => selectMode(null)}
+            />
 
-            <h1 className="mb-4 text-lg font-extrabold uppercase tracking-wide text-gray-400">
+            <p className="mt-4 text-sm font-extrabold uppercase tracking-wide text-slate-400">
               {displayTitle}
-            </h1>
+            </p>
 
             {checkpoints.length > 1 && (
-              <div className="mb-5 flex max-w-xl flex-wrap justify-center gap-2">
+              <div className="mt-3 flex max-w-xl flex-wrap justify-center gap-1.5">
                 {checkpoints.map((cp) => (
                   <button
                     key={cp}
                     onClick={() => handleJump(cp)}
-                    className={`rounded-xl border-2 px-3 py-1 text-sm font-extrabold transition ${
+                    className={`rounded-lg px-2.5 py-1 text-xs font-extrabold ring-1 transition ${
                       index >= cp && index < cp + 100
-                        ? "border-sky-300 bg-sky-100 text-sky-600"
-                        : "border-gray-200 bg-white text-gray-400 hover:bg-gray-50"
+                        ? "bg-emerald-50 text-emerald-700 ring-emerald-300"
+                        : "bg-white text-slate-400 ring-slate-200 hover:bg-slate-50"
                     }`}
                   >
-                    {cp + 1}
+                    {cp + 1}–{Math.min(cp + 100, activeWords.length)}
                   </button>
                 ))}
               </div>
             )}
 
-            <Flashcard key={word.id} word={word} />
+            <div className="mt-5 flex w-full justify-center">
+              <Flashcard key={word.id} word={word} />
+            </div>
 
-            <div className="mt-8 grid w-full grid-cols-2 gap-3">
-              <button
-                onClick={() => handleAnswer(false)}
-                className="rounded-2xl border-b-4 border-red-700 bg-red-500 py-4 text-lg font-extrabold uppercase tracking-wide text-white transition hover:bg-red-400 active:translate-y-1 active:border-b-0"
-              >
+            <div className="mt-6 grid w-full grid-cols-2 gap-3">
+              <button onClick={() => handleAnswer(false)} className={`${btnDanger} py-4 text-lg`}>
                 Bilmadim
               </button>
-              <button
-                onClick={() => handleAnswer(true)}
-                className="rounded-2xl border-b-4 border-green-700 bg-green-500 py-4 text-lg font-extrabold uppercase tracking-wide text-white transition hover:bg-green-400 active:translate-y-1 active:border-b-0"
-              >
+              <button onClick={() => handleAnswer(true)} className={`${btnPrimary} py-4 text-lg`}>
                 Bilaman
               </button>
             </div>
-            <button
-              onClick={handlePrev}
-              disabled={isFirst}
-              className="mt-3 w-full rounded-2xl border-b-4 border-gray-300 bg-gray-200 py-3 font-extrabold uppercase tracking-wide text-gray-600 transition hover:bg-gray-100 active:translate-y-1 active:border-b-0 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              ← Oldingi
+            <button onClick={handlePrev} disabled={isFirst} className={`${btnSecondary} mt-3 w-full`}>
+              ← Oldingi so'z
             </button>
           </>
         )}
-      </div>
+      </main>
     </div>
   );
 }
