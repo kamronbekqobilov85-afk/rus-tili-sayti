@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ServiceWorkerRegister from "./ServiceWorkerRegister";
@@ -35,10 +36,8 @@ export default function Header() {
       <header className="sticky top-0 z-40 bg-white border-b-2 border-gray-200">
         <nav className="max-w-5xl mx-auto flex items-center justify-between gap-4 px-4 py-3">
           <Link href="/" className="flex items-center gap-2">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-green-500 text-xl font-extrabold text-white border-b-4 border-green-700">
-              Р
-            </span>
-            <span className="whitespace-nowrap text-2xl font-extrabold tracking-tight text-green-600">
+            <Image src="/icon-192.png" alt="" width={36} height={36} priority />
+            <span className="whitespace-nowrap text-2xl font-extrabold tracking-tight text-emerald-600">
               Rus tili
             </span>
           </Link>

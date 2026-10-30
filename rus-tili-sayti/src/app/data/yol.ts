@@ -1,4 +1,4 @@
-import { LEVELS, LESSONS_PER_LEVEL } from "./gaplar";
+import { LEVELS, LESSONS_PER_LEVEL } from "./gaplarMeta";
 
 const KEY = "rus-tili-yol";
 
