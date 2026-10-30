@@ -1,20 +1,47 @@
 import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
+import type { OAuthConfig } from "next-auth/providers";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "./lib/prisma";
 
 // Shu email bilan kirgan odam avtomatik admin bo'ladi (Vercel'da ADMIN_EMAIL o'zgaruvchisi orqali sozlanadi)
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.toLowerCase().trim();
 
+type GoogleProfile = {
+  sub: string;
+  name?: string;
+  email?: string;
+  picture?: string;
+};
+
+// OIDC discovery/"iss" tekshiruvisiz, oddiy OAuth 2.0 rejimida —
+// next-auth@5 beta'dagi Google OIDC provayderida "iss" xatosi borligi uchun
+const GoogleProvider: OAuthConfig<GoogleProfile> = {
+  id: "google",
+  name: "Google",
+  type: "oauth",
+  authorization: {
+    url: "https://accounts.google.com/o/oauth2/v2/auth",
+    params: { scope: "openid email profile" },
+  },
+  token: "https://oauth2.googleapis.com/token",
+  userinfo: "https://openidconnect.googleapis.com/v1/userinfo",
+  clientId: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  checks: ["pkce", "state"],
+  profile(profile) {
+    return {
+      id: profile.sub,
+      name: profile.name,
+      email: profile.email,
+      image: profile.picture,
+    };
+  },
+};
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "database" },
-  providers: [
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
-  ],
+  providers: [GoogleProvider],
   pages: {
     signIn: "/",
   },
