@@ -6,9 +6,9 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  // Vercel Postgres (Neon) ulanganda avtomatik qo'shiladigan nomlar
-  url       = env("POSTGRES_PRISMA_URL")
-  directUrl = env("POSTGRES_URL_NON_POOLING")
+  // Vercel'dagi Neon integratsiyasi ulanganda avtomatik qo'shiladigan nomlar
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 // --- NextAuth uchun standart jadvallar ---

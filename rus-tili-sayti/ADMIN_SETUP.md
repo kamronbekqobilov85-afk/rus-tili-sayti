@@ -6,7 +6,7 @@ Bu qadamlarni faqat siz (loyiha egasi) Vercel va Google Cloud konsollarida bajar
 
 1. https://vercel.com dagi loyihangizni oching → **Storage** bo'limi → **Create Database** → **Postgres**.
 2. Yaratilgandan so'ng **Connect to Project** tugmasini bosib, shu loyihaga ulang.
-3. Vercel o'zi `POSTGRES_PRISMA_URL` va `POSTGRES_URL_NON_POOLING` o'zgaruvchilarini loyihaga qo'shadi — qo'lda hech narsa yozish shart emas.
+3. Vercel o'zi `DATABASE_URL` va `DATABASE_URL_UNPOOLED` o'zgaruvchilarini loyihaga qo'shadi — qo'lda hech narsa yozish shart emas.
 
 ## 2. Google bilan kirish (OAuth)
 
