@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ServiceWorkerRegister from "./ServiceWorkerRegister";
 import UpdateBanner from "./UpdateBanner";
+import UserMenu from "./UserMenu";
 
 const links = [
   { href: "/", label: "Bosh sahifa", short: "Bosh", icon: "🏠" },
@@ -34,7 +35,7 @@ export default function Header() {
 
       {/* Yuqori panel */}
       <header className="sticky top-0 z-40 bg-white border-b-2 border-gray-200">
-        <nav className="max-w-5xl mx-auto flex items-center justify-between gap-4 px-4 py-3">
+        <nav className="max-w-5xl mx-auto flex items-center justify-between gap-2 px-4 py-3">
           <Link href="/" className="flex items-center gap-2">
             <Image src="/icon-192.png" alt="" width={36} height={36} priority />
             <span className="whitespace-nowrap text-2xl font-extrabold tracking-tight text-emerald-600">
@@ -49,7 +50,7 @@ export default function Header() {
                 <Link
                   key={l.href}
                   href={l.href}
-                  className={`whitespace-nowrap rounded-xl px-3 py-2 text-xs lg:text-sm lg:px-4 font-extrabold uppercase tracking-wide border-2 transition ${
+                  className={`whitespace-nowrap rounded-xl px-2 py-2 text-[11px] lg:px-2.5 lg:text-xs font-extrabold uppercase tracking-wide border-2 transition ${
                     active
                       ? "bg-sky-100 text-sky-600 border-sky-300"
                       : "border-transparent text-gray-500 hover:bg-gray-100"
@@ -60,6 +61,8 @@ export default function Header() {
               );
             })}
           </div>
+
+          <UserMenu />
         </nav>
       </header>
 
