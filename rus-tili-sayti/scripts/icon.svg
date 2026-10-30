@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8be22a"/>
+      <stop offset="0.5" stop-color="#22c07a"/>
+      <stop offset="1" stop-color="#1572e8"/>
+    </linearGradient>
+    <linearGradient id="wave" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#0b3fa8" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#0b3fa8" stop-opacity="0.15"/>
+    </linearGradient>
+    <clipPath id="c"><circle cx="256" cy="256" r="236"/></clipPath>
+    <filter id="s" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#06306e" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <g clip-path="url(#c)">
+    <rect width="512" height="512" fill="url(#bg)"/>
+    <path d="M0 0H512V140C380 230 190 40 0 175Z" fill="#ffffff" opacity="0.2"/>
+    <path d="M0 360C150 270 300 470 512 320V512H0Z" fill="url(#wave)"/>
+  </g>
+  <text x="256" y="318" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-weight="800" font-size="200" fill="#ffffff" filter="url(#s)">Ру</text>
+</svg>
