@@ -9,7 +9,12 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.toLowerCase().trim();
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "database" },
-  providers: [Google],
+  providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
+  ],
   pages: {
     signIn: "/",
   },
