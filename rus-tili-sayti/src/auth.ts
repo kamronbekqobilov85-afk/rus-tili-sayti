@@ -19,6 +19,9 @@ const GoogleProvider: OAuthConfig<GoogleProfile> = {
   id: "google",
   name: "Google",
   type: "oauth",
+  // Google authorization code bilan birga "iss" so'rov parametrini ham
+  // qo'shadi (RFC 9207); next-auth buni shu qiymat bilan solishtiradi
+  issuer: "https://accounts.google.com",
   authorization: {
     url: "https://accounts.google.com/o/oauth2/v2/auth",
     // "openid" yo'q — shunda Google id_token qaytarmaydi va next-auth
