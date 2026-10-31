@@ -77,9 +77,8 @@ function getYolSummary(): YolSummary {
   return { next, doneLessons, totalLessons, stars: totalStarsAll(p) };
 }
 
-function quoteOfTheDay() {
-  const day = Math.floor(Date.now() / 86_400_000);
-  return quotes[day % quotes.length];
+function randomQuote() {
+  return quotes[Math.floor(Math.random() * quotes.length)];
 }
 
 export default function HomeClient({ counts }: { counts: Counts }) {
@@ -92,7 +91,7 @@ export default function HomeClient({ counts }: { counts: Counts }) {
     setStats(getDisplayStats());
     setYol(getYolSummary());
     setDue(getDueIds().length);
-    setQuote(quoteOfTheDay());
+    setQuote(randomQuote());
   }, []);
 
   const fmt = (n: number) => n.toLocaleString("ru-RU");
@@ -344,7 +343,7 @@ export default function HomeClient({ counts }: { counts: Counts }) {
           </div>
 
           <div className="flex flex-col justify-center rounded-2xl bg-slate-800 p-5 text-white shadow-sm">
-            <p className="text-xs font-bold uppercase tracking-widest text-emerald-300">Kun hikmati</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-emerald-300">Hikmat</p>
             <p className="mt-2 text-xl font-extrabold leading-snug">«{quote.russian}»</p>
             <p className="mt-2 text-slate-300">{quote.uzbek}</p>
           </div>
