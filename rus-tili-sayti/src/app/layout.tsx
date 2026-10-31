@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "./components/AuthProvider";
 import VisitTracker from "./components/VisitTracker";
+import SignInGate from "./components/SignInGate";
+import { auth } from "../auth";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,7 +24,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  // Ilova faqat tizimga kirgan foydalanuvchilarga ochiq
+  const session = await auth();
+
   return (
     <html
       lang="uz"
@@ -30,8 +35,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <AuthProvider>
-          <VisitTracker />
-          {children}
+          {session ? (
+            <>
+              <VisitTracker />
+              {children}
+            </>
+          ) : (
+            <SignInGate />
+          )}
         </AuthProvider>
       </body>
     </html>
