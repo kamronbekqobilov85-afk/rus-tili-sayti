@@ -86,12 +86,22 @@ export default function HomeClient({ counts }: { counts: Counts }) {
   const [yol, setYol] = useState<YolSummary | null>(null);
   const [due, setDue] = useState(0);
   const [quote, setQuote] = useState(quotes[0]);
+  const [showQuote, setShowQuote] = useState(false);
 
   useEffect(() => {
     setStats(getDisplayStats());
     setYol(getYolSummary());
     setDue(getDueIds().length);
     setQuote(randomQuote());
+
+    try {
+      if (!sessionStorage.getItem("quotePopupShown")) {
+        sessionStorage.setItem("quotePopupShown", "1");
+        setShowQuote(true);
+      }
+    } catch {
+      setShowQuote(true);
+    }
   }, []);
 
   const fmt = (n: number) => n.toLocaleString("ru-RU");
@@ -152,6 +162,36 @@ export default function HomeClient({ counts }: { counts: Counts }) {
   return (
     <div className="flex min-h-screen flex-col bg-slate-50">
       <Header />
+
+      {showQuote && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4"
+          onClick={() => setShowQuote(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-sm rounded-3xl bg-slate-800 p-6 text-white shadow-2xl"
+          >
+            <button
+              onClick={() => setShowQuote(false)}
+              className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full text-lg text-slate-400 transition hover:bg-white/10 hover:text-white"
+              aria-label="Yopish"
+            >
+              ✕
+            </button>
+            <p className="text-3xl">💡</p>
+            <p className="mt-3 text-xs font-bold uppercase tracking-widest text-emerald-300">Kun hikmati</p>
+            <p className="mt-2 text-xl font-extrabold leading-snug">«{quote.russian}»</p>
+            <p className="mt-2 text-slate-300">{quote.uzbek}</p>
+            <button
+              onClick={() => setShowQuote(false)}
+              className="mt-5 w-full rounded-xl border-b-4 border-emerald-700 bg-emerald-500 py-2.5 text-center font-extrabold uppercase tracking-wide text-white transition active:translate-y-0.5 active:border-b-2"
+            >
+              Tushunarli
+            </button>
+          </div>
+        </div>
+      )}
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 sm:py-8">
         {/* Asosiy blok: kirish va keyingi dars */}
