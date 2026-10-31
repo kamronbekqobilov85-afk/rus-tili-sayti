@@ -83,8 +83,23 @@ export function getDisplayStats(): DisplayStats {
   };
 }
 
+// Serverga ball yuborish (tizimga kirgan bo'lsa hisobga qo'shiladi, bo'lmasa jim e'tiborsiz qoldiriladi)
+function syncXp(type: "word" | "test") {
+  try {
+    fetch("/api/xp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type }),
+      keepalive: true,
+    }).catch(() => {});
+  } catch {
+    // fetch mavjud emas — e'tiborsiz qoldiramiz
+  }
+}
+
 // Faoliyatni qayd etish (so'z ko'rilganda yoki test tugaganda chaqiriladi)
 export function recordActivity(type: "word" | "test") {
+  syncXp(type);
   const today = todayStr();
   const yesterday = yesterdayStr();
   const raw = loadRaw();

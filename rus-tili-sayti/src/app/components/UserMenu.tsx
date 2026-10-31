@@ -58,6 +58,20 @@ export default function UserMenu() {
             <p className="truncate font-extrabold text-slate-800">{user.name}</p>
             <p className="truncate text-xs text-slate-400">{user.email}</p>
           </div>
+          <Link
+            href="/profil"
+            onClick={() => setOpen(false)}
+            className="block rounded-xl px-3 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50"
+          >
+            👤 Profil
+          </Link>
+          <Link
+            href="/reyting"
+            onClick={() => setOpen(false)}
+            className="block rounded-xl px-3 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50"
+          >
+            🏆 Reyting
+          </Link>
           {user.role === "admin" && (
             <Link
               href="/admin"

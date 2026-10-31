@@ -4,6 +4,7 @@ import "./globals.css";
 import AuthProvider from "./components/AuthProvider";
 import VisitTracker from "./components/VisitTracker";
 import SignInGate from "./components/SignInGate";
+import ReferralHandler from "./components/ReferralHandler";
 import { auth } from "../auth";
 
 const geistSans = Geist({
@@ -35,6 +36,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <AuthProvider>
+          <ReferralHandler />
           {session ? (
             <>
               <VisitTracker />
