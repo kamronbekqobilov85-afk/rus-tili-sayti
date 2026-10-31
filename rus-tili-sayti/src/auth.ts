@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import type { OAuthConfig } from "next-auth/providers";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "./lib/prisma";
+import { ensureReferralCode } from "./lib/gamification";
 
 // Shu email bilan kirgan odam avtomatik admin bo'ladi (Vercel'da ADMIN_EMAIL o'zgaruvchisi orqali sozlanadi)
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.toLowerCase().trim();
@@ -70,6 +71,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           ...(isAdmin ? { role: "admin" } : {}),
         },
       });
+      await ensureReferralCode(user.id);
     },
   },
 });

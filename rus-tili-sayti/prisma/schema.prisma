@@ -26,7 +26,7 @@ model User {
   // Gamifikatsiya: ball, kunlik maqsad, taklif tizimi
   xp           Int     @default(0)
   dailyGoal    Int     @default(20)
-  referralCode String  @unique @default(cuid())
+  referralCode String? @unique
   referredBy   String?
 
   accounts     Account[]

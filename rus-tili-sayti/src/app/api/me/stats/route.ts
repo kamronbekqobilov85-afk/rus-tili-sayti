@@ -1,5 +1,6 @@
 import { auth } from "../../../../auth";
 import { prisma } from "../../../../lib/prisma";
+import { ensureReferralCode } from "../../../../lib/gamification";
 
 function todayStr(): string {
   return new Date().toISOString().slice(0, 10);
@@ -34,13 +35,15 @@ export async function GET() {
     return Response.json({ ok: false }, { status: 404 });
   }
 
+  const referralCode = user.referralCode ?? (await ensureReferralCode(userId));
+
   return Response.json({
     ok: true,
     xp: user.xp,
     dailyGoal: user.dailyGoal,
     todayXp: todayStat?.xp ?? 0,
     achievements: achievements.map((a) => a.key),
-    referralCode: user.referralCode,
+    referralCode,
     referralCount,
   });
 }

@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import { prisma } from "./prisma";
 import { XP_PER_TEST, XP_PER_WORD, XP_REFERRAL_BONUS, XP_THRESHOLDS, REFERRAL_THRESHOLDS } from "../app/data/achievements";
 
@@ -5,6 +6,16 @@ export { XP_PER_WORD, XP_PER_TEST, XP_REFERRAL_BONUS };
 
 function todayStr(): string {
   return new Date().toISOString().slice(0, 10);
+}
+
+// Mavjud foydalanuvchilarda referralCode bo'lmasligi mumkin (ustun ixtiyoriy
+// qilib qo'shilgan) — shu yerda birinchi so'ralganda hosil qilib beramiz
+export async function ensureReferralCode(userId: string): Promise<string> {
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { referralCode: true } });
+  if (user?.referralCode) return user.referralCode;
+  const code = randomUUID();
+  await prisma.user.update({ where: { id: userId }, data: { referralCode: code } });
+  return code;
 }
 
 async function unlockXpAchievements(userId: string, xp: number): Promise<string[]> {
