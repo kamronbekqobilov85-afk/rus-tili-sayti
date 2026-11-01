@@ -28,7 +28,7 @@ function randomPhrase(): { ru: string; uz: string } {
   return { ru: pick.ru, uz: pick.uz };
 }
 
-type Stage = "idle" | "recording" | "recorded" | "sending" | "sent" | "error" | "no-mic" | "no-storage";
+type Stage = "idle" | "recording" | "sending" | "sent" | "error" | "no-mic" | "no-storage";
 
 export default function GapirishPage() {
   const [phrase, setPhrase] = useState(() => randomPhrase());
@@ -38,6 +38,7 @@ export default function GapirishPage() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
+  const recordedBlobRef = useRef<Blob | null>(null);
 
   useEffect(() => {
     return () => {
@@ -47,44 +48,9 @@ export default function GapirishPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      streamRef.current = stream;
-      chunksRef.current = [];
-      const recorder = new MediaRecorder(stream);
-      recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) chunksRef.current.push(e.data);
-      };
-      recorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
-        setAudioUrl(URL.createObjectURL(blob));
-        setStage("recorded");
-        stream.getTracks().forEach((t) => t.stop());
-      };
-      mediaRecorderRef.current = recorder;
-      recorder.start();
-      setStage("recording");
-    } catch {
-      setStage("no-mic");
-    }
-  };
-
-  const stopRecording = () => {
-    mediaRecorderRef.current?.stop();
-  };
-
-  const retry = () => {
-    if (audioUrl) URL.revokeObjectURL(audioUrl);
-    setAudioUrl(null);
-    setStage("idle");
-  };
-
-  const submit = async () => {
-    if (!audioUrl) return;
+  const uploadNow = async (blob: Blob) => {
     setStage("sending");
     try {
-      const blob = await fetch(audioUrl).then((r) => r.blob());
       const form = new FormData();
       form.append("audio", blob, "recording.webm");
       form.append("ru", phrase.ru);
@@ -100,10 +66,48 @@ export default function GapirishPage() {
     }
   };
 
-  const nextPhrase = () => {
-    retry();
-    setPhrase(randomPhrase());
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+      chunksRef.current = [];
+      const recorder = new MediaRecorder(stream);
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
+      recorder.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+        recordedBlobRef.current = blob;
+        setAudioUrl(URL.createObjectURL(blob));
+        stream.getTracks().forEach((t) => t.stop());
+        void uploadNow(blob);
+      };
+      mediaRecorderRef.current = recorder;
+      recorder.start();
+      setStage("recording");
+    } catch {
+      setStage("no-mic");
+    }
+  };
+
+  const stopRecording = () => {
+    mediaRecorderRef.current?.stop();
+  };
+
+  const retrySend = () => {
+    if (recordedBlobRef.current) void uploadNow(recordedBlobRef.current);
+  };
+
+  const recordAgain = () => {
+    if (audioUrl) URL.revokeObjectURL(audioUrl);
+    setAudioUrl(null);
+    recordedBlobRef.current = null;
     setStage("idle");
+  };
+
+  const nextPhrase = () => {
+    recordAgain();
+    setPhrase(randomPhrase());
   };
 
   return (
@@ -113,7 +117,7 @@ export default function GapirishPage() {
         <PageHero
           icon="🎙️"
           title="Gapirish mashqi"
-          desc="Gapni tinglang va o'zingiz talaffuz qilib yozib oling. Yozuvingizni faqat admin eshitadi."
+          desc="Gapni tinglang va o'zingiz talaffuz qilib ayting. Yozuvingizni faqat admin eshitadi."
         />
 
         <div className={`${card} mt-6 p-5`}>
@@ -148,7 +152,7 @@ export default function GapirishPage() {
                 className="flex h-20 w-20 animate-pulse items-center justify-center self-center rounded-full border-b-8 border-rose-900 bg-rose-700 text-4xl text-white shadow-lg transition active:translate-y-1 active:border-b-4"
                 aria-label="To'xtatish"
               >
-                ⏹️
+                ⏸️
               </button>
             )}
 
@@ -158,41 +162,48 @@ export default function GapirishPage() {
               </p>
             )}
 
-            {(stage === "recorded" || stage === "sending" || stage === "error" || stage === "no-storage") &&
-              audioUrl && (
+            {audioUrl && (stage === "sending" || stage === "sent" || stage === "error" || stage === "no-storage") && (
               <div className="space-y-3">
                 <audio src={audioUrl} controls className="mx-auto w-full" />
-                <div className="flex justify-center gap-2">
-                  <button onClick={retry} className={`${btnSecondary} px-4 py-2 text-sm`}>
-                    Qayta yozish
-                  </button>
-                  <button
-                    onClick={submit}
-                    disabled={stage === "sending"}
-                    className={`${btnPrimary} px-4 py-2 text-sm`}
-                  >
-                    {stage === "sending" ? "Yuborilmoqda..." : "Yuborish"}
-                  </button>
-                </div>
-                {stage === "error" && (
-                  <p className="text-sm font-bold text-rose-600">Yuborilmadi, qayta urinib ko'ring.</p>
+                <p className="text-sm text-slate-500">
+                  Siz aytdingiz: <span className="font-bold text-slate-700">{phrase.ru}</span> —{" "}
+                  <span className="italic">{phrase.uz}</span>
+                </p>
+
+                {stage === "sending" && (
+                  <p className="text-sm font-bold text-slate-400">Adminga yuborilmoqda...</p>
                 )}
+
+                {stage === "sent" && (
+                  <div>
+                    <p className="text-sm font-extrabold text-emerald-600">
+                      ✅ Yuborildi — faqat admin eshitadi (+{XP_PER_VOICE} ball)
+                    </p>
+                    <button onClick={nextPhrase} className={`${btnPrimary} mt-3 px-5 py-2.5 text-sm`}>
+                      Keyingi gap →
+                    </button>
+                  </div>
+                )}
+
+                {stage === "error" && (
+                  <div>
+                    <p className="text-sm font-bold text-rose-600">Yuborilmadi, internetni tekshiring.</p>
+                    <div className="mt-2 flex justify-center gap-2">
+                      <button onClick={recordAgain} className={`${btnSecondary} px-4 py-2 text-sm`}>
+                        Qayta yozish
+                      </button>
+                      <button onClick={retrySend} className={`${btnPrimary} px-4 py-2 text-sm`}>
+                        Qayta yuborish
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 {stage === "no-storage" && (
                   <p className="text-sm font-bold text-rose-600">
                     Ovozli mashq hali sozlanmagan, birozdan keyin qayta urinib ko'ring.
                   </p>
                 )}
-              </div>
-            )}
-
-            {stage === "sent" && (
-              <div>
-                <p className="text-4xl">✅</p>
-                <p className="mt-2 font-extrabold text-slate-800">Yuborildi!</p>
-                <p className="text-sm text-emerald-600 font-bold">+{XP_PER_VOICE} ball</p>
-                <button onClick={nextPhrase} className={`${btnPrimary} mt-4 px-5 py-2.5 text-sm`}>
-                  Keyingi gap →
-                </button>
               </div>
             )}
           </div>
