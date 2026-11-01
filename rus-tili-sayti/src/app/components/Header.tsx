@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import ServiceWorkerRegister from "./ServiceWorkerRegister";
 import UpdateBanner from "./UpdateBanner";
 import UserMenu from "./UserMenu";
+import InstallBadge from "./InstallBadge";
 
 const links = [
   { href: "/", label: "Bosh sahifa", short: "Bosh", icon: "🏠" },
@@ -36,12 +37,15 @@ export default function Header() {
       {/* Yuqori panel */}
       <header className="sticky top-0 z-40 bg-white border-b-2 border-gray-200">
         <nav className="max-w-5xl mx-auto flex items-center justify-between gap-2 px-4 py-3">
-          <Link href="/" className="flex items-center gap-2">
-            <Image src="/icon-192.png" alt="" width={36} height={36} priority />
-            <span className="whitespace-nowrap text-2xl font-extrabold tracking-tight text-emerald-600">
-              Rus tili
-            </span>
-          </Link>
+          <div className="flex flex-col items-start">
+            <Link href="/" className="flex items-center gap-2">
+              <Image src="/icon-192.png" alt="" width={36} height={36} priority />
+              <span className="whitespace-nowrap text-2xl font-extrabold tracking-tight text-emerald-600">
+                Rus tili
+              </span>
+            </Link>
+            <InstallBadge />
+          </div>
 
           <div className="hidden md:flex items-center gap-0.5">
             {links.map((l) => {
