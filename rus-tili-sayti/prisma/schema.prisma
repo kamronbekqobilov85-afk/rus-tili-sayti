@@ -34,6 +34,23 @@ model User {
   visits       Visit[]
   dailyStats   DailyStat[]
   achievements UserAchievement[]
+  feedbacks    Feedback[]
+}
+
+// Foydalanuvchilar yuborgan savol/taklif/fikrlar
+model Feedback {
+  id        String   @id @default(cuid())
+  userId    String?
+  name      String?
+  email     String?
+  message   String   @db.Text
+  status    String   @default("new") // "new" | "read" | "resolved"
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([status])
 }
 
 // Kunlik to'plangan ball — kunlik maqsad va reyting uchun

@@ -3,6 +3,7 @@ import Image from "next/image";
 import Header from "../components/Header";
 import PageHero, { HeroChip } from "../components/PageHero";
 import { card, pageShell } from "../components/ui";
+import FeedbackRow from "../components/FeedbackRow";
 import { auth } from "../../auth";
 import { prisma, daysAgo } from "../../lib/prisma";
 
@@ -57,19 +58,26 @@ export default async function AdminPage() {
     );
   }
 
-  const [totalUsers, totalVisits, byDeviceRaw, recentUsers, last7dVisits] = await Promise.all([
-    prisma.user.count(),
-    prisma.visit.count(),
-    prisma.visit.groupBy({ by: ["device"], _count: { device: true } }),
-    prisma.user.findMany({
-      orderBy: { lastSeenAt: "desc" },
-      take: 20,
-      select: { id: true, name: true, email: true, image: true, role: true, createdAt: true, lastSeenAt: true },
-    }),
-    prisma.visit.count({
-      where: { createdAt: { gte: daysAgo(7) } },
-    }),
-  ]);
+  const [totalUsers, totalVisits, byDeviceRaw, recentUsers, last7dVisits, feedbacks, newFeedbackCount] =
+    await Promise.all([
+      prisma.user.count(),
+      prisma.visit.count(),
+      prisma.visit.groupBy({ by: ["device"], _count: { device: true } }),
+      prisma.user.findMany({
+        orderBy: { lastSeenAt: "desc" },
+        take: 20,
+        select: { id: true, name: true, email: true, image: true, role: true, createdAt: true, lastSeenAt: true },
+      }),
+      prisma.visit.count({
+        where: { createdAt: { gte: daysAgo(7) } },
+      }),
+      prisma.feedback.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 50,
+        select: { id: true, name: true, email: true, message: true, status: true, createdAt: true },
+      }),
+      prisma.feedback.count({ where: { status: "new" } }),
+    ]);
 
   const byDevice = byDeviceRaw
     .map((d) => ({ device: d.device, count: d._count.device }))
@@ -83,7 +91,7 @@ export default async function AdminPage() {
           <HeroChip>{session.user.email}</HeroChip>
         </PageHero>
 
-        <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-5">
           <StatCard icon="👤" value={totalUsers} label="Ro'yxatdan o'tganlar" color="text-emerald-600" />
           <StatCard icon="👁️" value={totalVisits} label="Jami sahifa ko'rishlar" color="text-sky-600" />
           <StatCard icon="📅" value={last7dVisits} label="Oxirgi 7 kunda" color="text-orange-500" />
@@ -93,6 +101,7 @@ export default async function AdminPage() {
             label="Telefondan kirish"
             color="text-violet-600"
           />
+          <StatCard icon="💬" value={newFeedbackCount} label="Yangi xabarlar" color="text-rose-600" />
         </div>
 
         <section className="mt-8">
@@ -117,6 +126,36 @@ export default async function AdminPage() {
                 </div>
               );
             })}
+          </div>
+        </section>
+
+        <section className="mt-8">
+          <h2 className="text-lg font-extrabold text-slate-800">
+            Xabarlar va takliflar
+            {newFeedbackCount > 0 && (
+              <span className="ml-2 rounded-full bg-rose-500 px-2 py-0.5 text-xs font-extrabold text-white">
+                {newFeedbackCount} yangi
+              </span>
+            )}
+          </h2>
+          <p className="mt-1 text-sm text-slate-400">Foydalanuvchilar yuborgan fikr va takliflar</p>
+          <div className={`${card} mt-3 divide-y divide-slate-100`}>
+            {feedbacks.length === 0 && (
+              <p className="p-4 text-sm text-slate-400">Hali hech kim xabar yubormagan.</p>
+            )}
+            {feedbacks.map((f) => (
+              <FeedbackRow
+                key={f.id}
+                feedback={{
+                  id: f.id,
+                  name: f.name,
+                  email: f.email,
+                  message: f.message,
+                  status: f.status,
+                  createdAtLabel: formatDate(f.createdAt),
+                }}
+              />
+            ))}
           </div>
         </section>
 
