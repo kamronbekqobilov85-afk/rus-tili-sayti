@@ -13,7 +13,8 @@ export async function GET(req: Request) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const today = todayStr();
+  const today = new Date();
+  const todayKey = todayStr();
 
   const users = await prisma.user.findMany({
     where: { email: { not: null } },
@@ -23,15 +24,27 @@ export async function GET(req: Request) {
   let sent = 0;
   for (const u of users) {
     if (!u.email) continue;
-    if (u.createdAt.toISOString().slice(0, 10) === today) continue; // bugun ro'yxatdan o'tgan
+    if (u.createdAt.toISOString().slice(0, 10) === todayKey) continue; // bugun ro'yxatdan o'tgan
 
-    const stat = await prisma.dailyStat.findUnique({
-      where: { userId_date: { userId: u.id, date: today } },
+    const todayStat = await prisma.dailyStat.findUnique({
+      where: { userId_date: { userId: u.id, date: todayKey } },
       select: { id: true },
     });
-    if (stat) continue; // bugun allaqachon faol bo'lgan
+    if (todayStat) continue; // bugun allaqachon faol bo'lgan
 
-    await sendReminderEmail(u.email, u.name);
+    const lastStat = await prisma.dailyStat.findFirst({
+      where: { userId: u.id },
+      orderBy: { date: "desc" },
+      select: { date: true },
+    });
+
+    const lastActiveDate = lastStat ? new Date(lastStat.date) : u.createdAt;
+    const daysInactive = Math.max(
+      0,
+      Math.floor((today.getTime() - lastActiveDate.getTime()) / 86_400_000)
+    );
+
+    await sendReminderEmail(u.email, u.name, daysInactive);
     sent++;
   }
 

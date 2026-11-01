@@ -58,26 +58,39 @@ export default async function AdminPage() {
     );
   }
 
-  const [totalUsers, totalVisits, byDeviceRaw, recentUsers, last7dVisits, feedbacks, newFeedbackCount] =
-    await Promise.all([
-      prisma.user.count(),
-      prisma.visit.count(),
-      prisma.visit.groupBy({ by: ["device"], _count: { device: true } }),
-      prisma.user.findMany({
-        orderBy: { lastSeenAt: "desc" },
-        take: 20,
-        select: { id: true, name: true, email: true, image: true, role: true, createdAt: true, lastSeenAt: true },
-      }),
-      prisma.visit.count({
-        where: { createdAt: { gte: daysAgo(7) } },
-      }),
-      prisma.feedback.findMany({
-        orderBy: { createdAt: "desc" },
-        take: 50,
-        select: { id: true, name: true, email: true, message: true, status: true, createdAt: true },
-      }),
-      prisma.feedback.count({ where: { status: "new" } }),
-    ]);
+  const [
+    totalUsers,
+    totalVisits,
+    byDeviceRaw,
+    recentUsers,
+    last7dVisits,
+    feedbacks,
+    newFeedbackCount,
+    voiceRecordings,
+  ] = await Promise.all([
+    prisma.user.count(),
+    prisma.visit.count(),
+    prisma.visit.groupBy({ by: ["device"], _count: { device: true } }),
+    prisma.user.findMany({
+      orderBy: { lastSeenAt: "desc" },
+      take: 20,
+      select: { id: true, name: true, email: true, image: true, role: true, createdAt: true, lastSeenAt: true },
+    }),
+    prisma.visit.count({
+      where: { createdAt: { gte: daysAgo(7) } },
+    }),
+    prisma.feedback.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 50,
+      select: { id: true, name: true, email: true, message: true, status: true, createdAt: true },
+    }),
+    prisma.feedback.count({ where: { status: "new" } }),
+    prisma.voiceRecording.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 30,
+      select: { id: true, name: true, email: true, phraseRu: true, audioUrl: true, createdAt: true },
+    }),
+  ]);
 
   const byDevice = byDeviceRaw
     .map((d) => ({ device: d.device, count: d._count.device }))
@@ -155,6 +168,29 @@ export default async function AdminPage() {
                   createdAtLabel: formatDate(f.createdAt),
                 }}
               />
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-8">
+          <h2 className="text-lg font-extrabold text-slate-800">Ovozli mashqlar</h2>
+          <p className="mt-1 text-sm text-slate-400">
+            Foydalanuvchilar talaffuz qilib yuborgan yozuvlar — faqat sizga ko'rinadi
+          </p>
+          <div className={`${card} mt-3 divide-y divide-slate-100`}>
+            {voiceRecordings.length === 0 && (
+              <p className="p-4 text-sm text-slate-400">Hali hech kim ovoz yubormagan.</p>
+            )}
+            {voiceRecordings.map((v) => (
+              <div key={v.id} className="p-4">
+                <p className="flex flex-wrap items-center gap-2 text-sm font-bold text-slate-700">
+                  {v.name || "Noma'lum"}
+                  <span className="font-normal text-slate-400">· {v.email}</span>
+                </p>
+                <p className="mt-1 text-sm text-slate-500 break-words">«{v.phraseRu}»</p>
+                <audio src={v.audioUrl} controls className="mt-2 w-full" />
+                <p className="mt-1 text-xs text-slate-400">{formatDate(v.createdAt)}</p>
+              </div>
             ))}
           </div>
         </section>

@@ -6,6 +6,7 @@ import Header from "../components/Header";
 import PageHero, { HeroChip } from "../components/PageHero";
 import { card, pageShell, btnPrimary, btnSecondary } from "../components/ui";
 import { ACHIEVEMENTS } from "../data/achievements";
+import GroupSection from "../components/GroupSection";
 
 type Stats = {
   xp: number;
@@ -167,6 +168,8 @@ export default function ProfilPage() {
             })}
           </div>
         </section>
+
+        <GroupSection myId={session?.user?.id} />
 
         {/* Do'stlarni taklif qilish */}
         <section className="mt-8 mb-10">

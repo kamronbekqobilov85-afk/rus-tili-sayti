@@ -4,6 +4,8 @@
 export const XP_PER_WORD = 5;
 export const XP_PER_TEST = 20;
 export const XP_REFERRAL_BONUS = 100;
+export const DAILY_CHALLENGE_XP = 30;
+export const XP_PER_VOICE = 10;
 
 export type Achievement = {
   key: string;

@@ -6,11 +6,21 @@ type Row = { id: string; name: string | null; image: string | null; xp: number }
 export async function GET(req: Request) {
   const session = await auth();
   const { searchParams } = new URL(req.url);
-  const period = searchParams.get("period") === "week" ? "week" : "all";
+  const periodParam = searchParams.get("period");
+  const period = periodParam === "week" ? "week" : periodParam === "friends" ? "friends" : "all";
 
   let items: Row[];
 
-  if (period === "week") {
+  if (period === "friends") {
+    if (!session?.user?.id) {
+      return Response.json({ ok: false }, { status: 401 });
+    }
+    items = await prisma.user.findMany({
+      where: { OR: [{ id: session.user.id }, { referredBy: session.user.id }] },
+      orderBy: { xp: "desc" },
+      select: { id: true, name: true, image: true, xp: true },
+    });
+  } else if (period === "week") {
     const since = daysAgo(7).toISOString().slice(0, 10);
     const grouped = await prisma.dailyStat.groupBy({
       by: ["userId"],

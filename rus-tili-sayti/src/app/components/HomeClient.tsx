@@ -155,6 +155,14 @@ export default function HomeClient({ counts }: { counts: Counts }) {
       badge: `${counts.videos} ta video`,
       tint: "bg-amber-50 text-amber-700 ring-amber-200",
     },
+    {
+      href: "/gapirish",
+      icon: "🎙️",
+      title: "Gapirish",
+      desc: "Gapni talaffuz qilib yozib yuboring",
+      badge: "Og'zaki mashq",
+      tint: "bg-rose-50 text-rose-700 ring-rose-200",
+    },
   ];
 
   const progressPct = yol ? Math.round((yol.doneLessons / yol.totalLessons) * 100) : 0;
@@ -216,6 +224,14 @@ export default function HomeClient({ counts }: { counts: Counts }) {
               <p className="mt-3 max-w-md text-base text-emerald-50/90 sm:text-lg">
                 Har kuni 10–15 daqiqa yetarli. Gaplar, so'zlar, grammatika va tinglash — hammasi bir joyda.
               </p>
+              {yol && yol.doneLessons === 0 && (
+                <Link
+                  href="/daraja-testi"
+                  className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-sm font-bold text-white ring-1 ring-white/25 transition hover:bg-white/25"
+                >
+                  🎯 Darajangizni bilmaysizmi? Qisqa test oling →
+                </Link>
+              )}
             </div>
 
             <div className="rounded-2xl bg-white p-5 text-slate-800 shadow-md">
@@ -289,6 +305,21 @@ export default function HomeClient({ counts }: { counts: Counts }) {
             <span className="text-xl font-bold text-amber-700">→</span>
           </Link>
         )}
+
+        {/* Kunlik mini-mashq */}
+        <Link
+          href="/kunlik"
+          className="mt-4 flex items-center gap-4 rounded-2xl border border-violet-200 bg-violet-50 p-4 transition hover:bg-violet-100"
+        >
+          <span className="text-3xl">⚡</span>
+          <span className="flex-1">
+            <span className="block font-extrabold text-violet-900">Kunlik mini-mashq</span>
+            <span className="block text-sm text-violet-800/80">
+              5 ta tezkor savol — bonus ball uchun har kuni yangi
+            </span>
+          </span>
+          <span className="text-xl font-bold text-violet-700">→</span>
+        </Link>
 
         {/* Bugungi natijalar */}
         <section className="mt-8">

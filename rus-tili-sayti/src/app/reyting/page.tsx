@@ -8,7 +8,7 @@ import PageHero from "../components/PageHero";
 import { card, pageShell } from "../components/ui";
 
 type Row = { id: string; name: string | null; image: string | null; xp: number };
-type Period = "week" | "all";
+type Period = "week" | "all" | "friends";
 
 const MEDAL = ["🥇", "🥈", "🥉"];
 
@@ -63,11 +63,26 @@ export default function ReytingPage() {
           >
             Umumiy
           </button>
+          <button
+            onClick={() => setPeriod("friends")}
+            className={`rounded-xl border-2 px-4 py-2 text-sm font-extrabold transition ${
+              period === "friends"
+                ? "border-emerald-400 bg-emerald-100 text-emerald-700"
+                : "border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
+            }`}
+          >
+            Do'stlarim
+          </button>
         </div>
 
         <div className={`${card} mt-4 divide-y divide-slate-100`}>
           {loading && <p className="p-4 text-sm text-slate-400">Yuklanmoqda...</p>}
-          {!loading && items.length === 0 && (
+          {!loading && items.length === 0 && period === "friends" && (
+            <p className="p-4 text-sm text-slate-400">
+              Hali do'stingiz yo'q. Profilingizdagi havola orqali ularni taklif qiling.
+            </p>
+          )}
+          {!loading && items.length === 0 && period !== "friends" && (
             <p className="p-4 text-sm text-slate-400">Hali statistika yo'q.</p>
           )}
           {items.map((row, i) => {
