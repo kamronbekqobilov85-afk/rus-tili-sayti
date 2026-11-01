@@ -6,7 +6,6 @@ import PageHero from "../components/PageHero";
 import { card, pageShell, btnPrimary, btnSecondary } from "../components/ui";
 import { LEVELS } from "../data/gaplarMeta";
 import { getLevelGaps } from "../data/gaplar";
-import { XP_PER_VOICE } from "../data/achievements";
 
 function speak(text: string) {
   try {
@@ -176,10 +175,7 @@ export default function GapirishPage() {
 
                 {stage === "sent" && (
                   <div>
-                    <p className="text-sm font-extrabold text-emerald-600">
-                      ✅ Yuborildi — faqat admin eshitadi (+{XP_PER_VOICE} ball)
-                    </p>
-                    <button onClick={nextPhrase} className={`${btnPrimary} mt-3 px-5 py-2.5 text-sm`}>
+                    <button onClick={nextPhrase} className={`${btnPrimary} px-5 py-2.5 text-sm`}>
                       Keyingi gap →
                     </button>
                   </div>
