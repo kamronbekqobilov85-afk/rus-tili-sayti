@@ -27,25 +27,76 @@ function randomPhrase(): { ru: string; uz: string } {
   return { ru: pick.ru, uz: pick.uz };
 }
 
-type Stage = "idle" | "recording" | "sending" | "sent" | "error" | "no-mic" | "no-storage";
+function normalize(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s]/gu, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// So'zlar mosligiga qarab o'xshashlik darajasi (0..1)
+function similarity(said: string, target: string): number {
+  const a = normalize(said).split(" ").filter(Boolean);
+  const b = normalize(target).split(" ").filter(Boolean);
+  if (a.length === 0 || b.length === 0) return 0;
+  const setB = new Set(b);
+  const matched = a.filter((w) => setB.has(w)).length;
+  return matched / Math.max(a.length, b.length);
+}
+
+const MATCH_THRESHOLD = 0.7;
+
+type Stage = "idle" | "recording" | "checking" | "sending" | "sent" | "error" | "no-mic" | "no-storage";
 
 export default function GapirishPage() {
   const [phrase, setPhrase] = useState(() => randomPhrase());
   const [stage, setStage] = useState<Stage>("idle");
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [heard, setHeard] = useState<string | null>(null);
+  const [correct, setCorrect] = useState<boolean | null>(null);
+  const [speechSupported, setSpeechSupported] = useState(true);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
   const recordedBlobRef = useRef<Blob | null>(null);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const transcriptRef = useRef<string>("");
+  const audioDoneRef = useRef(false);
+  const speechDoneRef = useRef(false);
 
   useEffect(() => {
+    const SR =
+      (window as unknown as { SpeechRecognition?: SpeechRecognitionCtor }).SpeechRecognition ||
+      (window as unknown as { webkitSpeechRecognition?: SpeechRecognitionCtor }).webkitSpeechRecognition;
+    setSpeechSupported(!!SR);
+
     return () => {
       streamRef.current?.getTracks().forEach((t) => t.stop());
       if (audioUrl) URL.revokeObjectURL(audioUrl);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const finishRecording = () => {
+    const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+    recordedBlobRef.current = blob;
+    setAudioUrl(URL.createObjectURL(blob));
+
+    const said = transcriptRef.current.trim();
+    if (speechSupported) {
+      setHeard(said);
+      setCorrect(said ? similarity(said, phrase.ru) >= MATCH_THRESHOLD : false);
+    }
+    void uploadNow(blob);
+  };
+
+  const maybeFinish = () => {
+    if (audioDoneRef.current && speechDoneRef.current && recordedBlobRef.current === null) {
+      finishRecording();
+    }
+  };
 
   const uploadNow = async (blob: Blob) => {
     setStage("sending");
@@ -70,19 +121,53 @@ export default function GapirishPage() {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
       chunksRef.current = [];
+      recordedBlobRef.current = null;
+      transcriptRef.current = "";
+      audioDoneRef.current = false;
+      speechDoneRef.current = !speechSupported;
+      setHeard(null);
+      setCorrect(null);
+
       const recorder = new MediaRecorder(stream);
       recorder.ondataavailable = (e) => {
         if (e.data.size > 0) chunksRef.current.push(e.data);
       };
       recorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
-        recordedBlobRef.current = blob;
-        setAudioUrl(URL.createObjectURL(blob));
         stream.getTracks().forEach((t) => t.stop());
-        void uploadNow(blob);
+        audioDoneRef.current = true;
+        setStage("checking");
+        maybeFinish();
       };
       mediaRecorderRef.current = recorder;
       recorder.start();
+
+      const SR =
+        (window as unknown as { SpeechRecognition?: SpeechRecognitionCtor }).SpeechRecognition ||
+        (window as unknown as { webkitSpeechRecognition?: SpeechRecognitionCtor }).webkitSpeechRecognition;
+      if (SR) {
+        const recognition = new SR();
+        recognition.lang = "ru-RU";
+        recognition.continuous = true;
+        recognition.interimResults = false;
+        recognition.onresult = (e) => {
+          let text = "";
+          for (let i = 0; i < e.results.length; i++) {
+            text += e.results[i][0].transcript;
+          }
+          transcriptRef.current = text;
+        };
+        recognition.onerror = () => {
+          speechDoneRef.current = true;
+          maybeFinish();
+        };
+        recognition.onend = () => {
+          speechDoneRef.current = true;
+          maybeFinish();
+        };
+        recognitionRef.current = recognition;
+        recognition.start();
+      }
+
       setStage("recording");
     } catch {
       setStage("no-mic");
@@ -91,6 +176,7 @@ export default function GapirishPage() {
 
   const stopRecording = () => {
     mediaRecorderRef.current?.stop();
+    recognitionRef.current?.stop();
   };
 
   const retrySend = () => {
@@ -101,6 +187,8 @@ export default function GapirishPage() {
     if (audioUrl) URL.revokeObjectURL(audioUrl);
     setAudioUrl(null);
     recordedBlobRef.current = null;
+    setHeard(null);
+    setCorrect(null);
     setStage("idle");
   };
 
@@ -155,6 +243,10 @@ export default function GapirishPage() {
               </button>
             )}
 
+            {stage === "checking" && (
+              <p className="text-sm font-bold text-slate-400">Tekshirilmoqda...</p>
+            )}
+
             {stage === "no-mic" && (
               <p className="text-sm font-bold text-rose-600">
                 Mikrofonga ruxsat berilmadi. Brauzer sozlamalaridan ruxsat bering va qayta urining.
@@ -163,9 +255,24 @@ export default function GapirishPage() {
 
             {audioUrl && (stage === "sending" || stage === "sent" || stage === "error" || stage === "no-storage") && (
               <div className="space-y-3">
+                {correct === true && (
+                  <p className="rounded-xl bg-emerald-50 p-3 text-sm font-extrabold text-emerald-700 ring-1 ring-emerald-200">
+                    ✅ To'g'ri talaffuz qildingiz!
+                  </p>
+                )}
+                {correct === false && (
+                  <div className="rounded-xl bg-rose-50 p-3 text-sm font-bold text-rose-700 ring-1 ring-rose-200">
+                    <p>❌ Talaffuzda xatolik bor.</p>
+                    {heard && <p className="mt-1 font-normal">Siz aytdingiz: «{heard}»</p>}
+                    <p className="mt-1 font-normal">
+                      To'g'risi: <span className="font-bold">{phrase.ru}</span>
+                    </p>
+                  </div>
+                )}
+
                 <audio src={audioUrl} controls className="mx-auto w-full" />
                 <p className="text-sm text-slate-500">
-                  Siz aytdingiz: <span className="font-bold text-slate-700">{phrase.ru}</span> —{" "}
+                  Gap: <span className="font-bold text-slate-700">{phrase.ru}</span> —{" "}
                   <span className="italic">{phrase.uz}</span>
                 </p>
 
@@ -174,7 +281,12 @@ export default function GapirishPage() {
                 )}
 
                 {stage === "sent" && (
-                  <div>
+                  <div className="flex justify-center gap-2">
+                    {correct === false && (
+                      <button onClick={recordAgain} className={`${btnSecondary} px-4 py-2 text-sm`}>
+                        Qayta urinish
+                      </button>
+                    )}
                     <button onClick={nextPhrase} className={`${btnPrimary} px-5 py-2.5 text-sm`}>
                       Keyingi gap →
                     </button>
@@ -208,3 +320,18 @@ export default function GapirishPage() {
     </div>
   );
 }
+
+// Brauzerning Web Speech API turi standart TS DOM kutubxonasida yo'q
+type SpeechRecognitionResultLike = { 0: { transcript: string } };
+type SpeechRecognitionEventLike = { results: ArrayLike<SpeechRecognitionResultLike> };
+type SpeechRecognitionLike = {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  start: () => void;
+  stop: () => void;
+  onresult: ((e: SpeechRecognitionEventLike) => void) | null;
+  onerror: (() => void) | null;
+  onend: (() => void) | null;
+};
+type SpeechRecognitionCtor = new () => SpeechRecognitionLike;
