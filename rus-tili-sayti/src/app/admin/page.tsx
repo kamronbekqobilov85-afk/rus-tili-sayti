@@ -87,14 +87,22 @@ export default async function AdminPage() {
     prisma.feedback.count({ where: { status: "new" } }),
     prisma.voiceRecording.findMany({
       orderBy: { createdAt: "desc" },
-      take: 30,
-      select: { id: true, name: true, email: true, phraseRu: true, audioUrl: true, createdAt: true },
+      take: 200,
+      select: { id: true, userId: true, phraseRu: true, audioUrl: true, createdAt: true },
     }),
   ]);
 
   const byDevice = byDeviceRaw
     .map((d) => ({ device: d.device, count: d._count.device }))
     .sort((a, b) => b.count - a.count);
+
+  const voiceByUser = new Map<string, typeof voiceRecordings>();
+  for (const v of voiceRecordings) {
+    if (!v.userId) continue;
+    const list = voiceByUser.get(v.userId) ?? [];
+    list.push(v);
+    voiceByUser.set(v.userId, list);
+  }
 
   return (
     <div className={pageShell}>
@@ -172,29 +180,6 @@ export default async function AdminPage() {
           </div>
         </section>
 
-        <section className="mt-8">
-          <h2 className="text-lg font-extrabold text-slate-800">Ovozli mashqlar</h2>
-          <p className="mt-1 text-sm text-slate-400">
-            Foydalanuvchilar talaffuz qilib yuborgan yozuvlar — faqat sizga ko'rinadi
-          </p>
-          <div className={`${card} mt-3 divide-y divide-slate-100`}>
-            {voiceRecordings.length === 0 && (
-              <p className="p-4 text-sm text-slate-400">Hali hech kim ovoz yubormagan.</p>
-            )}
-            {voiceRecordings.map((v) => (
-              <div key={v.id} className="p-4">
-                <p className="flex flex-wrap items-center gap-2 text-sm font-bold text-slate-700">
-                  {v.name || "Noma'lum"}
-                  <span className="font-normal text-slate-400">· {v.email}</span>
-                </p>
-                <p className="mt-1 text-sm text-slate-500 break-words">«{v.phraseRu}»</p>
-                <audio src={v.audioUrl} controls className="mt-2 w-full" />
-                <p className="mt-1 text-xs text-slate-400">{formatDate(v.createdAt)}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
         <section className="mt-8 mb-10">
           <h2 className="text-lg font-extrabold text-slate-800">Kirgan akkauntlar</h2>
           <p className="mt-1 text-sm text-slate-400">Tafsilotlar uchun qatorni bosing</p>
@@ -202,41 +187,66 @@ export default async function AdminPage() {
             {recentUsers.length === 0 && (
               <p className="p-4 text-sm text-slate-400">Hali hech kim Google bilan kirmagan.</p>
             )}
-            {recentUsers.map((u) => (
-              <details key={u.id} className="group p-4">
-                <summary className="flex cursor-pointer list-none items-center gap-3 [&::-webkit-details-marker]:hidden">
-                  {u.image ? (
-                    <Image src={u.image} alt="" width={36} height={36} className="shrink-0 rounded-full" />
-                  ) : (
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-sm font-extrabold text-white">
-                      {(u.name || u.email || "?").slice(0, 1).toUpperCase()}
+            {recentUsers.map((u) => {
+              const voices = voiceByUser.get(u.id) ?? [];
+              return (
+                <details key={u.id} className="group p-4">
+                  <summary className="flex cursor-pointer list-none items-center gap-3 [&::-webkit-details-marker]:hidden">
+                    {u.image ? (
+                      <Image src={u.image} alt="" width={36} height={36} className="shrink-0 rounded-full" />
+                    ) : (
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-sm font-extrabold text-white">
+                        {(u.name || u.email || "?").slice(0, 1).toUpperCase()}
+                      </span>
+                    )}
+                    <span className="min-w-0 flex-1">
+                      <span className="flex items-center gap-2 truncate font-bold text-slate-800">
+                        {u.name || "Noma'lum"}
+                        {u.role === "admin" && (
+                          <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-extrabold text-emerald-700 ring-1 ring-emerald-200">
+                            ADMIN
+                          </span>
+                        )}
+                        {voices.length > 0 && (
+                          <span className="rounded-full bg-sky-50 px-2 py-0.5 text-[10px] font-extrabold text-sky-700 ring-1 ring-sky-200">
+                            🎙️ {voices.length}
+                          </span>
+                        )}
+                      </span>
+                      <span className="block truncate text-xs text-slate-400">{u.email}</span>
                     </span>
-                  )}
-                  <span className="min-w-0 flex-1">
-                    <span className="flex items-center gap-2 truncate font-bold text-slate-800">
-                      {u.name || "Noma'lum"}
-                      {u.role === "admin" && (
-                        <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-extrabold text-emerald-700 ring-1 ring-emerald-200">
-                          ADMIN
-                        </span>
-                      )}
-                    </span>
-                    <span className="block truncate text-xs text-slate-400">{u.email}</span>
-                  </span>
-                  <span className="shrink-0 text-slate-300 transition group-open:rotate-180">▾</span>
-                </summary>
-                <div className="mt-3 grid grid-cols-1 gap-2 border-t border-slate-100 pt-3 text-sm sm:grid-cols-2">
-                  <p className="text-slate-500">
-                    <span className="font-bold text-slate-700">Birinchi kirgan:</span>{" "}
-                    {formatDate(u.createdAt)}
-                  </p>
-                  <p className="text-slate-500">
-                    <span className="font-bold text-slate-700">Oxirgi faollik:</span>{" "}
-                    {formatDate(u.lastSeenAt)}
-                  </p>
-                </div>
-              </details>
-            ))}
+                    <span className="shrink-0 text-slate-300 transition group-open:rotate-180">▾</span>
+                  </summary>
+                  <div className="mt-3 grid grid-cols-1 gap-2 border-t border-slate-100 pt-3 text-sm sm:grid-cols-2">
+                    <p className="text-slate-500">
+                      <span className="font-bold text-slate-700">Birinchi kirgan:</span>{" "}
+                      {formatDate(u.createdAt)}
+                    </p>
+                    <p className="text-slate-500">
+                      <span className="font-bold text-slate-700">Oxirgi faollik:</span>{" "}
+                      {formatDate(u.lastSeenAt)}
+                    </p>
+                  </div>
+
+                  <div className="mt-4 border-t border-slate-100 pt-3">
+                    <p className="text-sm font-bold text-slate-700">Ovozli xabarlar tarixi</p>
+                    {voices.length === 0 ? (
+                      <p className="mt-1 text-sm text-slate-400">Bu akkaunt hali ovoz yubormagan.</p>
+                    ) : (
+                      <div className="mt-2 space-y-3">
+                        {voices.map((v) => (
+                          <div key={v.id} className="rounded-xl bg-slate-50 p-3">
+                            <p className="text-sm text-slate-600 break-words">«{v.phraseRu}»</p>
+                            <audio src={v.audioUrl} controls className="mt-2 w-full" />
+                            <p className="mt-1 text-xs text-slate-400">{formatDate(v.createdAt)}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </details>
+              );
+            })}
           </div>
         </section>
       </main>
