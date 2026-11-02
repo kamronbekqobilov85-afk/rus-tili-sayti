@@ -31,4 +31,24 @@ export const videos: VideoItem[] = [
     title: "103 ta qo'shiq (to'plam, matn bilan)",
     playlistId: "PL-7NkxlnsDlVQB5wBSWVUyBPjKm5smjDh",
   },
+  {
+    id: 6,
+    title: "Rauf & Faik — Детство",
+    youtubeId: "m-el0pQLQE4",
+  },
+  {
+    id: 7,
+    title: "JONY — Комета",
+    youtubeId: "yM1QjdoLmxQ",
+  },
+  {
+    id: 8,
+    title: "Miyagi & Andy Panda — I Got Love",
+    youtubeId: "nidQCt_HEsY",
+  },
+  {
+    id: 9,
+    title: "SLAVA MARLOW — Мания",
+    youtubeId: "y9BaC30NLd4",
+  },
 ];
