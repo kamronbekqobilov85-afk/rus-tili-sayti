@@ -28,11 +28,8 @@ export async function GET(req: Request) {
       orderBy: { xp: "desc" },
       select: { id: true, name: true, image: true, xp: true },
     });
-  } else if (period === "week" || period === "challenge") {
-    const since =
-      period === "challenge"
-        ? currentWeekStart().toISOString().slice(0, 10)
-        : daysAgo(7).toISOString().slice(0, 10);
+  } else if (period === "week") {
+    const since = daysAgo(7).toISOString().slice(0, 10);
     const grouped = await prisma.dailyStat.groupBy({
       by: ["userId"],
       where: { date: { gte: since } },
@@ -49,6 +46,28 @@ export async function GET(req: Request) {
       .map((g) => {
         const u = byId.get(g.userId);
         return u ? { id: u.id, name: u.name, image: u.image, xp: g._sum.xp ?? 0 } : null;
+      })
+      .filter((r): r is Row => r !== null);
+  } else if (period === "challenge") {
+    // Haftalik Challenge: faqat do'st taklif qilib olingan ball hisobga olinadi
+    const since = currentWeekStart().toISOString().slice(0, 10);
+    const grouped = await prisma.dailyStat.groupBy({
+      by: ["userId"],
+      where: { date: { gte: since } },
+      _sum: { referralXp: true },
+      having: { referralXp: { _sum: { gt: 0 } } },
+      orderBy: { _sum: { referralXp: "desc" } },
+      take: 20,
+    });
+    const users = await prisma.user.findMany({
+      where: { id: { in: grouped.map((g) => g.userId) } },
+      select: { id: true, name: true, image: true },
+    });
+    const byId = new Map(users.map((u) => [u.id, u]));
+    items = grouped
+      .map((g) => {
+        const u = byId.get(g.userId);
+        return u ? { id: u.id, name: u.name, image: u.image, xp: g._sum.referralXp ?? 0 } : null;
       })
       .filter((r): r is Row => r !== null);
   } else {

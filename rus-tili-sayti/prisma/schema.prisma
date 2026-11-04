@@ -96,10 +96,11 @@ model Feedback {
 
 // Kunlik to'plangan ball — kunlik maqsad va reyting uchun
 model DailyStat {
-  id     String @id @default(cuid())
-  userId String
-  date   String // "YYYY-MM-DD"
-  xp     Int    @default(0)
+  id         String @id @default(cuid())
+  userId     String
+  date       String // "YYYY-MM-DD"
+  xp         Int    @default(0)
+  referralXp Int    @default(0) // Haftalik Challenge: faqat do'st taklif qilib olingan ball
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

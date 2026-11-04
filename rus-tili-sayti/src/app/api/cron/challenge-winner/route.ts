@@ -18,8 +18,9 @@ export async function GET(req: Request) {
   const grouped = await prisma.dailyStat.groupBy({
     by: ["userId"],
     where: { date: { gte: since, lt: until } },
-    _sum: { xp: true },
-    orderBy: { _sum: { xp: "desc" } },
+    _sum: { referralXp: true },
+    having: { referralXp: { _sum: { gt: 0 } } },
+    orderBy: { _sum: { referralXp: "desc" } },
     take: 1,
   });
 
@@ -32,7 +33,7 @@ export async function GET(req: Request) {
       select: { name: true, email: true },
     });
     if (user) {
-      winner = { name: user.name, email: user.email, xp: top._sum.xp ?? 0 };
+      winner = { name: user.name, email: user.email, xp: top._sum.referralXp ?? 0 };
     }
   }
 

@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
 import Header from "../components/Header";
 import PageHero, { HeroChip } from "../components/PageHero";
-import { card, pageShell } from "../components/ui";
-import { nextMondayTashkent, formatCountdown } from "../data/challenge";
+import { card, pageShell, btnPrimary } from "../components/ui";
+import { nextMondayTashkent, formatCountdown, isChallengeLive } from "../data/challenge";
 
 type Row = { id: string; name: string | null; image: string | null; xp: number };
 
@@ -18,6 +19,11 @@ export default function ChallengePage() {
   const [myRank, setMyRank] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [countdown, setCountdown] = useState("");
+  const [live, setLive] = useState(false);
+
+  useEffect(() => {
+    setLive(isChallengeLive());
+  }, []);
 
   useEffect(() => {
     fetch(`/api/leaderboard?period=challenge`)
@@ -46,11 +52,28 @@ export default function ChallengePage() {
         <PageHero
           icon="🏆"
           title="Haftalik Challenge"
-          desc="Shu hafta (dushanbadan yakshanbagacha) eng ko'p ball to'plagan 1-o'rin sovrin yutib oladi!"
+          desc="Har dushanba kuni hammaning balli 0'ga tushadi. Shu hafta eng ko'p do'st taklif qilib ball yig'gan 1-o'rin sovrin yutib oladi!"
         >
           <HeroChip>🎁 Sovrin: Telegram Premium</HeroChip>
+          <HeroChip>{live ? "✅ Hozir faol" : "🚀 Dushanbadan boshlanadi"}</HeroChip>
           <HeroChip>⏳ {countdown} qoldi</HeroChip>
         </PageHero>
+
+        <div className={`${card} mt-4 p-5`}>
+          <p className="font-extrabold text-slate-800">📜 Qoidalar</p>
+          <ul className="mt-2 space-y-1.5 text-sm text-slate-600">
+            <li>• Har dushanba kuni barchaning challenge balli 0'dan boshlanadi.</li>
+            <li>• Faqat <strong>taklif qilingan do'stlaringiz</strong> orqali olgan ball hisoblanadi.</li>
+            <li>• Do'stingiz sizning havolangiz orqali ro'yxatdan o'tsa, sizga ball qo'shiladi.</li>
+            <li>• Hafta oxirida eng ko'p ball to'plagan 1-o'rin sovrinni yutadi.</li>
+          </ul>
+          <p className="mt-3 text-sm italic text-slate-500">
+            Sovrin arzimas bo'lsa ham — g'alaba qozonasiz! Lekin eng muhimi, rus tilini biz bilan birga o'rganishda davom eting 💪
+          </p>
+          <Link href="/profil" className={`${btnPrimary} mt-4 block w-full text-center`}>
+            Do'stlarni taklif qilish →
+          </Link>
+        </div>
 
         <div className={`${card} mt-4 divide-y divide-slate-100`}>
           {loading && <p className="p-4 text-sm text-slate-400">Yuklanmoqda...</p>}

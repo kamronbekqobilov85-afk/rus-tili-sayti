@@ -53,8 +53,9 @@ export async function unlockReferralAchievements(userId: string): Promise<string
   return fresh;
 }
 
-export async function awardXp(userId: string, amount: number) {
+export async function awardXp(userId: string, amount: number, opts?: { isReferral?: boolean }) {
   const date = todayStr();
+  const isReferral = opts?.isReferral ?? false;
 
   const user = await prisma.user.update({
     where: { id: userId },
@@ -64,8 +65,8 @@ export async function awardXp(userId: string, amount: number) {
 
   const stat = await prisma.dailyStat.upsert({
     where: { userId_date: { userId, date } },
-    create: { userId, date, xp: amount },
-    update: { xp: { increment: amount } },
+    create: { userId, date, xp: amount, referralXp: isReferral ? amount : 0 },
+    update: { xp: { increment: amount }, ...(isReferral ? { referralXp: { increment: amount } } : {}) },
     select: { xp: true },
   });
 

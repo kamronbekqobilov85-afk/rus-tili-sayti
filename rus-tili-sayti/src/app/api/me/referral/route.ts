@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     data: { referredBy: referrer.id },
   });
 
-  await awardXp(referrer.id, XP_REFERRAL_BONUS);
+  await awardXp(referrer.id, XP_REFERRAL_BONUS, { isReferral: true });
   await unlockReferralAchievements(referrer.id);
 
   return Response.json({ ok: true, applied: true });
