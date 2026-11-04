@@ -2,29 +2,23 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { nextMondayTashkent, formatCountdown, tashkentDateKey, isChallengeLive } from "../data/challenge";
+import {
+  nextMondayTashkent,
+  formatCountdown,
+  isChallengeLive,
+  CHALLENGE_LAUNCH_LABEL,
+} from "../data/challenge";
 
-const STORAGE_PREFIX = "challengeReminderShown-";
-
-// Dushanbadan yakshanbagacha har kuni bir marta chiqadigan "Haftalik Challenge"
-// eslatma oynasi — foydalanuvchini sovrin va qoidalar haqida xabardor qiladi
+// Ilovaga har kirilganda (har sahifa yuklanganda) chiqadigan "Haftalik Challenge"
+// eslatma oynasi — foydalanuvchini sovrin, qoidalar va boshlanish sanasi haqida xabardor qiladi
 export default function ChallengeReminder() {
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(true);
   const [countdown, setCountdown] = useState("");
   const [live, setLive] = useState(false);
 
   useEffect(() => {
-    const key = STORAGE_PREFIX + tashkentDateKey();
-    try {
-      if (!localStorage.getItem(key)) {
-        localStorage.setItem(key, "1");
-        setShow(true);
-        setLive(isChallengeLive());
-        setCountdown(formatCountdown(nextMondayTashkent().getTime() - Date.now()));
-      }
-    } catch {
-      // localStorage mavjud emas — eslatma shunchaki ko'rsatilmaydi
-    }
+    setLive(isChallengeLive());
+    setCountdown(formatCountdown(nextMondayTashkent().getTime() - Date.now()));
   }, []);
 
   if (!show) return null;
@@ -57,10 +51,11 @@ export default function ChallengeReminder() {
           </>
         ) : (
           <>
-            <p className="mt-3 text-lg font-extrabold">Haftalik Challenge dushanbadan boshlanadi!</p>
+            <p className="mt-3 text-lg font-extrabold">Haftalik Challenge hali boshlanmadi!</p>
             <p className="mt-1 text-sm text-white/90">
-              Faqat <strong>taklif qilingan do'stlaringiz</strong> orqali olgan ball hisoblanadi. Challenge
-              boshlanguncha do'stlaringizni taklif qilib, ball yig'ib qoling!
+              Bu hafta emas — Challenge <strong>{CHALLENGE_LAUNCH_LABEL}</strong> kunidan boshlanadi. Faqat{" "}
+              <strong>taklif qilingan do'stlaringiz</strong> orqali olgan ball hisoblanadi. Hozirdanoq
+              do'stlaringizni taklif qilib, tayyorlanib qoling!
             </p>
           </>
         )}

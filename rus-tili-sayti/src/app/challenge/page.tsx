@@ -7,7 +7,7 @@ import Link from "next/link";
 import Header from "../components/Header";
 import PageHero, { HeroChip } from "../components/PageHero";
 import { card, pageShell } from "../components/ui";
-import { nextMondayTashkent, formatCountdown, isChallengeLive } from "../data/challenge";
+import { nextMondayTashkent, formatCountdown, isChallengeLive, CHALLENGE_LAUNCH_LABEL } from "../data/challenge";
 
 type Row = { id: string; name: string | null; image: string | null; xp: number };
 
@@ -80,9 +80,13 @@ export default function ChallengePage() {
         <PageHero
           icon="🏆"
           title="Haftalik Challenge"
-          desc="Do'stlaringizni taklif qiling, ball to'plang — hafta g'olibi sovrin yutib oladi!"
+          desc={
+            live
+              ? "Do'stlaringizni taklif qiling, ball to'plang — hafta g'olibi sovrin yutib oladi!"
+              : `Bu hafta emas — Challenge ${CHALLENGE_LAUNCH_LABEL} kunidan boshlanadi. Hozirdanoq do'stlaringizni taklif qilib tayyorlanib qoling!`
+          }
         >
-          <HeroChip>{live ? "✅ Hozir faol" : "🚀 Dushanbadan boshlanadi"}</HeroChip>
+          <HeroChip>{live ? "✅ Hozir faol" : `🚀 ${CHALLENGE_LAUNCH_LABEL}dan boshlanadi`}</HeroChip>
           <HeroChip>⏳ {countdown} qoldi</HeroChip>
         </PageHero>
 
