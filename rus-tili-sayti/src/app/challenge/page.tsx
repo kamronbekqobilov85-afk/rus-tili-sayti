@@ -18,28 +18,36 @@ const PODIUM_BG = [
   "bg-gradient-to-r from-orange-50 to-orange-50/40 ring-1 ring-orange-200",
 ];
 
-const RULES = [
-  {
-    icon: "🔄",
-    title: "Har dushanba — qaytadan boshlanadi",
-    desc: "Barchaning challenge balli dushanba kuni 0'dan hisoblanadi.",
-  },
-  {
-    icon: "📚",
-    title: "Mashq qiling, ball to'plang",
-    desc: "So'z, test, dars va kundalik mashqlarni bajarib to'plagan har bir ballingiz challenge uchun ham hisoblanadi.",
-  },
-  {
-    icon: "🤝",
-    title: "Do'stlaringizni ham taklif qiling",
-    desc: "Profilingizdagi shaxsiy havola orqali do'stingiz ro'yxatdan o'tsa, sizga qo'shimcha ball beriladi.",
-  },
-  {
-    icon: "🏁",
-    title: "Hafta oxirida g'olib aniqlanadi",
-    desc: "Yakshanba kuni eng ko'p ball to'plagan 1-o'rin sovrinni yutib oladi.",
-  },
-];
+function getRules(live: boolean) {
+  return [
+    {
+      icon: "🔄",
+      title: "Har dushanba — qaytadan boshlanadi",
+      desc: "Barchaning challenge balli dushanba kuni 0'dan hisoblanadi.",
+    },
+    live
+      ? {
+          icon: "📚",
+          title: "Mashq qiling, ball to'plang",
+          desc: "So'z, test, dars va kundalik mashqlarni bajarib to'plagan har bir ballingiz challenge uchun ham hisoblanadi.",
+        }
+      : {
+          icon: "📚",
+          title: `${CHALLENGE_LAUNCH_LABEL}dan — mashq balli ham qo'shiladi`,
+          desc: "Hozircha faqat do'st taklif qilish hisoblanadi. Shu sanadan boshlab so'z, test va darslarni o'zlashtirib ham ball yig'asiz.",
+        },
+    {
+      icon: "🤝",
+      title: live ? "Do'stlaringizni ham taklif qiling" : "Hozircha do'st taklif qilib ball yig'ing",
+      desc: "Profilingizdagi shaxsiy havola orqali do'stingiz ro'yxatdan o'tsa, sizga ball beriladi.",
+    },
+    {
+      icon: "🏁",
+      title: "Hafta oxirida g'olib aniqlanadi",
+      desc: "Yakshanba kuni eng ko'p ball to'plagan 1-o'rin sovrinni yutib oladi.",
+    },
+  ];
+}
 
 export default function ChallengePage() {
   const { data: session } = useSession();
@@ -83,7 +91,7 @@ export default function ChallengePage() {
           desc={
             live
               ? "Mashq qiling, do'stlaringizni taklif qiling, ball to'plang — hafta g'olibi sovrin yutib oladi!"
-              : `Bu hafta emas — Challenge ${CHALLENGE_LAUNCH_LABEL} kunidan boshlanadi. Hozirdanoq mashq qilib va do'stlaringizni taklif qilib tayyorlanib qoling!`
+              : `Bu hafta faqat do'stlaringizni tilni o'rganishga chorlang va ball yig'ing. ${CHALLENGE_LAUNCH_LABEL}dan boshlab o'zlashtirishingiz orqali ham ball yig'asiz — ham tilni o'rganasiz, ham Telegram Premium yutasiz!`
           }
         >
           <HeroChip>{live ? "✅ Hozir faol" : `🚀 ${CHALLENGE_LAUNCH_LABEL}dan boshlanadi`}</HeroChip>
@@ -106,7 +114,7 @@ export default function ChallengePage() {
         <div className={`${card} mt-4 p-5`}>
           <p className="font-extrabold text-slate-800">📜 Qanday ishlaydi</p>
           <div className="mt-3 space-y-3">
-            {RULES.map((r, i) => (
+            {getRules(live).map((r, i) => (
               <div key={i} className="flex items-start gap-3">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-lg ring-1 ring-emerald-200">
                   {r.icon}
@@ -135,6 +143,9 @@ export default function ChallengePage() {
               📢 Telegram kanal
             </a>
           </div>
+          <p className="mt-3 text-center text-xs text-slate-500">
+            Albatta Telegram kanalimizga obuna bo'ling va tushunmagan narsalaringizni izohlarda so'rab boring!
+          </p>
         </div>
 
         {/* Reyting */}

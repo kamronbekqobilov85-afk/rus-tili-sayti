@@ -45,17 +45,18 @@ export default function ChallengeReminder() {
           <>
             <p className="mt-3 text-lg font-extrabold">Haftalik Challenge davom etmoqda!</p>
             <p className="mt-1 text-sm text-white/90">
-              Har dushanba kuni hammaning balli 0'ga tushadi. Mashq qilib (so'z, test, dars) va{" "}
-              <strong>do'st taklif qilib</strong> ball to'plang — shu hafta eng ko'p ball yig'gan 1-o'rin Telegram
-              Premium yutib oladi!
+              Endi o'zlashtirishingiz orqali ham ball yig'asiz! Mashq qiling (so'z, test, dars) va{" "}
+              <strong>do'st ham taklif qiling</strong> — shu hafta eng ko'p ball yig'gan 1-o'rin Telegram Premium
+              yutib oladi. Ham tilni o'rganasiz, ham sovrin yutasiz!
             </p>
           </>
         ) : (
           <>
             <p className="mt-3 text-lg font-extrabold">Haftalik Challenge hali boshlanmadi!</p>
             <p className="mt-1 text-sm text-white/90">
-              Bu hafta emas — Challenge <strong>{CHALLENGE_LAUNCH_LABEL}</strong> kunidan boshlanadi. Mashq qilib va
-              do'stlaringizni taklif qilib, hozirdanoq tayyorlanib qoling!
+              Bu hafta — faqat <strong>do'stlaringizni rus tilini o'rganishga chorlang</strong> va ball yig'ing.
+              Eng muhimi: <strong>{CHALLENGE_LAUNCH_LABEL}</strong>dan boshlab o'zlashtirishingiz orqali ham ball
+              yig'asiz — ham tilni o'rganasiz, ham Telegram Premium yutasiz!
             </p>
           </>
         )}
@@ -64,6 +65,9 @@ export default function ChallengeReminder() {
         <p className="mt-3 text-xs italic text-white/80">
           Sovrin — asosiy maqsad emas, balki rus tilini birgalikda, qiziqarli raqobat orqali o'rganish uchun kichik
           motivatsiya. Asosiy maqsad — tilni chuqur o'zlashtirish! 📖
+        </p>
+        <p className="mt-2 text-xs font-bold text-white/90">
+          📢 Albatta Telegram kanalimizga obuna bo'ling va tushunmagan narsalaringizni izohlarda so'rab boring!
         </p>
 
         <Link
