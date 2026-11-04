@@ -49,14 +49,15 @@ export async function GET(req: Request) {
       })
       .filter((r): r is Row => r !== null);
   } else if (period === "challenge") {
-    // Haftalik Challenge: faqat do'st taklif qilib olingan ball hisobga olinadi
+    // Haftalik Challenge: mashq qilib (so'z, test, dars) va do'st taklif qilib
+    // olingan ballning hammasi hisobga olinadi — har dushanba 0'dan boshlanadi
     const since = currentWeekStart().toISOString().slice(0, 10);
     const grouped = await prisma.dailyStat.groupBy({
       by: ["userId"],
       where: { date: { gte: since } },
-      _sum: { referralXp: true },
-      having: { referralXp: { _sum: { gt: 0 } } },
-      orderBy: { _sum: { referralXp: "desc" } },
+      _sum: { xp: true },
+      having: { xp: { _sum: { gt: 0 } } },
+      orderBy: { _sum: { xp: "desc" } },
       take: 20,
     });
     const users = await prisma.user.findMany({
@@ -67,7 +68,7 @@ export async function GET(req: Request) {
     items = grouped
       .map((g) => {
         const u = byId.get(g.userId);
-        return u ? { id: u.id, name: u.name, image: u.image, xp: g._sum.referralXp ?? 0 } : null;
+        return u ? { id: u.id, name: u.name, image: u.image, xp: g._sum.xp ?? 0 } : null;
       })
       .filter((r): r is Row => r !== null);
   } else {

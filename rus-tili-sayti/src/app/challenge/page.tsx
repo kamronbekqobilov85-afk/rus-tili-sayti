@@ -25,14 +25,14 @@ const RULES = [
     desc: "Barchaning challenge balli dushanba kuni 0'dan hisoblanadi.",
   },
   {
-    icon: "🤝",
-    title: "Faqat do'st taklif qilish hisoblanadi",
-    desc: "Ball faqat sizning havolangiz orqali ro'yxatdan o'tgan do'stlaringiz uchun beriladi.",
+    icon: "📚",
+    title: "Mashq qiling, ball to'plang",
+    desc: "So'z, test, dars va kundalik mashqlarni bajarib to'plagan har bir ballingiz challenge uchun ham hisoblanadi.",
   },
   {
-    icon: "🔗",
-    title: "Havolangizni ulashing",
-    desc: "Profilingizdagi shaxsiy havolani do'stlaringizga yuboring — ular ro'yxatdan o'tishi bilan ball tushadi.",
+    icon: "🤝",
+    title: "Do'stlaringizni ham taklif qiling",
+    desc: "Profilingizdagi shaxsiy havola orqali do'stingiz ro'yxatdan o'tsa, sizga qo'shimcha ball beriladi.",
   },
   {
     icon: "🏁",
@@ -82,8 +82,8 @@ export default function ChallengePage() {
           title="Haftalik Challenge"
           desc={
             live
-              ? "Do'stlaringizni taklif qiling, ball to'plang — hafta g'olibi sovrin yutib oladi!"
-              : `Bu hafta emas — Challenge ${CHALLENGE_LAUNCH_LABEL} kunidan boshlanadi. Hozirdanoq do'stlaringizni taklif qilib tayyorlanib qoling!`
+              ? "Mashq qiling, do'stlaringizni taklif qiling, ball to'plang — hafta g'olibi sovrin yutib oladi!"
+              : `Bu hafta emas — Challenge ${CHALLENGE_LAUNCH_LABEL} kunidan boshlanadi. Hozirdanoq mashq qilib va do'stlaringizni taklif qilib tayyorlanib qoling!`
           }
         >
           <HeroChip>{live ? "✅ Hozir faol" : `🚀 ${CHALLENGE_LAUNCH_LABEL}dan boshlanadi`}</HeroChip>
@@ -97,8 +97,8 @@ export default function ChallengePage() {
           <p className="mt-2 text-sm font-bold uppercase tracking-wide text-white/80">Bu haftaning sovrini</p>
           <p className="mt-1 text-2xl font-extrabold">Telegram Premium</p>
           <p className="mt-1 text-sm text-white/90">
-            Sovrin arzimas bo'lsa ham — g'alaba qozonasiz! Eng muhimi, rus tilini biz bilan birga o'rganishda
-            davom eting 💪
+            Sovrin — asosiy maqsad emas, balki rus tilini birgalikda, qiziqarli raqobat orqali o'rganish uchun
+            kichik motivatsiya. Asosiy maqsad — tilni chuqur o'zlashtirish! 📖
           </p>
         </div>
 

@@ -45,25 +45,25 @@ export default function ChallengeReminder() {
           <>
             <p className="mt-3 text-lg font-extrabold">Haftalik Challenge davom etmoqda!</p>
             <p className="mt-1 text-sm text-white/90">
-              Har dushanba kuni hammaning balli 0'ga tushadi. Faqat <strong>taklif qilingan do'stlaringiz</strong>{" "}
-              orqali olgan ball hisoblanadi — shu hafta eng ko'p ball to'plagan 1-o'rin Telegram Premium yutib oladi!
+              Har dushanba kuni hammaning balli 0'ga tushadi. Mashq qilib (so'z, test, dars) va{" "}
+              <strong>do'st taklif qilib</strong> ball to'plang — shu hafta eng ko'p ball yig'gan 1-o'rin Telegram
+              Premium yutib oladi!
             </p>
           </>
         ) : (
           <>
             <p className="mt-3 text-lg font-extrabold">Haftalik Challenge hali boshlanmadi!</p>
             <p className="mt-1 text-sm text-white/90">
-              Bu hafta emas — Challenge <strong>{CHALLENGE_LAUNCH_LABEL}</strong> kunidan boshlanadi. Faqat{" "}
-              <strong>taklif qilingan do'stlaringiz</strong> orqali olgan ball hisoblanadi. Hozirdanoq
-              do'stlaringizni taklif qilib, tayyorlanib qoling!
+              Bu hafta emas — Challenge <strong>{CHALLENGE_LAUNCH_LABEL}</strong> kunidan boshlanadi. Mashq qilib va
+              do'stlaringizni taklif qilib, hozirdanoq tayyorlanib qoling!
             </p>
           </>
         )}
 
         <p className="mt-2 text-xs font-bold text-white/80">⏳ {countdown} qoldi</p>
         <p className="mt-3 text-xs italic text-white/80">
-          Sovrin arzimas bo'lsa ham — g'alaba qozonasiz! Eng muhimi, rus tilini biz bilan birga o'rganishda davom
-          eting 💪
+          Sovrin — asosiy maqsad emas, balki rus tilini birgalikda, qiziqarli raqobat orqali o'rganish uchun kichik
+          motivatsiya. Asosiy maqsad — tilni chuqur o'zlashtirish! 📖
         </p>
 
         <Link
