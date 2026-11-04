@@ -51,4 +51,9 @@ export const videos: VideoItem[] = [
     title: "SLAVA MARLOW — Мания",
     youtubeId: "y9BaC30NLd4",
   },
+  {
+    id: 10,
+    title: "HammAli & Navai — У окна",
+    youtubeId: "olOnunHLoUc",
+  },
 ];
