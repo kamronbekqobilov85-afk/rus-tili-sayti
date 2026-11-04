@@ -85,6 +85,14 @@ export default function ChallengeReminder() {
         >
           Reytingni ko'rish →
         </Link>
+        <a
+          href="https://t.me/rustili24soat"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-2 block rounded-xl bg-white/15 py-2.5 text-center font-extrabold uppercase tracking-wide text-white ring-1 ring-white/30 transition hover:bg-white/25"
+        >
+          📢 Telegram kanal →
+        </a>
       </div>
     </div>
   );

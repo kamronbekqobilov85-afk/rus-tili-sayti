@@ -73,6 +73,14 @@ export default function ChallengePage() {
           <Link href="/profil" className={`${btnPrimary} mt-4 block w-full text-center`}>
             Do'stlarni taklif qilish →
           </Link>
+          <a
+            href="https://t.me/rustili24soat"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2 block w-full rounded-xl border-2 border-sky-400 bg-sky-50 py-2.5 text-center font-extrabold uppercase tracking-wide text-sky-700 transition hover:bg-sky-100"
+          >
+            📢 Telegram kanal →
+          </a>
         </div>
 
         <div className={`${card} mt-4 divide-y divide-slate-100`}>

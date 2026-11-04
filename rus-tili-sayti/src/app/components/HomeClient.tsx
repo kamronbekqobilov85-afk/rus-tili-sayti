@@ -336,6 +336,23 @@ export default function HomeClient({ counts }: { counts: Counts }) {
           <span className="text-xl font-bold text-rose-700">→</span>
         </Link>
 
+        {/* Telegram kanal */}
+        <a
+          href="https://t.me/rustili24soat"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 flex items-center gap-4 rounded-2xl border border-sky-200 bg-sky-50 p-4 transition hover:bg-sky-100"
+        >
+          <span className="text-3xl">📢</span>
+          <span className="flex-1">
+            <span className="block font-extrabold text-sky-900">Telegram kanalimizga qo'shiling</span>
+            <span className="block text-sm text-sky-800/80">
+              Challenge haqida batafsil bilib oling va rus tilini biz bilan birgalikda o'rganing
+            </span>
+          </span>
+          <span className="text-xl font-bold text-sky-700">→</span>
+        </a>
+
         {/* Bugungi natijalar */}
         <section className="mt-8">
           <h2 className="text-lg font-extrabold text-slate-800">Sizning natijalaringiz</h2>
