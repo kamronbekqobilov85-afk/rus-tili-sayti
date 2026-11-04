@@ -321,6 +321,21 @@ export default function HomeClient({ counts }: { counts: Counts }) {
           <span className="text-xl font-bold text-violet-700">→</span>
         </Link>
 
+        {/* Haftalik Challenge */}
+        <Link
+          href="/challenge"
+          className="mt-4 flex items-center gap-4 rounded-2xl border border-rose-200 bg-rose-50 p-4 transition hover:bg-rose-100"
+        >
+          <span className="text-3xl">🏆</span>
+          <span className="flex-1">
+            <span className="block font-extrabold text-rose-900">Haftalik Challenge</span>
+            <span className="block text-sm text-rose-800/80">
+              1-o'rin — Telegram Premium yutib oling!
+            </span>
+          </span>
+          <span className="text-xl font-bold text-rose-700">→</span>
+        </Link>
+
         {/* Bugungi natijalar */}
         <section className="mt-8">
           <h2 className="text-lg font-extrabold text-slate-800">Sizning natijalaringiz</h2>

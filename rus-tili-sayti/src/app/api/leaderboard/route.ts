@@ -1,13 +1,21 @@
 import { auth } from "../../../auth";
-import { prisma, daysAgo } from "../../../lib/prisma";
+import { prisma, daysAgo, currentWeekStart } from "../../../lib/prisma";
 
 type Row = { id: string; name: string | null; image: string | null; xp: number };
+type Period = "week" | "friends" | "challenge" | "all";
 
 export async function GET(req: Request) {
   const session = await auth();
   const { searchParams } = new URL(req.url);
   const periodParam = searchParams.get("period");
-  const period = periodParam === "week" ? "week" : periodParam === "friends" ? "friends" : "all";
+  const period: Period =
+    periodParam === "week"
+      ? "week"
+      : periodParam === "friends"
+        ? "friends"
+        : periodParam === "challenge"
+          ? "challenge"
+          : "all";
 
   let items: Row[];
 
@@ -20,8 +28,11 @@ export async function GET(req: Request) {
       orderBy: { xp: "desc" },
       select: { id: true, name: true, image: true, xp: true },
     });
-  } else if (period === "week") {
-    const since = daysAgo(7).toISOString().slice(0, 10);
+  } else if (period === "week" || period === "challenge") {
+    const since =
+      period === "challenge"
+        ? currentWeekStart().toISOString().slice(0, 10)
+        : daysAgo(7).toISOString().slice(0, 10);
     const grouped = await prisma.dailyStat.groupBy({
       by: ["userId"],
       where: { date: { gte: since } },

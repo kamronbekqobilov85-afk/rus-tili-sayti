@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/reminders",
       "schedule": "0 15 * * *"
+    },
+    {
+      "path": "/api/cron/challenge-winner",
+      "schedule": "5 19 * * 0"
     }
   ]
 }

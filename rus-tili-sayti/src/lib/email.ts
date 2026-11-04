@@ -35,6 +35,38 @@ export async function sendReminderEmail(to: string, name: string | null, daysIna
   }
 }
 
+export async function sendChallengeWinnerEmail(
+  adminEmail: string,
+  winner: { name: string | null; email: string | null; xp: number } | null
+) {
+  if (!resend) return;
+  try {
+    await resend.emails.send({
+      from: "Rus tili <onboarding@resend.dev>",
+      to: adminEmail,
+      subject: winner ? "🏆 Haftalik Challenge g'olibi aniqlandi!" : "🏆 Haftalik Challenge — g'olib yo'q",
+      html: winner
+        ? `
+        <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+          <h2>🏆 Bu haftaning g'olibi</h2>
+          <p><strong>Ism:</strong> ${winner.name || "Noma'lum"}</p>
+          <p><strong>Email:</strong> ${winner.email || "yo'q"}</p>
+          <p><strong>To'plagan ball:</strong> ${winner.xp}</p>
+          <p>Unga Telegram Premium (yoki tanlangan sovrin)ni qo'lda yuboring.</p>
+        </div>
+      `
+        : `
+        <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+          <h2>O'tgan hafta hech kim ball to'plamadi</h2>
+          <p>Shu sabab g'olib aniqlanmadi.</p>
+        </div>
+      `,
+    });
+  } catch {
+    // email yuborilmadi
+  }
+}
+
 export async function sendFeedbackNotification(
   adminEmail: string,
   from: { name: string | null; email: string | null; message: string }
