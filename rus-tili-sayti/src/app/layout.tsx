@@ -4,6 +4,7 @@ import "./globals.css";
 import AuthProvider from "./components/AuthProvider";
 import VisitTracker from "./components/VisitTracker";
 import FeedbackWidget from "./components/FeedbackWidget";
+import ChallengeReminder from "./components/ChallengeReminder";
 import SignInGate from "./components/SignInGate";
 import ReferralHandler from "./components/ReferralHandler";
 import { auth } from "../auth";
@@ -42,6 +43,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             <>
               <VisitTracker />
               <FeedbackWidget />
+              <ChallengeReminder />
               {children}
             </>
           ) : (
