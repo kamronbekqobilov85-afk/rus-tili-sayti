@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import AuthProvider from "./components/AuthProvider";
 import VisitTracker from "./components/VisitTracker";
@@ -7,6 +8,7 @@ import FeedbackWidget from "./components/FeedbackWidget";
 import ChallengeReminder from "./components/ChallengeReminder";
 import SignInGate from "./components/SignInGate";
 import ReferralHandler from "./components/ReferralHandler";
+import TelegramWebApp from "./components/TelegramWebApp";
 import { auth } from "../auth";
 
 const geistSans = Geist({
@@ -37,6 +39,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
+        <TelegramWebApp />
         <AuthProvider>
           <ReferralHandler />
           {session ? (
