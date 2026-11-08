@@ -39,6 +39,7 @@ model User {
   dailyChallenges   DailyChallenge[]
   voiceRecordings   VoiceRecording[]
   pushSubscriptions PushSubscription[]
+  telegramLink      TelegramLink?
   group             Group?             @relation(fields: [groupId], references: [id], onDelete: SetNull)
 }
 
@@ -50,6 +51,18 @@ model PushSubscription {
   p256dh    String
   auth      String
   createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Telegram kanalga obuna bo'lganlik tasdiqlanganda +500 ball berish uchun
+model TelegramLink {
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  linkCode      String    @unique
+  telegramId    String?   @unique
+  verifiedAt    DateTime?
+  createdAt     DateTime  @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

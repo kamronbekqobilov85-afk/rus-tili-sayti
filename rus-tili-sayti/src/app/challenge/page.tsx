@@ -8,6 +8,7 @@ import Header from "../components/Header";
 import PageHero, { HeroChip } from "../components/PageHero";
 import { card, pageShell } from "../components/ui";
 import { nextMondayTashkent, formatCountdown, isChallengeLive, CHALLENGE_LAUNCH_LABEL } from "../data/challenge";
+import TelegramVerifyButton from "../components/TelegramVerifyButton";
 
 type Row = { id: string; name: string | null; image: string | null; xp: number };
 
@@ -40,6 +41,11 @@ function getRules(live: boolean) {
       icon: "🤝",
       title: live ? "Do'stlaringizni ham taklif qiling" : "Hozircha do'st taklif qilib ball yig'ing",
       desc: "Profilingizdagi shaxsiy havola orqali do'stingiz ro'yxatdan o'tsa, sizga ball beriladi.",
+    },
+    {
+      icon: "📢",
+      title: "Telegram kanalga obuna bo'ling — +500 ball",
+      desc: "@rustili24soat kanaliga obuna bo'lib tasdiqlasangiz, bir martalik 500 ball beriladi.",
     },
     {
       icon: "🏁",
@@ -143,6 +149,7 @@ export default function ChallengePage() {
               📢 Telegram kanal
             </a>
           </div>
+          <TelegramVerifyButton className="mt-3 block w-full rounded-xl border-b-4 border-amber-600 bg-amber-500 py-3 text-center text-sm font-extrabold uppercase tracking-wide text-white transition hover:bg-amber-400 active:translate-y-0.5 active:border-b-2" />
           <p className="mt-3 text-center text-xs text-slate-500">
             Albatta Telegram kanalimizga obuna bo'ling va tushunmagan narsalaringizni izohlarda so'rab boring!
           </p>

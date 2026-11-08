@@ -9,6 +9,7 @@ import {
   CHALLENGE_LAUNCH_LABEL,
 } from "../data/challenge";
 import PushSubscribeButton from "./PushSubscribeButton";
+import TelegramVerifyButton from "./TelegramVerifyButton";
 
 // Ilovaga har kirilganda (har sahifa yuklanganda) chiqadigan "Haftalik Challenge"
 // eslatma oynasi — foydalanuvchini sovrin, qoidalar va boshlanish sanasi haqida xabardor qiladi
@@ -68,7 +69,8 @@ export default function ChallengeReminder() {
           motivatsiya. Asosiy maqsad — tilni chuqur o'zlashtirish! 📖
         </p>
         <p className="mt-2 text-xs font-bold text-white/90">
-          📢 Albatta Telegram kanalimizga obuna bo'ling va tushunmagan narsalaringizni izohlarda so'rab boring!
+          📢 Albatta Telegram kanalimizga obuna bo'ling — tasdiqlasangiz +500 ball beriladi, shuningdek
+          tushunmagan narsalaringizni izohlarda so'rab boring!
         </p>
 
         <Link
@@ -93,6 +95,7 @@ export default function ChallengeReminder() {
         >
           📢 Telegram kanal →
         </a>
+        <TelegramVerifyButton className="mt-2 block w-full rounded-xl bg-white py-2.5 text-center text-sm font-extrabold uppercase tracking-wide text-amber-600 transition hover:bg-white/90 disabled:opacity-60" />
         <PushSubscribeButton className="mt-2 block w-full rounded-xl bg-white/15 py-2.5 text-center text-sm font-extrabold uppercase tracking-wide text-white ring-1 ring-white/30 transition hover:bg-white/25 disabled:opacity-60" />
       </div>
     </div>
