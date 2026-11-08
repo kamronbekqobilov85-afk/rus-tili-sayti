@@ -57,6 +57,12 @@ export async function awardXp(userId: string, amount: number, opts?: { isReferra
   const date = todayStr();
   const isReferral = opts?.isReferral ?? false;
 
+  const existing = await prisma.user.findUnique({ where: { id: userId }, select: { role: true, xp: true } });
+  if (existing?.role === "admin") {
+    // Admin hisobi reytinglarda qatnashmaydi — ball yig'maydi
+    return { xp: existing.xp, todayXp: 0, newAchievements: [] as string[] };
+  }
+
   const user = await prisma.user.update({
     where: { id: userId },
     data: { xp: { increment: amount } },

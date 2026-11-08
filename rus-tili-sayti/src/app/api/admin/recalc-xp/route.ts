@@ -13,7 +13,7 @@ export async function POST() {
   }
 
   const [users, referralCounts, verifiedLinks] = await Promise.all([
-    prisma.user.findMany({ select: { id: true } }),
+    prisma.user.findMany({ select: { id: true, role: true } }),
     prisma.user.groupBy({
       by: ["referredBy"],
       where: { referredBy: { not: null } },
@@ -32,8 +32,10 @@ export async function POST() {
 
   let updated = 0;
   for (const u of users) {
+    // Admin hisobi reytingda qatnashmaydi — balli har doim 0
     const refCount = referralCountByUser.get(u.id) ?? 0;
-    const xp = refCount * XP_REFERRAL_BONUS + (telegramVerified.has(u.id) ? XP_TELEGRAM_BONUS : 0);
+    const xp =
+      u.role === "admin" ? 0 : refCount * XP_REFERRAL_BONUS + (telegramVerified.has(u.id) ? XP_TELEGRAM_BONUS : 0);
     await prisma.user.update({ where: { id: u.id }, data: { xp } });
     updated++;
   }
