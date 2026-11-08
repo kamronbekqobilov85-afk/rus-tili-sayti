@@ -20,16 +20,3 @@ export function formatCountdown(ms: number): string {
   return `${days} kun ${hours} soat ${minutes} daqiqa`;
 }
 
-export function tashkentDateKey(): string {
-  const tashkentNow = new Date(Date.now() + 5 * 60 * 60 * 1000);
-  return tashkentNow.toISOString().slice(0, 10);
-}
-
-// Challenge rasman shu kundan (dushanba, Toshkent vaqti) boshlanadi —
-// shu sanagacha "tayyorgarlik" rejimi ko'rsatiladi
-export const CHALLENGE_LAUNCH_DATE = "2026-11-09";
-export const CHALLENGE_LAUNCH_LABEL = "9-noyabr, dushanba";
-
-export function isChallengeLive(): boolean {
-  return tashkentDateKey() >= CHALLENGE_LAUNCH_DATE;
-}

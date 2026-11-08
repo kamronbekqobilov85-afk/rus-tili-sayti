@@ -7,7 +7,7 @@ import Link from "next/link";
 import Header from "../components/Header";
 import PageHero, { HeroChip } from "../components/PageHero";
 import { card, pageShell } from "../components/ui";
-import { nextMondayTashkent, formatCountdown, isChallengeLive, CHALLENGE_LAUNCH_LABEL } from "../data/challenge";
+import { nextMondayTashkent, formatCountdown } from "../data/challenge";
 import TelegramVerifyButton from "../components/TelegramVerifyButton";
 
 type Row = { id: string; name: string | null; image: string | null; xp: number };
@@ -19,28 +19,17 @@ const PODIUM_BG = [
   "bg-gradient-to-r from-orange-50 to-orange-50/40 ring-1 ring-orange-200",
 ];
 
-function getRules(live: boolean) {
+function getRules() {
   return [
     {
       icon: "🔄",
       title: "Har dushanba — qaytadan boshlanadi",
       desc: "Barchaning challenge balli dushanba kuni 0'dan hisoblanadi.",
     },
-    live
-      ? {
-          icon: "📚",
-          title: "Mashq qiling, ball to'plang",
-          desc: "So'z, test, dars va kundalik mashqlarni bajarib to'plagan har bir ballingiz challenge uchun ham hisoblanadi.",
-        }
-      : {
-          icon: "📚",
-          title: `${CHALLENGE_LAUNCH_LABEL}dan — mashq balli ham qo'shiladi`,
-          desc: "Hozircha faqat do'st taklif qilish hisoblanadi. Shu sanadan boshlab so'z, test va darslarni o'zlashtirib ham ball yig'asiz.",
-        },
     {
       icon: "🤝",
-      title: live ? "Do'stlaringizni ham taklif qiling" : "Hozircha do'st taklif qilib ball yig'ing",
-      desc: "Profilingizdagi shaxsiy havola orqali do'stingiz ro'yxatdan o'tsa, sizga ball beriladi.",
+      title: "Do'stlaringizni taklif qiling",
+      desc: "Ball faqat do'st taklif qilish orqali yig'iladi. Profilingizdagi shaxsiy havola orqali do'stingiz ro'yxatdan o'tsa, sizga ball beriladi.",
     },
     {
       icon: "📢",
@@ -61,11 +50,6 @@ export default function ChallengePage() {
   const [myRank, setMyRank] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [countdown, setCountdown] = useState("");
-  const [live, setLive] = useState(false);
-
-  useEffect(() => {
-    setLive(isChallengeLive());
-  }, []);
 
   useEffect(() => {
     fetch(`/api/leaderboard?period=challenge`)
@@ -94,13 +78,9 @@ export default function ChallengePage() {
         <PageHero
           icon="🏆"
           title="Haftalik Challenge"
-          desc={
-            live
-              ? "Mashq qiling, do'stlaringizni taklif qiling, ball to'plang — hafta g'olibi sovrin yutib oladi!"
-              : `Bu hafta faqat do'stlaringizni tilni o'rganishga chorlang va ball yig'ing. ${CHALLENGE_LAUNCH_LABEL}dan boshlab o'zlashtirishingiz orqali ham ball yig'asiz — ham tilni o'rganasiz, ham Telegram Premium yutasiz!`
-          }
+          desc="Do'stlaringizni rus tilini o'rganishga taklif qiling va ball to'plang — hafta g'olibi sovrin yutib oladi!"
         >
-          <HeroChip>{live ? "✅ Hozir faol" : `🚀 ${CHALLENGE_LAUNCH_LABEL}dan boshlanadi`}</HeroChip>
+          <HeroChip>✅ Hozir faol</HeroChip>
           <HeroChip>⏳ {countdown} qoldi</HeroChip>
         </PageHero>
 
@@ -120,7 +100,7 @@ export default function ChallengePage() {
         <div className={`${card} mt-4 p-5`}>
           <p className="font-extrabold text-slate-800">📜 Qanday ishlaydi</p>
           <div className="mt-3 space-y-3">
-            {getRules(live).map((r, i) => (
+            {getRules().map((r, i) => (
               <div key={i} className="flex items-start gap-3">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-lg ring-1 ring-emerald-200">
                   {r.icon}

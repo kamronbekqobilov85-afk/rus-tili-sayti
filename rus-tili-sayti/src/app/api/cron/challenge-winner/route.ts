@@ -1,6 +1,5 @@
 import { prisma, previousWeekRange } from "../../../../lib/prisma";
 import { sendChallengeWinnerEmail } from "../../../../lib/email";
-import { CHALLENGE_LAUNCH_DATE } from "../../../data/challenge";
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.toLowerCase().trim();
 
@@ -15,25 +14,15 @@ export async function GET(req: Request) {
   const { start, end } = previousWeekRange();
   const since = start.toISOString().slice(0, 10);
   const until = end.toISOString().slice(0, 10);
-  const useFullXp = since >= CHALLENGE_LAUNCH_DATE;
 
-  const grouped = useFullXp
-    ? await prisma.dailyStat.groupBy({
-        by: ["userId"],
-        where: { date: { gte: since, lt: until } },
-        _sum: { xp: true },
-        having: { xp: { _sum: { gt: 0 } } },
-        orderBy: { _sum: { xp: "desc" } },
-        take: 1,
-      })
-    : await prisma.dailyStat.groupBy({
-        by: ["userId"],
-        where: { date: { gte: since, lt: until } },
-        _sum: { referralXp: true },
-        having: { referralXp: { _sum: { gt: 0 } } },
-        orderBy: { _sum: { referralXp: "desc" } },
-        take: 1,
-      });
+  const grouped = await prisma.dailyStat.groupBy({
+    by: ["userId"],
+    where: { date: { gte: since, lt: until } },
+    _sum: { referralXp: true },
+    having: { referralXp: { _sum: { gt: 0 } } },
+    orderBy: { _sum: { referralXp: "desc" } },
+    take: 1,
+  });
 
   const top = grouped[0];
   let winner: { name: string | null; email: string | null; xp: number } | null = null;
@@ -44,9 +33,7 @@ export async function GET(req: Request) {
       select: { name: true, email: true },
     });
     if (user) {
-      const sum = top._sum as { xp?: number | null; referralXp?: number | null };
-      const score = useFullXp ? sum.xp : sum.referralXp;
-      winner = { name: user.name, email: user.email, xp: score ?? 0 };
+      winner = { name: user.name, email: user.email, xp: top._sum.referralXp ?? 0 };
     }
   }
 

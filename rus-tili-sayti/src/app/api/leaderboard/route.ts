@@ -1,6 +1,5 @@
 import { auth } from "../../../auth";
 import { prisma, daysAgo, currentWeekStart } from "../../../lib/prisma";
-import { CHALLENGE_LAUNCH_DATE } from "../../data/challenge";
 
 type Row = { id: string; name: string | null; image: string | null; xp: number };
 type Period = "week" | "friends" | "challenge" | "all";
@@ -50,28 +49,17 @@ export async function GET(req: Request) {
       })
       .filter((r): r is Row => r !== null);
   } else if (period === "challenge") {
-    // Haftalik Challenge: rasman boshlanguncha (CHALLENGE_LAUNCH_DATE) faqat do'st
-    // taklif qilib olingan ball hisoblanadi; shu sanadan boshlab mashq (so'z,
-    // test, dars) orqali olingan ball ham qo'shiladi — har dushanba 0'dan boshlanadi
+    // Haftalik Challenge: faqat do'st taklif qilib olingan ball hisoblanadi —
+    // har dushanba 0'dan boshlanadi
     const since = currentWeekStart().toISOString().slice(0, 10);
-    const useFullXp = since >= CHALLENGE_LAUNCH_DATE;
-    const grouped = useFullXp
-      ? await prisma.dailyStat.groupBy({
-          by: ["userId"],
-          where: { date: { gte: since } },
-          _sum: { xp: true },
-          having: { xp: { _sum: { gt: 0 } } },
-          orderBy: { _sum: { xp: "desc" } },
-          take: 20,
-        })
-      : await prisma.dailyStat.groupBy({
-          by: ["userId"],
-          where: { date: { gte: since } },
-          _sum: { referralXp: true },
-          having: { referralXp: { _sum: { gt: 0 } } },
-          orderBy: { _sum: { referralXp: "desc" } },
-          take: 20,
-        });
+    const grouped = await prisma.dailyStat.groupBy({
+      by: ["userId"],
+      where: { date: { gte: since } },
+      _sum: { referralXp: true },
+      having: { referralXp: { _sum: { gt: 0 } } },
+      orderBy: { _sum: { referralXp: "desc" } },
+      take: 20,
+    });
     const users = await prisma.user.findMany({
       where: { id: { in: grouped.map((g) => g.userId) } },
       select: { id: true, name: true, image: true },
@@ -80,9 +68,7 @@ export async function GET(req: Request) {
     items = grouped
       .map((g) => {
         const u = byId.get(g.userId);
-        const sum = g._sum as { xp?: number | null; referralXp?: number | null };
-        const score = useFullXp ? sum.xp : sum.referralXp;
-        return u ? { id: u.id, name: u.name, image: u.image, xp: score ?? 0 } : null;
+        return u ? { id: u.id, name: u.name, image: u.image, xp: g._sum.referralXp ?? 0 } : null;
       })
       .filter((r): r is Row => r !== null);
   } else {

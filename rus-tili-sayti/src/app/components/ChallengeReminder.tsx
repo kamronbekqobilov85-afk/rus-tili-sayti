@@ -2,24 +2,17 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  nextMondayTashkent,
-  formatCountdown,
-  isChallengeLive,
-  CHALLENGE_LAUNCH_LABEL,
-} from "../data/challenge";
+import { nextMondayTashkent, formatCountdown } from "../data/challenge";
 import PushSubscribeButton from "./PushSubscribeButton";
 import TelegramVerifyButton from "./TelegramVerifyButton";
 
 // Ilovaga har kirilganda (har sahifa yuklanganda) chiqadigan "Haftalik Challenge"
-// eslatma oynasi — foydalanuvchini sovrin, qoidalar va boshlanish sanasi haqida xabardor qiladi
+// eslatma oynasi — foydalanuvchini sovrin va qoidalar haqida xabardor qiladi
 export default function ChallengeReminder() {
   const [show, setShow] = useState(true);
   const [countdown, setCountdown] = useState("");
-  const [live, setLive] = useState(false);
 
   useEffect(() => {
-    setLive(isChallengeLive());
     setCountdown(formatCountdown(nextMondayTashkent().getTime() - Date.now()));
   }, []);
 
@@ -43,25 +36,11 @@ export default function ChallengeReminder() {
         </button>
         <p className="text-4xl">🏆</p>
 
-        {live ? (
-          <>
-            <p className="mt-3 text-lg font-extrabold">Haftalik Challenge davom etmoqda!</p>
-            <p className="mt-1 text-sm text-white/90">
-              Endi o'zlashtirishingiz orqali ham ball yig'asiz! Mashq qiling (so'z, test, dars) va{" "}
-              <strong>do'st ham taklif qiling</strong> — shu hafta eng ko'p ball yig'gan 1-o'rin Telegram Premium
-              yutib oladi. Ham tilni o'rganasiz, ham sovrin yutasiz!
-            </p>
-          </>
-        ) : (
-          <>
-            <p className="mt-3 text-lg font-extrabold">Haftalik Challenge hali boshlanmadi!</p>
-            <p className="mt-1 text-sm text-white/90">
-              Bu hafta — faqat <strong>do'stlaringizni rus tilini o'rganishga chorlang</strong> va ball yig'ing.
-              Eng muhimi: <strong>{CHALLENGE_LAUNCH_LABEL}</strong>dan boshlab o'zlashtirishingiz orqali ham ball
-              yig'asiz — ham tilni o'rganasiz, ham Telegram Premium yutasiz!
-            </p>
-          </>
-        )}
+        <p className="mt-3 text-lg font-extrabold">Haftalik Challenge davom etmoqda!</p>
+        <p className="mt-1 text-sm text-white/90">
+          Ball faqat <strong>do'st taklif qilish</strong> orqali yig'iladi — do'stlaringizni rus tilini
+          o'rganishga chorlang, shu hafta eng ko'p ball yig'gan 1-o'rin Telegram Premium yutib oladi!
+        </p>
 
         <p className="mt-2 text-xs font-bold text-white/80">⏳ {countdown} qoldi</p>
         <p className="mt-3 text-xs italic text-white/80">
