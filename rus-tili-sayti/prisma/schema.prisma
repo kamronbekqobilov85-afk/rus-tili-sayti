@@ -35,10 +35,23 @@ model User {
   visits       Visit[]
   dailyStats   DailyStat[]
   achievements UserAchievement[]
-  feedbacks       Feedback[]
-  dailyChallenges DailyChallenge[]
-  voiceRecordings VoiceRecording[]
-  group           Group?            @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  feedbacks         Feedback[]
+  dailyChallenges   DailyChallenge[]
+  voiceRecordings   VoiceRecording[]
+  pushSubscriptions PushSubscription[]
+  group             Group?             @relation(fields: [groupId], references: [id], onDelete: SetNull)
+}
+
+// Brauzer push-bildirishnomasi uchun obuna (Web Push)
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // Foydalanuvchi talaffuz mashqida yozib yuborgan ovoz — faqat admin eshita oladi

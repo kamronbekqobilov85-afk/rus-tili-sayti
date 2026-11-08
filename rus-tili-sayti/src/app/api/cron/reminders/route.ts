@@ -1,5 +1,6 @@
 import { prisma } from "../../../../lib/prisma";
 import { sendReminderEmail } from "../../../../lib/email";
+import { sendPushToAll } from "../../../../lib/push";
 
 function todayStr(): string {
   return new Date().toISOString().slice(0, 10);
@@ -48,5 +49,16 @@ export async function GET(req: Request) {
     sent++;
   }
 
-  return Response.json({ ok: true, sent, total: users.length });
+  // Toshkent vaqti bilan yakshanba bo'lsa — ertaga Challenge boshlanishi haqida push yuboramiz
+  const tashkentNow = new Date(today.getTime() + 5 * 60 * 60 * 1000);
+  let push: { sent: number; removed: number } | null = null;
+  if (tashkentNow.getUTCDay() === 0) {
+    push = await sendPushToAll({
+      title: "🏆 Ertaga Haftalik Challenge!",
+      body: "Ertaga dushanba — ball hisobi 0'dan boshlanadi. Mashq qiling, do'st taklif qiling va Telegram Premium yuting!",
+      url: "/challenge",
+    });
+  }
+
+  return Response.json({ ok: true, sent, total: users.length, push });
 }

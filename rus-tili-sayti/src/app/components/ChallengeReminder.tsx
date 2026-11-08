@@ -8,6 +8,7 @@ import {
   isChallengeLive,
   CHALLENGE_LAUNCH_LABEL,
 } from "../data/challenge";
+import PushSubscribeButton from "./PushSubscribeButton";
 
 // Ilovaga har kirilganda (har sahifa yuklanganda) chiqadigan "Haftalik Challenge"
 // eslatma oynasi — foydalanuvchini sovrin, qoidalar va boshlanish sanasi haqida xabardor qiladi
@@ -92,6 +93,7 @@ export default function ChallengeReminder() {
         >
           📢 Telegram kanal →
         </a>
+        <PushSubscribeButton className="mt-2 block w-full rounded-xl bg-white/15 py-2.5 text-center text-sm font-extrabold uppercase tracking-wide text-white ring-1 ring-white/30 transition hover:bg-white/25 disabled:opacity-60" />
       </div>
     </div>
   );
