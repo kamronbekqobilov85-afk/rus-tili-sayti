@@ -4,6 +4,7 @@ import Header from "../components/Header";
 import PageHero, { HeroChip } from "../components/PageHero";
 import { card, pageShell } from "../components/ui";
 import FeedbackRow from "../components/FeedbackRow";
+import RecalcXpButton from "../components/RecalcXpButton";
 import { auth } from "../../auth";
 import { prisma, daysAgo } from "../../lib/prisma";
 
@@ -111,6 +112,8 @@ export default async function AdminPage() {
         <PageHero icon="🛡️" title="Admin panel" desc="Saytdan faqat siz ko'ra oladigan statistika.">
           <HeroChip>{session.user.email}</HeroChip>
         </PageHero>
+
+        <RecalcXpButton />
 
         <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-5">
           <StatCard icon="👤" value={totalUsers} label="Ro'yxatdan o'tganlar" color="text-emerald-600" />

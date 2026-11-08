@@ -1,8 +1,6 @@
 import { put } from "@vercel/blob";
 import { auth } from "../../../auth";
 import { prisma } from "../../../lib/prisma";
-import { awardXp } from "../../../lib/gamification";
-import { XP_PER_VOICE } from "../../data/achievements";
 
 const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
 
@@ -42,7 +40,5 @@ export async function POST(req: Request) {
     },
   });
 
-  const result = await awardXp(session.user.id, XP_PER_VOICE);
-
-  return Response.json({ ok: true, ...result });
+  return Response.json({ ok: true });
 }

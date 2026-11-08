@@ -5,7 +5,6 @@ import Header from "../components/Header";
 import PageHero from "../components/PageHero";
 import { card, pageShell, btnPrimary } from "../components/ui";
 import { words } from "../data/words";
-import { DAILY_CHALLENGE_XP } from "../data/achievements";
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -43,7 +42,6 @@ export default function KunlikPage() {
   const [selected, setSelected] = useState<string | null>(null);
   const [answered, setAnswered] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
-  const [xpEarned, setXpEarned] = useState(0);
 
   useEffect(() => {
     fetch("/api/daily-challenge")
@@ -72,9 +70,7 @@ export default function KunlikPage() {
       return;
     }
 
-    const res = await fetch("/api/daily-challenge", { method: "POST" }).catch(() => null);
-    const data = await res?.json().catch(() => null);
-    setXpEarned(data?.alreadyDone ? 0 : DAILY_CHALLENGE_XP);
+    await fetch("/api/daily-challenge", { method: "POST" }).catch(() => null);
     setStatus("finished");
   };
 
@@ -98,7 +94,7 @@ export default function KunlikPage() {
         <main className="mx-auto w-full max-w-xl flex-1 px-4 py-10 text-center">
           <p className="text-5xl">⏳</p>
           <h1 className="mt-4 text-2xl font-extrabold text-slate-800">Bugungi mashq bajarildi!</h1>
-          <p className="mt-2 text-slate-500">Ertaga yana +{DAILY_CHALLENGE_XP} bonus ball uchun qaytib keling.</p>
+          <p className="mt-2 text-slate-500">Ertaga yangi savollar bilan qaytib keling.</p>
         </main>
       </div>
     );
@@ -113,11 +109,6 @@ export default function KunlikPage() {
           <h1 className="mt-4 text-2xl font-extrabold text-slate-800">
             {correctCount} / {questions.length} to'g'ri!
           </h1>
-          {xpEarned > 0 ? (
-            <p className="mt-2 text-lg font-extrabold text-emerald-600">+{xpEarned} bonus ball</p>
-          ) : (
-            <p className="mt-2 text-slate-500">Bugungi bonus allaqachon olingan edi.</p>
-          )}
           <p className="mt-1 text-slate-500">Ertaga yangi savollar bilan qaytib keling.</p>
         </main>
       </div>
@@ -131,7 +122,7 @@ export default function KunlikPage() {
         <PageHero
           icon="⚡"
           title="Kunlik mini-mashq"
-          desc={`5 ta tezkor savol — to'g'ri yakunlasangiz +${DAILY_CHALLENGE_XP} bonus ball.`}
+          desc="5 ta tezkor savol — bilimingizni mustahkamlang."
         />
 
         <div className="mt-6">

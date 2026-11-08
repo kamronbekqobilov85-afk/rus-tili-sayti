@@ -1,7 +1,5 @@
 import { auth } from "../../../auth";
 import { prisma } from "../../../lib/prisma";
-import { awardXp } from "../../../lib/gamification";
-import { DAILY_CHALLENGE_XP } from "../../data/achievements";
 
 function todayStr(): string {
   return new Date().toISOString().slice(0, 10);
@@ -37,7 +35,5 @@ export async function POST() {
     return Response.json({ ok: true, alreadyDone: true });
   }
 
-  const result = await awardXp(userId, DAILY_CHALLENGE_XP);
-
-  return Response.json({ ok: true, alreadyDone: false, ...result });
+  return Response.json({ ok: true, alreadyDone: false });
 }
