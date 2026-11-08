@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useSession } from "next-auth/react";
 import Header from "../components/Header";
 import PageHero, { HeroChip } from "../components/PageHero";
@@ -167,6 +168,19 @@ export default function ProfilPage() {
               );
             })}
           </div>
+          <Link
+            href="/sertifikat"
+            className="mt-4 flex items-center gap-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 transition hover:bg-amber-100"
+          >
+            <span className="text-3xl">🏆</span>
+            <span className="flex-1">
+              <span className="block font-extrabold text-amber-900">Sertifikatlar</span>
+              <span className="block text-sm text-amber-800/80">
+                Har 1000 ballda yangi, o'ziga xos sertifikat ochiladi
+              </span>
+            </span>
+            <span className="text-xl font-bold text-amber-700">→</span>
+          </Link>
         </section>
 
         <GroupSection myId={session?.user?.id} />

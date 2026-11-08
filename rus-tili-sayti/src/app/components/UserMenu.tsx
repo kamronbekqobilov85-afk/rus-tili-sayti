@@ -79,6 +79,13 @@ export default function UserMenu() {
           >
             🎁 Haftalik Challenge
           </Link>
+          <Link
+            href="/sertifikat"
+            onClick={() => setOpen(false)}
+            className="block rounded-xl px-3 py-2 text-sm font-bold text-amber-700 hover:bg-amber-50"
+          >
+            🏆 Sertifikatlar
+          </Link>
           {user.role === "admin" && (
             <Link
               href="/admin"
