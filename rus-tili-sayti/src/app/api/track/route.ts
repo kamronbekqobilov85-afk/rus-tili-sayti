@@ -22,6 +22,13 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    if (session?.user?.id) {
+      // "Oxirgi faollik" chindan ham oxirgi tashrifni ko'rsatishi uchun
+      await prisma.user
+        .update({ where: { id: session.user.id }, data: { lastSeenAt: new Date() } })
+        .catch(() => {});
+    }
+
     return NextResponse.json({ ok: true });
   } catch {
     // Statistika yig'ish muvaffaqiyatsiz bo'lsa ham, foydalanuvchi buni sezmasligi kerak
