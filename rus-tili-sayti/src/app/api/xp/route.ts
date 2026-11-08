@@ -1,8 +1,6 @@
 import { auth } from "../../../auth";
+import { awardXp, XP_PER_TEST, XP_PER_WORD } from "../../../lib/gamification";
 
-// Mashq (so'z/test) orqali endi ball berilmaydi — ball faqat Telegram
-// obunasi va do'st taklif qilish orqali olinadi. Bu endpoint faqat
-// mavjud mijoz kodlari sinmasligi uchun saqlab qolindi.
 export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -15,5 +13,8 @@ export async function POST(req: Request) {
     return Response.json({ ok: false }, { status: 400 });
   }
 
-  return Response.json({ ok: true });
+  const amount = type === "test" ? XP_PER_TEST : XP_PER_WORD;
+  const result = await awardXp(session.user.id, amount);
+
+  return Response.json({ ok: true, ...result });
 }

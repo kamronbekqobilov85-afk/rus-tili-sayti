@@ -1,8 +1,8 @@
 import { randomUUID } from "crypto";
 import { prisma } from "./prisma";
-import { XP_REFERRAL_BONUS, XP_THRESHOLDS, REFERRAL_THRESHOLDS } from "../app/data/achievements";
+import { XP_PER_TEST, XP_PER_WORD, XP_REFERRAL_BONUS, XP_THRESHOLDS, REFERRAL_THRESHOLDS } from "../app/data/achievements";
 
-export { XP_REFERRAL_BONUS };
+export { XP_PER_WORD, XP_PER_TEST, XP_REFERRAL_BONUS };
 
 function todayStr(): string {
   return new Date().toISOString().slice(0, 10);
