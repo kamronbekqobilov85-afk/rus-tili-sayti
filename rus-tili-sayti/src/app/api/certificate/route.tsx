@@ -38,140 +38,189 @@ export async function GET(req: Request) {
   const { colors } = tier;
   const name = user.name || "Foydalanuvchi";
   const today = formatDate(new Date());
+  const certNo = `RT-${tier.tier}-${session.user.id.slice(-6).toUpperCase()}`;
 
   return new ImageResponse(
     (
       <div
         style={{
-          width: "1200px",
-          height: "800px",
+          width: "1400px",
+          height: "990px",
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          background: `linear-gradient(135deg, ${colors.from} 0%, ${colors.via} 55%, ${colors.to} 100%)`,
+          background: "#fffdf7",
           fontFamily: "sans-serif",
           position: "relative",
+          padding: "28px",
         }}
       >
+        {/* Tashqi ramka */}
         <div
           style={{
             display: "flex",
-            position: "absolute",
-            top: "40px",
-            left: "40px",
-            right: "40px",
-            bottom: "40px",
-            border: `3px solid ${colors.accent}`,
-            borderRadius: "24px",
+            flexDirection: "column",
+            alignItems: "center",
+            width: "100%",
+            height: "100%",
+            border: `10px solid ${colors.border}`,
+            borderRadius: "6px",
+            padding: "18px",
           }}
-        />
-        <div
-          style={{
-            display: "flex",
-            position: "absolute",
-            top: "56px",
-            left: "56px",
-            right: "56px",
-            bottom: "56px",
-            border: `1px solid ${colors.accent}`,
-            borderRadius: "16px",
-            opacity: 0.6,
-          }}
-        />
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              width: "100%",
+              height: "100%",
+              border: `2px solid ${colors.border}`,
+              borderRadius: "4px",
+              padding: "50px 90px",
+              position: "relative",
+            }}
+          >
+            {/* Burchak bezaklari */}
+            <div style={{ display: "flex", position: "absolute", top: "18px", left: "18px", fontSize: "30px", color: colors.border }}>❦</div>
+            <div style={{ display: "flex", position: "absolute", top: "18px", right: "18px", fontSize: "30px", color: colors.border }}>❦</div>
+            <div style={{ display: "flex", position: "absolute", bottom: "18px", left: "18px", fontSize: "30px", color: colors.border }}>❦</div>
+            <div style={{ display: "flex", position: "absolute", bottom: "18px", right: "18px", fontSize: "30px", color: colors.border }}>❦</div>
 
-        <div style={{ display: "flex", fontSize: "80px" }}>🏆</div>
+            {/* Sarlavha */}
+            <div
+              style={{
+                display: "flex",
+                fontSize: "20px",
+                fontWeight: 700,
+                letterSpacing: "8px",
+                textTransform: "uppercase",
+                color: "#78716c",
+              }}
+            >
+              Rus tili — bepul o'rganish platformasi
+            </div>
 
-        <div
-          style={{
-            display: "flex",
-            marginTop: "18px",
-            fontSize: "26px",
-            fontWeight: 700,
-            letterSpacing: "6px",
-            textTransform: "uppercase",
-            color: colors.accent,
-          }}
-        >
-          Rus tili
-        </div>
+            <div
+              style={{
+                display: "flex",
+                marginTop: "34px",
+                fontSize: "64px",
+                fontWeight: 800,
+                letterSpacing: "4px",
+                color: colors.title,
+              }}
+            >
+              SERTIFIKAT
+            </div>
+            <div
+              style={{
+                display: "flex",
+                marginTop: "8px",
+                fontSize: "22px",
+                fontWeight: 500,
+                color: "#78716c",
+              }}
+            >
+              {tier.subtitle}
+            </div>
 
-        <div
-          style={{
-            display: "flex",
-            marginTop: "28px",
-            fontSize: "56px",
-            fontWeight: 800,
-            color: colors.text,
-            textAlign: "center",
-          }}
-        >
-          {tier.title}
-        </div>
-        <div
-          style={{
-            display: "flex",
-            marginTop: "6px",
-            fontSize: "26px",
-            fontWeight: 500,
-            color: colors.text,
-            opacity: 0.85,
-          }}
-        >
-          {tier.subtitle}
-        </div>
+            {/* Ajratuvchi */}
+            <div style={{ display: "flex", alignItems: "center", marginTop: "36px", gap: "14px" }}>
+              <div style={{ display: "flex", width: "70px", height: "2px", background: colors.border }} />
+              <div style={{ display: "flex", fontSize: "26px" }}>{tier.medal}</div>
+              <div style={{ display: "flex", width: "70px", height: "2px", background: colors.border }} />
+            </div>
 
-        <div
-          style={{
-            display: "flex",
-            marginTop: "50px",
-            fontSize: "22px",
-            fontWeight: 600,
-            color: colors.accent,
-          }}
-        >
-          Ushbu sertifikat
-        </div>
-        <div
-          style={{
-            display: "flex",
-            marginTop: "14px",
-            fontSize: "52px",
-            fontWeight: 800,
-            color: colors.text,
-            borderBottom: `3px solid ${colors.text}`,
-            paddingBottom: "10px",
-          }}
-        >
-          {name}
-        </div>
-        <div
-          style={{
-            display: "flex",
-            marginTop: "26px",
-            fontSize: "24px",
-            fontWeight: 500,
-            color: colors.accent,
-            textAlign: "center",
-          }}
-        >
-          rus tilini o'rganishda {tier.tier.toLocaleString("ru-RU")} ball to'plagani uchun beriladi
-        </div>
+            <div
+              style={{
+                display: "flex",
+                marginTop: "36px",
+                fontSize: "20px",
+                color: "#57534e",
+              }}
+            >
+              Ushbu sertifikat quyidagi shaxsga topshiriladi:
+            </div>
 
-        <div
-          style={{
-            display: "flex",
-            marginTop: "60px",
-            fontSize: "20px",
-            fontWeight: 600,
-            color: colors.text,
-            opacity: 0.8,
-          }}
-        >
-          {today} • rus-tili-sayti.vercel.app
+            <div
+              style={{
+                display: "flex",
+                marginTop: "18px",
+                fontSize: "56px",
+                fontWeight: 800,
+                color: "#1c1917",
+                borderBottom: `3px solid ${colors.border}`,
+                padding: "0 24px 12px",
+              }}
+            >
+              {name}
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                marginTop: "32px",
+                fontSize: "22px",
+                color: "#44403c",
+                textAlign: "center",
+                maxWidth: "980px",
+                lineHeight: 1.6,
+              }}
+            >
+              {tier.reason}
+            </div>
+
+            {/* Pastki qism: sana, muhr, imzo */}
+            <div
+              style={{
+                display: "flex",
+                width: "100%",
+                marginTop: "auto",
+                paddingTop: "40px",
+                alignItems: "flex-end",
+                justifyContent: "space-between",
+              }}
+            >
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                <div style={{ display: "flex", fontSize: "18px", fontWeight: 700, color: "#1c1917", borderTop: "2px solid #d6d3d1", paddingTop: "8px" }}>
+                  {today}
+                </div>
+                <div style={{ display: "flex", fontSize: "14px", color: "#a8a29e", marginTop: "2px" }}>Berilgan sana</div>
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "100px",
+                  height: "100px",
+                  borderRadius: "999px",
+                  background: colors.badge,
+                  color: colors.badgeText,
+                  fontSize: "40px",
+                  boxShadow: "0 6px 16px rgba(0,0,0,0.18)",
+                }}
+              >
+                {tier.medal}
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                <div style={{ display: "flex", fontSize: "18px", fontWeight: 700, color: "#1c1917", borderTop: "2px solid #d6d3d1", paddingTop: "8px" }}>
+                  Rus tili platformasi
+                </div>
+                <div style={{ display: "flex", fontSize: "14px", color: "#a8a29e", marginTop: "2px" }}>rus-tili-sayti.vercel.app</div>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", marginTop: "18px", fontSize: "13px", color: "#d6d3d1" }}>
+              Sertifikat raqami: {certNo}
+            </div>
+          </div>
         </div>
       </div>
     ),
-    { width: 1200, height: 800 }
+    { width: 1400, height: 990 }
   );
 }

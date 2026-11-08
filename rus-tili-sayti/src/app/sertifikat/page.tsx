@@ -34,20 +34,17 @@ export default function SertifikatPage() {
                 <div
                   className="relative flex aspect-[3/2] items-center justify-center text-center"
                   style={{
-                    background: unlocked
-                      ? `linear-gradient(135deg, ${t.colors.from}, ${t.colors.via}, ${t.colors.to})`
-                      : "#e2e8f0",
+                    background: unlocked ? "#fffdf7" : "#e2e8f0",
+                    border: unlocked ? `3px solid ${t.colors.border}` : undefined,
                   }}
                 >
                   {unlocked ? (
                     <div className="px-4">
-                      <p className="text-4xl">🏆</p>
-                      <p className="mt-2 text-lg font-extrabold" style={{ color: t.colors.text }}>
+                      <p className="text-4xl">{t.medal}</p>
+                      <p className="mt-2 text-lg font-extrabold" style={{ color: t.colors.title }}>
                         {t.title}
                       </p>
-                      <p className="text-sm font-medium opacity-80" style={{ color: t.colors.text }}>
-                        {t.subtitle}
-                      </p>
+                      <p className="text-sm font-medium text-stone-500">{t.subtitle}</p>
                     </div>
                   ) : (
                     <div className="px-4">
