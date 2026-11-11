@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Header from "../components/Header";
 import PageHero from "../components/PageHero";
+import ShareRankButton from "../components/ShareRankButton";
 import { card, pageShell } from "../components/ui";
 
 type Row = { id: string; name: string | null; image: string | null; xp: number };
@@ -41,6 +42,12 @@ export default function ReytingPage() {
           title="Reyting"
           desc="Eng ko'p ball to'plagan foydalanuvchilar. Siz ham yuqoriga chiqishingiz mumkin!"
         />
+
+        {session?.user && (
+          <div className="mt-4 flex justify-center">
+            <ShareRankButton />
+          </div>
+        )}
 
         <div className="mt-6 flex gap-2">
           <button
