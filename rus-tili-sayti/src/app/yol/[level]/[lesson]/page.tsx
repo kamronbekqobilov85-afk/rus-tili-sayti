@@ -12,7 +12,7 @@ import {
   getLevelGaps,
   getLevelInfo,
 } from "../../../data/gaplar";
-import { getProgress, getStars, isLessonUnlocked, saveLessonResult } from "../../../data/yol";
+import { getProgress, getStars, isLessonUnlocked, saveLessonResult, MAX_STARS } from "../../../data/yol";
 import { getDueIds, recordGapResults } from "../../../data/gapSrs";
 import { recordActivity } from "../../../data/stats";
 
@@ -119,7 +119,7 @@ export default function LessonPage({
 
           {bestStars > 0 && (
             <p className="mb-4 text-lg font-extrabold text-yellow-500">
-              Eng yaxshi natija: {"★".repeat(bestStars)}{"☆".repeat(3 - bestStars)}
+              Eng yaxshi natija: {"★".repeat(bestStars)}{"☆".repeat(MAX_STARS - bestStars)}
             </p>
           )}
 
@@ -177,7 +177,7 @@ export default function LessonPage({
           </h1>
           <p className="mb-2 text-4xl text-yellow-400">
             {"★".repeat(finalStars)}
-            <span className="text-gray-300">{"★".repeat(3 - finalStars)}</span>
+            <span className="text-gray-300">{"★".repeat(MAX_STARS - finalStars)}</span>
           </p>
           <p className="mb-6 text-xl font-extrabold text-gray-500">
             Aniqlik: <span className={passed ? "text-green-600" : "text-red-500"}>{finalPercent}%</span>

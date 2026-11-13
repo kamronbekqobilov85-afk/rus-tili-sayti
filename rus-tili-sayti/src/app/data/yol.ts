@@ -2,9 +2,24 @@ import { LEVELS, LESSONS_PER_LEVEL } from "./gaplarMeta";
 
 const KEY = "rus-tili-yol";
 
+// Har bir darsdan olinadigan eng ko'p yulduz
+export const MAX_STARS = 5;
+
 export type YolProgress = {
-  lessons: Record<string, number>; // "daraja-dars": yulduzlar (0..3)
+  lessons: Record<string, number>; // "daraja-dars": yulduzlar (0..5)
+  scale?: number; // yulduz shkalasi (eski saqlangan natijalar 3 talik edi)
 };
+
+// Eski 3 talik shkaladagi natijani 5 talikka o'tkazadi: 1→1, 2→3, 3→5
+function migrateToFiveStars(p: YolProgress): YolProgress {
+  const map: Record<number, number> = { 1: 1, 2: 3, 3: 5 };
+  const lessons: Record<string, number> = {};
+  for (const [k, v] of Object.entries(p.lessons)) {
+    // "exam-<daraja>" kalitlarida yulduz emas, foiz saqlanadi
+    lessons[k] = k.startsWith("exam-") ? v : (map[v] ?? v);
+  }
+  return { lessons, scale: MAX_STARS };
+}
 
 function lessonKey(level: number, lesson: number) {
   return `${level}-${lesson}`;
@@ -13,14 +28,18 @@ function lessonKey(level: number, lesson: number) {
 export function getProgress(): YolProgress {
   try {
     const raw = localStorage.getItem(KEY);
-    if (!raw) return { lessons: {} };
+    if (!raw) return { lessons: {}, scale: MAX_STARS };
     const parsed = JSON.parse(raw);
     if (parsed && typeof parsed === "object" && parsed.lessons) {
-      return parsed as YolProgress;
+      const p = parsed as YolProgress;
+      if (p.scale === MAX_STARS) return p;
+      const migrated = migrateToFiveStars(p);
+      saveProgress(migrated);
+      return migrated;
     }
-    return { lessons: {} };
+    return { lessons: {}, scale: MAX_STARS };
   } catch {
-    return { lessons: {} };
+    return { lessons: {}, scale: MAX_STARS };
   }
 }
 
@@ -32,10 +51,13 @@ function saveProgress(p: YolProgress) {
   }
 }
 
-// Aniqlik foizidan yulduzlar soni: 70% dan kam = 0, 70-84 = 1, 85-94 = 2, 95+ = 3
+// Aniqlik foizidan yulduzlar soni:
+// 70% dan kam = 0, 70-79 = 1, 80-84 = 2, 85-94 = 3, 95-99 = 4, 100 = 5
 export function percentToStars(percent: number): number {
-  if (percent >= 95) return 3;
-  if (percent >= 85) return 2;
+  if (percent >= 100) return 5;
+  if (percent >= 95) return 4;
+  if (percent >= 85) return 3;
+  if (percent >= 80) return 2;
   if (percent >= 70) return 1;
   return 0;
 }

@@ -15,6 +15,7 @@ import {
   areLessonsDone,
   isExamPassed,
   totalStarsAll,
+  MAX_STARS,
 } from "../data/yol";
 
 type Counts = {
@@ -388,9 +389,9 @@ export default function HomeClient({ counts }: { counts: Counts }) {
             <StatTile
               icon="⭐"
               value={yol?.stars}
-              unit={yol ? `/ ${yol.totalLessons * 3}` : ""}
+              unit={yol ? `/ ${yol.totalLessons * MAX_STARS}` : ""}
               label="Yulduzlar"
-              hint="Har bir darsdan 3 tagacha yulduz"
+              hint="Har bir darsdan 5 tagacha yulduz"
               color="text-amber-500"
             />
           </div>

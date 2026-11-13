@@ -21,6 +21,7 @@ import {
   isLevelComplete,
   levelStars,
   totalStarsAll,
+  MAX_STARS,
   YolProgress,
 } from "../data/yol";
 
@@ -62,7 +63,7 @@ export default function YolPage() {
             📘 {doneLessons} / {totalLessons} dars
           </HeroChip>
           <HeroChip>
-            ⭐ {totalStarsAll(p)} / {totalLessons * 3}
+            ⭐ {totalStarsAll(p)} / {totalLessons * MAX_STARS}
           </HeroChip>
         </PageHero>
 
@@ -108,7 +109,7 @@ export default function YolPage() {
                     <p className="text-sm leading-snug text-slate-500">{lv.desc}</p>
                   </div>
                   <span className="shrink-0 rounded-full bg-amber-50 px-2.5 py-1 text-sm font-extrabold text-amber-600 ring-1 ring-amber-200">
-                    ⭐ {stars}/{LESSONS_PER_LEVEL * 3}
+                    ⭐ {stars}/{LESSONS_PER_LEVEL * MAX_STARS}
                   </span>
                 </div>
 
@@ -162,7 +163,7 @@ export default function YolPage() {
                           </p>
                           <p className="text-xs font-bold tracking-widest text-amber-500">
                             {unlocked ? (
-                              "★".repeat(lessonStars) + "☆".repeat(3 - lessonStars)
+                              "★".repeat(lessonStars) + "☆".repeat(MAX_STARS - lessonStars)
                             ) : (
                               <span className="tracking-normal text-slate-400">Yopiq</span>
                             )}
