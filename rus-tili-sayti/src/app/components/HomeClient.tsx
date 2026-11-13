@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Header from "./Header";
+import MysteryChest from "./MysteryChest";
 import { quotes } from "../data/quotes";
 import { getDisplayStats, DisplayStats } from "../data/stats";
 import { getDueIds } from "../data/gapSrs";
@@ -305,6 +306,9 @@ export default function HomeClient({ counts }: { counts: Counts }) {
             <span className="text-xl font-bold text-amber-700">→</span>
           </Link>
         )}
+
+        {/* Sirli sandiq — kuniga bir marta */}
+        <MysteryChest />
 
         {/* Kunlik mini-mashq */}
         <Link

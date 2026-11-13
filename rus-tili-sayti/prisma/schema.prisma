@@ -37,6 +37,7 @@ model User {
   achievements UserAchievement[]
   feedbacks         Feedback[]
   dailyChallenges   DailyChallenge[]
+  dailyChests       DailyChest[]
   voiceRecordings   VoiceRecording[]
   pushSubscriptions PushSubscription[]
   telegramLink      TelegramLink?
@@ -97,6 +98,19 @@ model DailyChallenge {
   id        String   @id @default(cuid())
   userId    String
   date      String // "YYYY-MM-DD"
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+}
+
+// Sirli sandiq: kuniga bir marta ochiladi, ichidan tasodifiy ball chiqadi
+model DailyChest {
+  id        String   @id @default(cuid())
+  userId    String
+  date      String // "YYYY-MM-DD" (Toshkent vaqti bo'yicha)
+  reward    Int
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
