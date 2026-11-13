@@ -12,7 +12,7 @@ export const LEVEL_02: [string, string][] = [
   ["Я люблю чай.", "Men choyni yaxshi ko'raman."],
   ["Я хочу спать.", "Men uxlagim keladi."],
   ["Я хочу есть.", "Men yegim keladi."],
-  ["Я хочу пить.", "Men ichgim keladi."],
+  ["Я хочу пить.", "Men chanqadim."],
   ["Я иду домой.", "Men uyga ketyapman."],
   ["Я еду на работу.", "Men ishga ketyapman (transportda)."],
   ["Я готовлю ужин.", "Men kechki ovqat tayyorlayman."],
