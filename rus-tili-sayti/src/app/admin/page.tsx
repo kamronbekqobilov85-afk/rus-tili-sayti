@@ -4,6 +4,7 @@ import Header from "../components/Header";
 import PageHero, { HeroChip } from "../components/PageHero";
 import { card, pageShell } from "../components/ui";
 import FeedbackRow from "../components/FeedbackRow";
+import SeasonResetButton from "../components/SeasonResetButton";
 import { auth } from "../../auth";
 import { prisma, daysAgo } from "../../lib/prisma";
 
@@ -124,6 +125,15 @@ export default async function AdminPage() {
           />
           <StatCard icon="💬" value={newFeedbackCount} label="Yangi xabarlar" color="text-rose-600" />
         </div>
+
+        <section className={`${card} mt-6 p-5`}>
+          <h2 className="text-lg font-extrabold text-slate-800">🏆 Mavsumni yakunlash</h2>
+          <p className="mt-1 text-sm text-slate-500">
+            Umumiy reytingdagi 1-o'rin g'olib sifatida hammaga bir marta ko'rsatiladi, so'ng barcha ballar 0 ga
+            tushiriladi.
+          </p>
+          <SeasonResetButton />
+        </section>
 
         <section className="mt-8">
           <h2 className="text-lg font-extrabold text-slate-800">Qurilmalar bo'yicha</h2>

@@ -6,6 +6,7 @@ import AuthProvider from "./components/AuthProvider";
 import VisitTracker from "./components/VisitTracker";
 import FeedbackWidget from "./components/FeedbackWidget";
 import ChallengeReminder from "./components/ChallengeReminder";
+import WinnerPopup from "./components/WinnerPopup";
 import SignInGate from "./components/SignInGate";
 import ReferralHandler from "./components/ReferralHandler";
 import TelegramWebApp from "./components/TelegramWebApp";
@@ -48,6 +49,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
               <VisitTracker />
               <FeedbackWidget />
               <ChallengeReminder />
+              <WinnerPopup />
               {children}
             </>
           ) : (

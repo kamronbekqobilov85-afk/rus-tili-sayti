@@ -118,6 +118,19 @@ model DailyChest {
   @@unique([userId, date])
 }
 
+// Mavsum g'olibi: ballar nollanishidan oldin 1-o'rindagi foydalanuvchi shu yerga yoziladi
+// va hamma foydalanuvchiga bir marta e'lon qilinadi
+model SeasonWinner {
+  id        String   @id @default(cuid())
+  userId    String?
+  name      String?
+  image     String?
+  xp        Int
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
 // Foydalanuvchilar yuborgan savol/taklif/fikrlar
 model Feedback {
   id        String   @id @default(cuid())
