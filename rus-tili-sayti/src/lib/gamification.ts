@@ -1,4 +1,4 @@
-import { randomUUID } from "crypto";
+import { randomBytes } from "crypto";
 import { prisma } from "./prisma";
 import { XP_PER_TEST, XP_PER_WORD, XP_REFERRAL_BONUS, XP_THRESHOLDS, REFERRAL_THRESHOLDS } from "../app/data/achievements";
 
@@ -8,14 +8,45 @@ function todayStr(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
-// Mavjud foydalanuvchilarda referralCode bo'lmasligi mumkin (ustun ixtiyoriy
-// qilib qo'shilgan) — shu yerda birinchi so'ralganda hosil qilib beramiz
+const SHORT_CODE_LENGTH = 7;
+// Adashtiradigan belgilarsiz (0/o, 1/l/i) — havolani qo'lda yozish ham oson
+const CODE_ALPHABET = "abcdefghjkmnpqrstuvwxyz23456789";
+
+function shortCode(): string {
+  const bytes = randomBytes(SHORT_CODE_LENGTH);
+  let out = "";
+  for (let i = 0; i < SHORT_CODE_LENGTH; i++) out += CODE_ALPHABET[bytes[i] % CODE_ALPHABET.length];
+  return out;
+}
+
+// Qisqa (7 belgili) taklif kodini qaytaradi. Kodi yo'q foydalanuvchiga yangisini
+// yaratadi; eski uzun (UUID) kodi borlarniki qisqasiga almashtiriladi, eskisi esa
+// legacyReferralCode'da saqlanadi — avval tarqatilgan havolalar ishlayveradi.
 export async function ensureReferralCode(userId: string): Promise<string> {
-  const user = await prisma.user.findUnique({ where: { id: userId }, select: { referralCode: true } });
-  if (user?.referralCode) return user.referralCode;
-  const code = randomUUID();
-  await prisma.user.update({ where: { id: userId }, data: { referralCode: code } });
-  return code;
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { referralCode: true, legacyReferralCode: true },
+  });
+  const current = user?.referralCode ?? null;
+  if (current && current.length <= SHORT_CODE_LENGTH) return current;
+
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const code = shortCode();
+    try {
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          referralCode: code,
+          ...(current && !user?.legacyReferralCode ? { legacyReferralCode: current } : {}),
+        },
+      });
+      return code;
+    } catch (e) {
+      // P2002 — kod band (juda kam uchraydi), boshqasini sinab ko'ramiz
+      if ((e as { code?: string })?.code !== "P2002") throw e;
+    }
+  }
+  throw new Error("Taklif kodini yaratib bo'lmadi");
 }
 
 async function unlockXpAchievements(userId: string, xp: number): Promise<string[]> {

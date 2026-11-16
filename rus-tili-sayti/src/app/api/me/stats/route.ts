@@ -35,7 +35,7 @@ export async function GET() {
     return Response.json({ ok: false }, { status: 404 });
   }
 
-  const referralCode = user.referralCode ?? (await ensureReferralCode(userId));
+  const referralCode = await ensureReferralCode(userId);
 
   return Response.json({
     ok: true,

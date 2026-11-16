@@ -27,6 +27,7 @@ model User {
   xp           Int     @default(0)
   dailyGoal    Int     @default(20)
   referralCode String? @unique
+  legacyReferralCode String? @unique // eski uzun kod — avval tarqatilgan havolalar ishlashda davom etishi uchun
   referredBy   String?
   groupId      String?
 

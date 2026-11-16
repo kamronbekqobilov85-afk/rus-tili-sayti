@@ -23,8 +23,9 @@ export async function POST(req: Request) {
     return Response.json({ ok: true, applied: false });
   }
 
-  const referrer = await prisma.user.findUnique({
-    where: { referralCode: code },
+  // Qisqa kod ham, avval tarqatilgan eski uzun kod ham qabul qilinadi
+  const referrer = await prisma.user.findFirst({
+    where: { OR: [{ referralCode: code }, { legacyReferralCode: code }] },
     select: { id: true },
   });
   if (!referrer || referrer.id === session.user.id) {
