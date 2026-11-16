@@ -19,7 +19,8 @@ export function isTelegramEnv(): boolean {
   if (window.location.hash.includes("tgWebApp")) return true;
   try {
     // Telegram skripti ishga tushgach parametrlarni shu yerda saqlaydi (sahifa yangilansa ham qoladi)
-    return !!sessionStorage.getItem("__telegram__initParams");
+    // Oddiy brauzerda bu qiymat bo'sh "{}" bo'ladi, shuning uchun ichida Telegram ma'lumoti borligini tekshiramiz.
+    return (sessionStorage.getItem("__telegram__initParams") || "").includes("tgWebApp");
   } catch {
     return false;
   }
