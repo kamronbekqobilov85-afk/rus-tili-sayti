@@ -7,6 +7,18 @@
     {
       "path": "/api/cron/challenge-winner",
       "schedule": "5 19 * * 0"
+    },
+    {
+      "path": "/api/cron/practice-reminder?slot=morning",
+      "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/practice-reminder?slot=midday",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/practice-reminder?slot=evening",
+      "schedule": "0 14 * * *"
     }
   ]
 }
