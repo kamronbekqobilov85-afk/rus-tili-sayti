@@ -23,8 +23,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Rus tilini bepul o'rganing — so'zlar, grammatika, video",
-  description: "Rus tilini noldan o'rganing: 500dan ortiq so'z, grammatika mashqlari, testlar va ruscha qo'shiqlar bilan. Bepul va oson.",
+  metadataBase: new URL("https://rus-tili-sayti.vercel.app"),
+  title: "Rus tili — o'ynab, bepul o'rganing",
+  description:
+    "Rus tilini noldan, o'zbek tilida o'rganing: qisqa darslar, reyting, har kungi sovg'alar va ruscha qo'shiqlar. Kuniga 10 daqiqa yetarli.",
+  openGraph: {
+    type: "website",
+    siteName: "Rus tili",
+    locale: "uz_UZ",
+    url: "/",
+    title: "Rus tili — o'ynab, bepul o'rganing",
+    description:
+      "Rus tilini noldan, o'zbek tilida o'rganing: qisqa darslar, reyting, har kungi sovg'alar va ruscha qo'shiqlar. Kuniga 10 daqiqa yetarli.",
+  },
+  twitter: { card: "summary_large_image" },
   verification: {
     google: "dPnmDXi4Wv_2J6GQivJHKkOS4hWbSPP7qmkSe4Yrk4I",
   },
