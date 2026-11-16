@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 import AuthProvider from "./components/AuthProvider";
 import VisitTracker from "./components/VisitTracker";
@@ -52,9 +51,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
         <TelegramWebApp />
-        <AuthProvider>
+        <AuthProvider session={session}>
           <ReferralHandler />
           {session ? (
             <>

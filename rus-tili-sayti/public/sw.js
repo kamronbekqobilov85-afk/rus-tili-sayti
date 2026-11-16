@@ -1,6 +1,6 @@
 // Oddiy service worker: ilova o'rnatilishi uchun va sahifalar oflayn ochilishi uchun.
 // Internet bor bo'lsa, doim yangi sahifa olinadi (eski nusxa ko'rsatilmaydi).
-const CACHE = "rus-tili-v1";
+const CACHE = "rus-tili-v2";
 
 self.addEventListener("install", () => {
   self.skipWaiting();
@@ -57,6 +57,27 @@ self.addEventListener("fetch", (event) => {
   if (url.origin !== self.location.origin) return;
   // Versiya tekshiruvi va boshqa API so'rovlari doim to'g'ridan-to'g'ri tarmoqdan
   if (url.pathname.startsWith("/api/")) return;
+
+  // Nomi o'zgarmas fayllar (skript, uslub, shrift, ikonka) bir marta yuklanadi va
+  // keyin to'g'ridan-to'g'ri keshdan olinadi — tarmoq kutilmaydi.
+  const immutable =
+    url.pathname.startsWith("/_next/static/") || /^\/(icon-|apple-icon|favicon)/.test(url.pathname);
+  if (immutable) {
+    event.respondWith(
+      caches.match(req).then(
+        (hit) =>
+          hit ||
+          fetch(req).then((res) => {
+            if (res && res.ok) {
+              const copy = res.clone();
+              caches.open(CACHE).then((c) => c.put(req, copy));
+            }
+            return res;
+          })
+      )
+    );
+    return;
+  }
 
   event.respondWith(
     fetch(req)

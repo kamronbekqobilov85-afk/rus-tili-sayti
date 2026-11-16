@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useInstallPrompt } from "./useInstallPrompt";
 import ServiceWorkerRegister from "./ServiceWorkerRegister";
+import { isTelegramEnv } from "./TelegramWebApp";
 
 const SKIP_KEY = "rus-tili-install-step-done";
 
@@ -16,12 +17,7 @@ function isStandalone(): boolean {
   );
 }
 
-// Telegram Mini App ichida ilovani o'rnatib bo'lmaydi — u yerda to'g'ridan-to'g'ri kirish ko'rsatiladi
-function isTelegramMiniApp(): boolean {
-  const tg = (window as unknown as { Telegram?: { WebApp?: { initData?: string } } }).Telegram?.WebApp;
-  return !!tg?.initData;
-}
-
+// Telegram Mini App ichida ilovani o'rnatib bo'lmaydi — u yerda to'g'ridan-to'g'ri kirish ko'rsatiladi.
 // Tizimga kirmagan foydalanuvchiga butun ilova o'rniga shu ekran ko'rsatiladi.
 // Yangi kelgan odam avval ilovani o'rnatishga taklif qilinadi, o'rnatgandan keyin hisob bilan kiradi.
 export default function SignInGate() {
@@ -37,7 +33,7 @@ export default function SignInGate() {
     } catch {
       // localStorage mavjud emas
     }
-    setStep(isStandalone() || isTelegramMiniApp() || done ? "signin" : "install");
+    setStep(isStandalone() || isTelegramEnv() || done ? "signin" : "install");
 
     const onInstalled = () => {
       try {
