@@ -13,7 +13,7 @@ export const LEVEL_08: [string, string][] = [
   ["Они будут учиться в библиотеке.", "Ular kutubxonada o'qiydilar."],
   ["Где вы будете обедать завтра?", "Ertaga qayerda tushlik qilasiz?"],
   ["Завтра в десять часов я буду ждать тебя.", "Ertaga soat o'nda seni kutaman."],
-  ["Сестра будет писать письмо подруге.", "Opam do'stiga xat yozadi."],
+  ["Сестра будет писать письмо подруге.", "Opam dugonasiga xat yozadi."],
   ["Завтра днём мы будем гулять по городу.", "Ertaga kunduzi biz shahar bo'ylab sayr qilamiz."],
   ["Я буду заниматься английским каждый день.", "Men har kuni ingliz tili bilan shug'ullanaman."],
   ["Завтра весь день будет идти дождь.", "Ertaga kun bo'yi yomg'ir yog'adi."],

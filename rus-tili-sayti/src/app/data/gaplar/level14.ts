@@ -12,7 +12,7 @@ export const LEVEL_14: [string, string][] = [
   ["Не забудь проверить, не закончился ли срок действия твоего паспорта.", "Pasportingning amal qilish muddati tugamaganini tekshirishni unutma."],
   ["Мама попросила, чтобы мы позвонили ей сразу после того, как приедем.", "Onam yetib borishimiz bilanoq unga qo'ng'iroq qilishimizni so'radi."],
   ["Перед поездкой я оформил страховку, чтобы чувствовать себя спокойно.", "Safar oldidan o'zimni xotirjam his qilish uchun sug'urta rasmiylashtirdim."],
-  ["Моя подруга советует брать с собой наличные деньги и банковскую карту.", "Do'stim naqd pul va bank kartasini birga olib yurishni maslahat beradi."],
+  ["Моя подруга советует брать с собой наличные деньги и банковскую карту.", "Dugonam naqd pul va bank kartasini birga olib yurishni maslahat beradi."],
   ["Пока ты собираешь вещи, я схожу в магазин и куплю воды и еды на дорогу.", "Sen narsalaringni yig'ayotganingda, men do'konga borib, yo'l uchun suv va ovqat olib kelaman."],
   ["Мы так долго планировали эту поездку, что теперь не можем дождаться отъезда.", "Biz bu safarni shunchalik uzoq rejalashtirdikki, endi jo'nashni sabrsizlik bilan kutyapmiz."],
   ["Мы выбрали эту страну, потому что там тёплое море, вкусная еда и добрые люди.", "Biz bu mamlakatni tanladik, chunki u yerda iliq dengiz, mazali taom va mehribon odamlar bor."],

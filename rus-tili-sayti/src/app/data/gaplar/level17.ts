@@ -31,7 +31,7 @@ export const LEVEL_17: [string, string][] = [
   ["Мне нужны две марки и конверт, а ещё я хочу отправить открытку.", "Menga ikkita marka va konvert kerak, yana ochiq xat yubormoqchiman."],
   ["Курьер позвонил и сказал, что привезёт посылку после обеда, но так и не приехал.", "Kuryer qo'ng'iroq qilib, posilkani tushdan keyin olib kelishini aytdi, lekin umuman kelmadi."],
   ["Если адрес написан неправильно, письмо может идти очень долго или вернуться отправителю.", "Agar manzil noto'g'ri yozilgan bo'lsa, xat juda uzoq yurishi yoki jo'natuvchiga qaytishi mumkin."],
-  ["Моя подруга живёт за границей, и мы всё ещё иногда пишем друг другу бумажные письма.", "Do'stim chet elda yashaydi va biz hali ham ba'zan bir-birimizga qog'oz xat yozamiz."],
+  ["Моя подруга живёт за границей, и мы всё ещё иногда пишем друг другу бумажные письма.", "Dugonam chet elda yashaydi va biz hali ham ba'zan bir-birimizga qog'oz xat yozamiz."],
   ["Прежде чем отправить хрупкую посылку, упакуйте её как можно надёжнее и напишите на коробке предупреждение.", "Mo'rt posilkani yuborishdan oldin uni imkon qadar puxta o'rang va qutiga ogohlantirish yozib qo'ying."],
   ["На почте можно не только отправить письмо, но и оплатить коммунальные услуги или получить пенсию.", "Pochtada nafaqat xat yuborish, balki kommunal xizmatlar uchun to'lash yoki pensiya olish ham mumkin."],
   ["Посылка из-за границы задержалась на таможне, потому что в документах не хватало некоторых сведений.", "Chet eldan kelgan posilka bojxonada kechikdi, chunki hujjatlarda ba'zi ma'lumotlar yetishmayotgan edi."],

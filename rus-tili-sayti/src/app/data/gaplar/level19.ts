@@ -8,7 +8,7 @@ export const LEVEL_19: [string, string][] = [
   ["Где фильм, о котором ты вчера рассказывал нашим друзьям?", "Kecha do'stlarimizga gapirib bergan filming qani?"],
   ["Магазин, в который мы зашли утром, сегодня закрыт на ремонт.", "Biz ertalab kirgan do'kon bugun ta'mirlash uchun yopiq."],
   ["Студенты, которые хорошо готовятся к экзаменам, обычно не боятся плохих оценок.", "Imtihonlarga yaxshi tayyorlanadigan talabalar odatda yomon baholardan qo'rqmaydi."],
-  ["Подруга, с которой я учился в школе, теперь живёт в другой стране.", "Maktabda birga o'qigan do'stim endi boshqa mamlakatda yashaydi."],
+  ["Подруга, с которой я учился в школе, теперь живёт в другой стране.", "Maktabda birga o'qigan dugonam endi boshqa mamlakatda yashaydi."],
   ["Ты видел машину, которая стоит возле нашего дома с самого утра?", "Ertalabdan beri uyimiz yonida turgan mashinani ko'rdingmi?"],
   ["Преподаватель, у которого мы сдаём экзамен, очень строгий, но справедливый человек.", "Biz imtihon topshiradigan o'qituvchi juda qattiqqo'l, lekin odil inson."],
   ["Это мой друг, чью сестру ты встретил на прошлой неделе.", "Bu mening do'stim, uning singlisini sen o'tgan hafta uchratgan eding."],

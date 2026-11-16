@@ -19,7 +19,7 @@ export const LEVEL_03: [string, string][] = [
   ["Телефон лежит на полу.", "Telefon polda yotibdi."],
   ["Мы обедаем в кафе.", "Biz kafeda tushlik qilamiz."],
   ["Бабушка отдыхает в саду.", "Buvim bog'da dam olyapti."],
-  ["Моя подруга учится в университете.", "Do'stim universitetda o'qiydi."],
+  ["Моя подруга учится в университете.", "Dugonam universitetda o'qiydi."],
   ["Я иду в школу.", "Men maktabga ketyapman."],
   ["Мы едем на работу.", "Biz ishga ketyapmiz."],
   ["Куда ты идёшь сейчас?", "Sen hozir qayerga ketyapsan?"],
