@@ -1,31 +1,161 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
+import { useInstallPrompt } from "./useInstallPrompt";
+import ServiceWorkerRegister from "./ServiceWorkerRegister";
 
-// Tizimga kirmagan foydalanuvchiga butun ilova o'rniga shu ekran ko'rsatiladi
-export default function SignInGate() {
+const SKIP_KEY = "rus-tili-install-step-done";
+
+type Step = "loading" | "install" | "signin";
+
+function isStandalone(): boolean {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-emerald-600 via-teal-600 to-blue-700 px-4 text-center text-white">
+    window.matchMedia("(display-mode: standalone)").matches ||
+    (window.navigator as unknown as { standalone?: boolean }).standalone === true
+  );
+}
+
+// Telegram Mini App ichida ilovani o'rnatib bo'lmaydi — u yerda to'g'ridan-to'g'ri kirish ko'rsatiladi
+function isTelegramMiniApp(): boolean {
+  const tg = (window as unknown as { Telegram?: { WebApp?: { initData?: string } } }).Telegram?.WebApp;
+  return !!tg?.initData;
+}
+
+// Tizimga kirmagan foydalanuvchiga butun ilova o'rniga shu ekran ko'rsatiladi.
+// Yangi kelgan odam avval ilovani o'rnatishga taklif qilinadi, o'rnatgandan keyin hisob bilan kiradi.
+export default function SignInGate() {
+  const { available, install } = useInstallPrompt();
+  const [step, setStep] = useState<Step>("loading");
+  const [justInstalled, setJustInstalled] = useState(false);
+  const [hint, setHint] = useState<"ios" | "manual" | null>(null);
+
+  useEffect(() => {
+    let done = false;
+    try {
+      done = localStorage.getItem(SKIP_KEY) === "1";
+    } catch {
+      // localStorage mavjud emas
+    }
+    setStep(isStandalone() || isTelegramMiniApp() || done ? "signin" : "install");
+
+    const onInstalled = () => {
+      try {
+        localStorage.setItem(SKIP_KEY, "1");
+      } catch {
+        // e'tiborsiz
+      }
+      setJustInstalled(true);
+      setStep("signin");
+    };
+    window.addEventListener("appinstalled", onInstalled);
+    return () => window.removeEventListener("appinstalled", onInstalled);
+  }, []);
+
+  const handleInstall = async () => {
+    const result = await install();
+    if (result === "ios") setHint("ios");
+    else if (result === null) setHint("manual");
+  };
+
+  const skip = () => {
+    try {
+      localStorage.setItem(SKIP_KEY, "1");
+    } catch {
+      // e'tiborsiz
+    }
+    setStep("signin");
+  };
+
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-emerald-600 via-teal-600 to-blue-700 px-4 py-10 text-center text-white">
+      <ServiceWorkerRegister />
       <span className="flex h-20 w-20 items-center justify-center rounded-3xl bg-white/15 text-5xl ring-1 ring-white/25">
         🐻
       </span>
       <h1 className="mt-6 text-3xl font-extrabold sm:text-4xl">Rus tilini o'rganing</h1>
-      <p className="mt-3 max-w-sm text-emerald-50/90">
-        Davom etish uchun Google hisobingiz bilan kiring. Progressingiz va yutuqlaringiz
-        hisobingizga saqlanadi.
-      </p>
 
-      <button
-        onClick={() => signIn("google")}
-        className="mt-8 flex items-center gap-3 rounded-2xl border-b-4 border-emerald-800 bg-white px-6 py-3 text-base font-extrabold text-slate-800 shadow-lg transition hover:bg-emerald-50 active:translate-y-0.5 active:border-b-2"
-      >
-        <GoogleIcon />
-        Google bilan kirish
-      </button>
+      {step === "install" && (
+        <>
+          <p className="mt-3 max-w-sm text-emerald-50/90">
+            Avval ilovani telefoningizga o'rnating — bepul, joy olmaydi va bir bosishda ochiladi. Keyin
+            hisobingiz bilan kirasiz.
+          </p>
 
-      <p className="mt-6 max-w-xs text-xs text-emerald-100/70">
-        Bepul va faqat bir necha soniya ketadi. Ma'lumotlaringiz faqat sizga tegishli bo'ladi.
-      </p>
+          <button
+            onClick={handleInstall}
+            className="mt-8 flex items-center gap-3 rounded-2xl border-b-4 border-emerald-800 bg-white px-7 py-3.5 text-lg font-extrabold text-emerald-700 shadow-lg transition hover:bg-emerald-50 active:translate-y-0.5 active:border-b-2"
+          >
+            📲 Ilovani o'rnatish
+          </button>
+
+          {hint === "ios" && (
+            <ol className="mt-5 max-w-sm space-y-2 rounded-2xl bg-white/15 p-4 text-left text-sm ring-1 ring-white/25">
+              <li>
+                1. Pastdagi <strong>Ulashish</strong> (kvadrat ichida yuqoriga qarab turgan strelka) tugmasini
+                bosing
+              </li>
+              <li>
+                2. <strong>«Bosh ekranga qo'shish»</strong> (Add to Home Screen) bandini tanlang
+              </li>
+              <li>
+                3. <strong>«Qo'shish»</strong> tugmasini bosing va bosh ekrandagi ilovani oching
+              </li>
+            </ol>
+          )}
+          {hint === "manual" && (
+            <ol className="mt-5 max-w-sm space-y-2 rounded-2xl bg-white/15 p-4 text-left text-sm ring-1 ring-white/25">
+              <li>
+                1. Brauzerning yuqori o'ng burchagidagi <strong>⋮</strong> menyusini oching
+              </li>
+              <li>
+                2. <strong>«Ilovani o'rnatish»</strong> yoki <strong>«Bosh ekranga qo'shish»</strong> bandini
+                tanlang
+              </li>
+              <li>3. Bosh ekrandagi «Rus tili» ilovasini oching va hisobingiz bilan kiring</li>
+              <li className="text-emerald-100/80">
+                Bu band ko'rinmasa, sahifani Chrome brauzerida oching yoki ilova allaqachon o'rnatilgan.
+              </li>
+            </ol>
+          )}
+
+          <div className="mt-6 flex items-center gap-2 text-xs font-bold text-emerald-100/80">
+            <span className="rounded-full bg-white px-2 py-0.5 text-emerald-700">1</span> O'rnatish
+            <span className="opacity-50">→</span>
+            <span className="rounded-full bg-white/20 px-2 py-0.5">2</span> Hisob bilan kirish
+          </div>
+
+          <button onClick={skip} className="mt-8 text-xs text-emerald-100/70 underline underline-offset-2">
+            {available ? "O'rnatmasdan davom etish" : "Ilova o'rnatilgan yoki o'rnatib bo'lmayaptimi? Davom etish"}
+          </button>
+        </>
+      )}
+
+      {step === "signin" && (
+        <>
+          {justInstalled && (
+            <p className="mt-4 rounded-full bg-white/20 px-4 py-1.5 text-sm font-extrabold ring-1 ring-white/30">
+              ✅ Ilova o'rnatildi!
+            </p>
+          )}
+          <p className="mt-3 max-w-sm text-emerald-50/90">
+            Davom etish uchun Google hisobingiz bilan kiring. Progressingiz va yutuqlaringiz
+            hisobingizga saqlanadi.
+          </p>
+
+          <button
+            onClick={() => signIn("google")}
+            className="mt-8 flex items-center gap-3 rounded-2xl border-b-4 border-emerald-800 bg-white px-6 py-3 text-base font-extrabold text-slate-800 shadow-lg transition hover:bg-emerald-50 active:translate-y-0.5 active:border-b-2"
+          >
+            <GoogleIcon />
+            Google bilan kirish
+          </button>
+
+          <p className="mt-6 max-w-xs text-xs text-emerald-100/70">
+            Bepul va faqat bir necha soniya ketadi. Ma'lumotlaringiz faqat sizga tegishli bo'ladi.
+          </p>
+        </>
+      )}
     </div>
   );
 }
