@@ -23,7 +23,7 @@ export default function Flashcard({ word }: { word: Word }) {
       <div className="flex items-center justify-center gap-3">
         <button
           onClick={handleSpeak}
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border-b-4 border-sky-700 bg-sky-500 text-2xl text-white transition hover:bg-sky-400 active:translate-y-0.5 active:border-b-0"
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border-b-4 border-indigo-700 bg-indigo-500 text-2xl text-white transition hover:bg-indigo-400 active:translate-y-0.5 active:border-b-0"
           aria-label="Tinglash"
         >
           🔊

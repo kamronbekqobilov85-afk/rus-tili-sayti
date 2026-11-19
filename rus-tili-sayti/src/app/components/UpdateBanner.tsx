@@ -46,7 +46,7 @@ export default function UpdateBanner() {
 
   return (
     <div
-      className="fixed inset-x-3 z-50 mx-auto flex max-w-md items-center justify-between gap-3 rounded-2xl bg-gray-900 px-4 py-3 text-white shadow-xl bottom-24 md:bottom-6"
+      className="fixed inset-x-3 z-50 mx-auto flex max-w-md items-center justify-between gap-3 rounded-2xl bg-slate-900 px-4 py-3 text-white shadow-xl bottom-24 md:bottom-6"
       role="status"
     >
       <span className="text-sm font-bold">🎉 Yangi versiya tayyor!</span>

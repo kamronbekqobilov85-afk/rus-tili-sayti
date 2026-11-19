@@ -128,7 +128,7 @@ export default function TinglashPage() {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => speak()}
-                  className="flex h-24 w-24 items-center justify-center rounded-full border-b-[6px] border-blue-800 bg-blue-600 text-5xl text-white shadow-lg transition hover:bg-blue-500 active:translate-y-0.5 active:border-b-2"
+                  className="flex h-24 w-24 items-center justify-center rounded-full border-b-[6px] border-violet-800 bg-violet-600 text-5xl text-white shadow-lg transition hover:bg-violet-500 active:translate-y-0.5 active:border-b-2"
                   aria-label="Qayta tinglash"
                 >
                   🔊

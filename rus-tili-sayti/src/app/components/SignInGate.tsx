@@ -64,7 +64,7 @@ export default function SignInGate() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-emerald-600 via-teal-600 to-blue-700 px-4 py-10 text-center text-white">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 px-4 py-10 text-center text-white">
       <ServiceWorkerRegister />
       <span className="flex h-20 w-20 items-center justify-center rounded-3xl bg-white/15 text-5xl ring-1 ring-white/25">
         🐻

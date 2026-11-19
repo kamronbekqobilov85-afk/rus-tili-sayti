@@ -115,7 +115,7 @@ export default async function AdminPage() {
 
         <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-5">
           <StatCard icon="👤" value={totalUsers} label="Ro'yxatdan o'tganlar" color="text-emerald-600" />
-          <StatCard icon="👁️" value={totalVisits} label="Jami sahifa ko'rishlar" color="text-sky-600" />
+          <StatCard icon="👁️" value={totalVisits} label="Jami sahifa ko'rishlar" color="text-indigo-600" />
           <StatCard icon="📅" value={last7dVisits} label="Oxirgi 7 kunda" color="text-orange-500" />
           <StatCard
             icon="📱"
@@ -218,7 +218,7 @@ export default async function AdminPage() {
                           </span>
                         )}
                         {voices.length > 0 && (
-                          <span className="rounded-full bg-sky-50 px-2 py-0.5 text-[10px] font-extrabold text-sky-700 ring-1 ring-sky-200">
+                          <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-extrabold text-indigo-700 ring-1 ring-indigo-200">
                             🎙️ {voices.length}
                           </span>
                         )}

@@ -79,7 +79,7 @@ export default function VideoPage() {
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={thumbnail} alt={v.title} className="h-full w-full object-cover" />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-emerald-600 to-blue-700 text-4xl text-white">
+                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-indigo-600 to-fuchsia-600 text-4xl text-white">
                       🎵
                     </div>
                   )}

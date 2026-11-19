@@ -1,6 +1,6 @@
 // Barcha sahifalarda bir xil ko'rinish uchun umumiy klasslar
 
-export const pageShell = "flex min-h-screen flex-col bg-slate-50";
+export const pageShell = "flex min-h-screen flex-col bg-gradient-to-b from-indigo-50/60 via-slate-50 to-slate-50";
 
 export const card = "rounded-2xl border border-slate-200 bg-white shadow-sm";
 

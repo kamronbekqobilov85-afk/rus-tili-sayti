@@ -13,7 +13,7 @@ export default function PageHero({
   children?: ReactNode;
 }) {
   return (
-    <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-600 via-teal-600 to-blue-700 p-5 text-white shadow-lg sm:p-6">
+    <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 p-5 text-white shadow-lg sm:p-6">
       <svg
         aria-hidden
         className="pointer-events-none absolute inset-x-0 bottom-0 h-16 w-full opacity-15"

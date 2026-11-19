@@ -147,8 +147,8 @@ export default function SozlarPage() {
         count: words.length,
         hint: "Hammasini tartib bilan, 100 tadan bo'lib ko'rib chiqing",
         disabled: false,
-        tint: "bg-sky-50 ring-sky-200",
-        accent: "text-sky-600",
+        tint: "bg-indigo-50 ring-indigo-200",
+        accent: "text-indigo-600",
       },
     ];
 

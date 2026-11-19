@@ -14,7 +14,7 @@ type Feedback = {
 
 const STATUS_LABEL: Record<string, { label: string; cls: string }> = {
   new: { label: "Yangi", cls: "bg-amber-50 text-amber-700 ring-amber-200" },
-  read: { label: "O'qildi", cls: "bg-sky-50 text-sky-700 ring-sky-200" },
+  read: { label: "O'qildi", cls: "bg-indigo-50 text-indigo-700 ring-indigo-200" },
   resolved: { label: "Hal qilindi", cls: "bg-emerald-50 text-emerald-700 ring-emerald-200" },
 };
 
@@ -66,7 +66,7 @@ export default function FeedbackRow({ feedback }: { feedback: Feedback }) {
           <button
             disabled={saving}
             onClick={() => changeStatus("read")}
-            className="rounded-xl border-2 border-sky-200 bg-sky-50 px-3 py-1.5 text-xs font-extrabold text-sky-700 transition hover:bg-sky-100 disabled:opacity-40"
+            className="rounded-xl border-2 border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-extrabold text-indigo-700 transition hover:bg-indigo-100 disabled:opacity-40"
           >
             O'qildi deb belgilash
           </button>

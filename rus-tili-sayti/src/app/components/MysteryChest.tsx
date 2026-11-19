@@ -15,7 +15,7 @@ function formatLeft(ms: number): string {
 function rewardTier(xp: number): { label: string; emoji: string; color: string } {
   if (xp >= 500) return { label: "JEKPOT!", emoji: "💎", color: "text-fuchsia-500" };
   if (xp >= 200) return { label: "Kamyob sovg'a!", emoji: "🌟", color: "text-amber-500" };
-  if (xp >= 100) return { label: "Zo'r omad!", emoji: "✨", color: "text-sky-500" };
+  if (xp >= 100) return { label: "Zo'r omad!", emoji: "✨", color: "text-indigo-500" };
   return { label: "Sovg'angiz", emoji: "🎉", color: "text-emerald-600" };
 }
 

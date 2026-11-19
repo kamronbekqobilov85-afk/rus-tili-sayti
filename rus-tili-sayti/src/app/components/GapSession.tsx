@@ -204,38 +204,38 @@ export default function GapSession({
       <div className="mb-5 flex items-center gap-3">
         <Link
           href={exitHref}
-          className="text-2xl font-extrabold text-gray-400 hover:text-gray-600"
+          className="text-2xl font-extrabold text-slate-400 hover:text-slate-600"
           aria-label="Chiqish"
         >
           ✕
         </Link>
-        <div className="h-4 flex-1 overflow-hidden rounded-full bg-gray-200">
+        <div className="h-4 flex-1 overflow-hidden rounded-full bg-slate-200">
           <div
-            className="h-full rounded-full bg-green-500 transition-all"
+            className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 transition-all"
             style={{ width: `${progress}%` }}
           />
         </div>
         {useHearts ? (
           <span className="text-lg font-extrabold text-red-500">❤️ {Math.max(hearts, 0)}</span>
         ) : (
-          <span className="text-lg font-extrabold text-sky-500">🔁</span>
+          <span className="text-lg font-extrabold text-indigo-500">🔁</span>
         )}
       </div>
 
       {current.review && (
         <p
           className="mb-2 inline-block self-start rounded-lg px-2 py-1 text-xs font-extrabold uppercase tracking-wide"
-          style={{ backgroundColor: "#ddf4ff", color: "#1899d6" }}
+          style={{ backgroundColor: "#e0e7ff", color: "#4338ca" }}
         >
           🔁 Takrorlash
         </p>
       )}
-      <h2 className="mb-4 text-xl font-extrabold text-gray-700">{prompt}</h2>
+      <h2 className="mb-4 text-xl font-extrabold text-slate-700">{prompt}</h2>
 
       {current.type === "listen" && (
         <button
           onClick={() => speak(current.gap.ru)}
-          className="mb-5 flex h-20 w-20 items-center justify-center self-center rounded-3xl border-b-8 border-sky-700 bg-sky-500 text-4xl text-white active:translate-y-1 active:border-b-4"
+          className="mb-5 flex h-20 w-20 items-center justify-center self-center rounded-3xl border-b-8 border-indigo-800 bg-indigo-600 text-4xl text-white active:translate-y-1 active:border-b-4"
           aria-label="Tinglash"
         >
           🔊
@@ -245,16 +245,16 @@ export default function GapSession({
         <div className="mb-5 flex items-center gap-3">
           <button
             onClick={() => speak(current.gap.ru)}
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border-b-4 border-sky-700 bg-sky-500 text-2xl text-white active:translate-y-0.5 active:border-b-0"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border-b-4 border-indigo-700 bg-indigo-500 text-2xl text-white active:translate-y-0.5 active:border-b-0"
             aria-label="Tinglash"
           >
             🔊
           </button>
-          <p className="text-2xl font-extrabold text-gray-800 break-words">{current.gap.ru}</p>
+          <p className="text-2xl font-extrabold text-slate-800 break-words">{current.gap.ru}</p>
         </div>
       )}
       {(current.type === "uz-ru" || current.type === "build") && (
-        <p className="mb-5 rounded-2xl border-2 border-gray-200 p-4 text-xl font-extrabold text-gray-800 break-words">
+        <p className="mb-5 rounded-2xl border-2 border-slate-200 p-4 text-xl font-extrabold text-slate-800 break-words">
           {current.gap.uz}
         </p>
       )}
@@ -264,8 +264,8 @@ export default function GapSession({
           {current.options.map((opt) => {
             const isSel = selected === opt;
             const isCorrectOpt = opt === correctAnswer();
-            let cls = "border-gray-200 bg-white text-gray-700 hover:bg-gray-50";
-            if (result === "idle" && isSel) cls = "border-sky-400 bg-sky-100 text-sky-700";
+            let cls = "border-slate-200 bg-white text-slate-700 hover:border-indigo-200 hover:bg-indigo-50/50";
+            if (result === "idle" && isSel) cls = "border-indigo-500 bg-indigo-50 text-indigo-700";
             if (result !== "idle" && isCorrectOpt) cls = "border-green-500 bg-green-100 text-green-700";
             if (result === "wrong" && isSel && !isCorrectOpt) cls = "border-red-500 bg-red-100 text-red-600";
             return (
@@ -282,15 +282,15 @@ export default function GapSession({
         </div>
       ) : (
         <div>
-          <div className="mb-4 flex min-h-[64px] flex-wrap gap-2 rounded-2xl border-2 border-dashed border-gray-300 p-3">
+          <div className="mb-4 flex min-h-[64px] flex-wrap gap-2 rounded-2xl border-2 border-dashed border-slate-300 p-3">
             {answerChips.length === 0 && (
-              <span className="text-sm font-bold text-gray-300">So'zlarni shu yerga bosing</span>
+              <span className="text-sm font-bold text-slate-300">So'zlarni shu yerga bosing</span>
             )}
             {answerChips.map((c) => (
               <button
                 key={c.id}
                 onClick={() => moveChip(c, false)}
-                className="rounded-xl border-2 border-b-4 border-gray-200 bg-white px-3 py-2 text-lg font-bold text-gray-800"
+                className="rounded-xl border-2 border-b-4 border-slate-200 bg-white px-3 py-2 text-lg font-bold text-slate-800"
               >
                 {c.text}
               </button>
@@ -301,7 +301,7 @@ export default function GapSession({
               <button
                 key={c.id}
                 onClick={() => moveChip(c, true)}
-                className="rounded-xl border-2 border-b-4 border-gray-200 bg-white px-3 py-2 text-lg font-bold text-gray-800 active:translate-y-0.5 active:border-b-2"
+                className="rounded-xl border-2 border-b-4 border-slate-200 bg-white px-3 py-2 text-lg font-bold text-slate-800 active:translate-y-0.5 active:border-b-2"
               >
                 {c.text}
               </button>
@@ -315,7 +315,7 @@ export default function GapSession({
           <button
             onClick={handleCheck}
             disabled={!canCheck}
-            className={`${btn3d} border-green-700 bg-green-500 text-white hover:bg-green-400 disabled:border-gray-300 disabled:bg-gray-200 disabled:text-gray-400 disabled:active:translate-y-0 disabled:active:border-b-4`}
+            className={`${btn3d} border-indigo-800 bg-indigo-600 text-white hover:bg-indigo-500 disabled:border-slate-300 disabled:bg-slate-200 disabled:text-slate-400 disabled:active:translate-y-0 disabled:active:border-b-4`}
           >
             Tekshirish
           </button>
@@ -335,7 +335,7 @@ export default function GapSession({
                 To'g'ri javob: {correctAnswer()}
               </p>
             )}
-            <div className="mb-3 flex items-center gap-2 text-sm font-bold text-gray-600">
+            <div className="mb-3 flex items-center gap-2 text-sm font-bold text-slate-600">
               <button
                 onClick={() => speak(current.gap.ru)}
                 className="rounded-lg bg-white px-2 py-1"

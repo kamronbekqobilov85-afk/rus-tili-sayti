@@ -159,7 +159,7 @@ export default function DarajaTestiPage() {
                 const isSel = selected === opt;
                 const isCorrectOpt = opt === current.correct;
                 let cls = "border-slate-200 bg-white text-slate-700 hover:bg-slate-50";
-                if (result === "idle" && isSel) cls = "border-sky-400 bg-sky-50 text-sky-700";
+                if (result === "idle" && isSel) cls = "border-indigo-400 bg-indigo-50 text-indigo-700";
                 if (result === "answered" && isCorrectOpt) cls = "border-emerald-500 bg-emerald-50 text-emerald-700";
                 if (result === "answered" && isSel && !isCorrectOpt) cls = "border-rose-500 bg-rose-50 text-rose-600";
                 return (

@@ -124,7 +124,7 @@ export default function ChallengePage() {
               href="https://t.me/rustili24soat"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 rounded-xl border-b-4 border-sky-700 bg-sky-500 py-3 text-center text-sm font-extrabold uppercase tracking-wide text-white transition hover:bg-sky-400 active:translate-y-0.5 active:border-b-2"
+              className="flex items-center justify-center gap-1.5 rounded-xl border-b-4 border-indigo-700 bg-indigo-500 py-3 text-center text-sm font-extrabold uppercase tracking-wide text-white transition hover:bg-indigo-400 active:translate-y-0.5 active:border-b-2"
             >
               📢 Telegram kanal
             </a>
