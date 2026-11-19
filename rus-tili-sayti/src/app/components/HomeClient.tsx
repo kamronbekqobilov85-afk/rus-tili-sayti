@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Header from "./Header";
 import MysteryChest from "./MysteryChest";
-import { quotes } from "../data/quotes";
+import { quotes, quoteOfTheDay } from "../data/quotes";
 import { getDisplayStats, DisplayStats } from "../data/stats";
 import { getDueIds } from "../data/gapSrs";
 import { LEVELS, LESSONS_PER_LEVEL } from "../data/gaplarMeta";
@@ -79,10 +79,6 @@ function getYolSummary(): YolSummary {
   return { next, doneLessons, totalLessons, stars: totalStarsAll(p) };
 }
 
-function randomQuote() {
-  return quotes[Math.floor(Math.random() * quotes.length)];
-}
-
 export default function HomeClient({ counts }: { counts: Counts }) {
   const [stats, setStats] = useState<DisplayStats | null>(null);
   const [yol, setYol] = useState<YolSummary | null>(null);
@@ -94,7 +90,7 @@ export default function HomeClient({ counts }: { counts: Counts }) {
     setStats(getDisplayStats());
     setYol(getYolSummary());
     setDue(getDueIds().length);
-    setQuote(randomQuote());
+    setQuote(quoteOfTheDay());
 
     try {
       if (!sessionStorage.getItem("quotePopupShown")) {
