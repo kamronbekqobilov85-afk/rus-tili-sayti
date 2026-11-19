@@ -1,6 +1,6 @@
 // Oddiy service worker: ilova o'rnatilishi uchun va sahifalar oflayn ochilishi uchun.
 // Internet bor bo'lsa, doim yangi sahifa olinadi (eski nusxa ko'rsatilmaydi).
-const CACHE = "rus-tili-v2";
+const CACHE = "rus-tili-v3";
 
 self.addEventListener("install", () => {
   self.skipWaiting();
