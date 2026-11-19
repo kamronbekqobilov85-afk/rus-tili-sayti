@@ -27,7 +27,7 @@ export default function Image() {
           flexDirection: "column",
           justifyContent: "center",
           padding: "0 80px",
-          background: "linear-gradient(135deg, #059669 0%, #0d9488 45%, #1d4ed8 100%)",
+          background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #c026d3 100%)",
           fontFamily: "sans-serif",
           color: "white",
           position: "relative",
@@ -73,7 +73,7 @@ export default function Image() {
               width: 76,
               height: 76,
               borderRadius: 22,
-              background: "linear-gradient(135deg,#34d399,#0ea5e9)",
+              background: "linear-gradient(135deg,#a5b4fc,#f0abfc)",
               border: "3px solid rgba(255,255,255,0.5)",
               alignItems: "center",
               justifyContent: "center",
@@ -101,7 +101,7 @@ export default function Image() {
           <div style={{ display: "flex", color: "#fde68a" }}>o'ynab o'rganing</div>
         </div>
 
-        <div style={{ display: "flex", marginTop: 22, fontSize: 34, fontWeight: 600, color: "#d1fae5" }}>
+        <div style={{ display: "flex", marginTop: 22, fontSize: 34, fontWeight: 600, color: "#e0e7ff" }}>
           Kuniga 10 daqiqa — o'zbek tilida, bepul
         </div>
 

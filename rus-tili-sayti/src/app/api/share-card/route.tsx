@@ -33,7 +33,7 @@ export async function GET() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          background: "radial-gradient(circle at 30% 0%, #10b981 0%, #0c4a6e 45%, #0b1220 85%)",
+          background: "radial-gradient(circle at 30% 0%, #6366f1 0%, #3730a3 45%, #0b1220 85%)",
           fontFamily: "sans-serif",
           color: "white",
           position: "relative",

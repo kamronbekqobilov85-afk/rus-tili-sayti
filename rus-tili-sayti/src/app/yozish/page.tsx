@@ -114,10 +114,10 @@ export default function YozishPage() {
               placeholder="Ruscha yozing..."
               className={`w-full rounded-xl border-2 px-4 py-3 text-center text-xl outline-none transition ${
                 feedback === "correct"
-                  ? "border-emerald-500 bg-emerald-50"
+                  ? "border-green-500 bg-green-50"
                   : feedback === "incorrect"
                   ? "border-rose-500 bg-rose-50"
-                  : "border-slate-200 focus:border-emerald-500"
+                  : "border-slate-200 focus:border-green-500"
               }`}
             />
             <p className="mt-2 text-center text-xs text-slate-400">
@@ -133,7 +133,7 @@ export default function YozishPage() {
               </div>
             )}
             {feedback === "correct" && (
-              <div className="mt-4 rounded-xl bg-emerald-50 p-3 text-center font-extrabold text-emerald-700 ring-1 ring-emerald-200">
+              <div className="mt-4 rounded-xl bg-green-50 p-3 text-center font-extrabold text-green-700 ring-1 ring-green-200">
                 To'g'ri! 🎉
               </div>
             )}
@@ -152,7 +152,7 @@ export default function YozishPage() {
           <div className={`${card} mt-4 p-8 text-center`}>
             <p className="text-5xl">{percentage >= 70 ? "🎉" : "💪"}</p>
             <p className="mt-3 text-sm font-bold uppercase tracking-wide text-slate-400">Sizning natijangiz</p>
-            <p className={`text-6xl font-extrabold ${percentage >= 70 ? "text-emerald-600" : "text-amber-500"}`}>
+            <p className={`text-6xl font-extrabold ${percentage >= 70 ? "text-green-600" : "text-amber-500"}`}>
               {percentage}%
             </p>
             <p className="mt-2 mb-8 text-lg text-slate-600">

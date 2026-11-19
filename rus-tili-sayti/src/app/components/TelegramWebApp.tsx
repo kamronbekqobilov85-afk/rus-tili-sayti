@@ -32,7 +32,7 @@ function setup() {
   try {
     tg.ready();
     tg.expand();
-    tg.setHeaderColor?.("#059669");
+    tg.setHeaderColor?.("#4f46e5");
     tg.setBackgroundColor?.("#f8fafc");
   } catch {
     // Telegram WebApp API xato bersa ham saytning ishlashiga xalaqit bermasin

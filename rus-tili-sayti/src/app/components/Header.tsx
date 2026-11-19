@@ -56,7 +56,7 @@ export default function Header() {
                   href={l.href}
                   className={`whitespace-nowrap rounded-xl px-2 py-2 text-[11px] lg:px-2.5 lg:text-xs font-extrabold uppercase tracking-wide border-2 transition ${
                     active
-                      ? "bg-sky-100 text-sky-600 border-sky-300"
+                      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                       : "border-transparent text-gray-500 hover:bg-gray-100"
                   }`}
                 >
@@ -83,7 +83,7 @@ export default function Header() {
               href={l.href}
               className={`flex flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5 text-[10px] font-bold transition ${
                 active
-                  ? "bg-sky-100 text-sky-600"
+                  ? "bg-emerald-50 text-emerald-700"
                   : "text-gray-400 active:bg-gray-100"
               }`}
             >
