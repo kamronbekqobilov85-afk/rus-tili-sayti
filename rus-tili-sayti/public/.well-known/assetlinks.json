@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "uz.rustili.app",
+      "sha256_cert_fingerprints": [
+        "F7:2C:9D:5A:5E:FF:05:94:71:93:B4:AD:EE:56:91:30:06:12:5B:AA:BC:FF:03:31:4F:18:8F:63:D7:17:F5:DA"
+      ]
+    }
+  }
+]
