@@ -14,6 +14,17 @@ export const metadata = { title: "Ko'cha suhbati — Rus tili" };
 // Sahifa ochilishi uchun kerakli ball
 const REQUIRED_XP = 500;
 
+// Boshida nechta suhbat ochiq va qachondan boshlab har kuni bittadan ochila boradi (Toshkent vaqti)
+const START_OPEN = 5;
+const OPEN_FROM = "2026-11-20";
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+function openCount(total: number): number {
+  const today = Math.floor((Date.now() + 5 * 60 * 60 * 1000) / DAY_MS);
+  const start = Math.floor(Date.parse(`${OPEN_FROM}T00:00:00Z`) / DAY_MS);
+  return Math.min(total, START_OPEN + Math.max(0, today - start));
+}
+
 export default async function SuhbatPage() {
   const session = await auth();
   const user = session?.user?.id
@@ -23,12 +34,20 @@ export default async function SuhbatPage() {
   const unlocked = xp >= REQUIRED_XP;
 
   if (unlocked) {
-    // Dialoglar faqat ochilgan foydalanuvchiga yuboriladi
+    // Dialoglar faqat ochilgan foydalanuvchiga yuboriladi; yopiq suhbatlarning matni yuborilmaydi
+    const open = openCount(scenarios.length);
+    const openList = scenarios.slice(0, open);
+    const lockedList = scenarios.slice(open).map((sc, i) => ({
+      id: sc.id,
+      icon: sc.icon,
+      title: sc.title,
+      daysLeft: i + 1,
+    }));
     return (
       <div className={pageShell}>
         <Header />
         <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">
-          <SuhbatClient scenarios={scenarios} phrases={phrases} />
+          <SuhbatClient scenarios={openList} locked={lockedList} phrases={phrases} />
         </main>
       </div>
     );

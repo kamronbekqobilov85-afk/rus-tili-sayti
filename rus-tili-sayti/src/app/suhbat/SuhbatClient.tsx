@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import PageHero, { HeroChip } from "../components/PageHero";
 import { card, btnPrimary, btnSecondary } from "../components/ui";
 import { speak, shuffle } from "../components/GapSession";
@@ -27,13 +27,37 @@ function saveDone(ids: string[]) {
 
 type View = { kind: "list" } | { kind: "phrases" } | { kind: "scenario"; id: string; mode: "read" | "quiz" };
 
-export default function SuhbatClient({ scenarios, phrases }: { scenarios: Scenario[]; phrases: Phrase[] }) {
+export type LockedScenario = { id: string; icon: string; title: string; daysLeft: number };
+
+function stopSpeech() {
+  try {
+    window.speechSynthesis.cancel();
+  } catch {
+    // ovoz mavjud emas
+  }
+}
+
+export default function SuhbatClient({
+  scenarios,
+  locked,
+  phrases,
+}: {
+  scenarios: Scenario[];
+  locked: LockedScenario[];
+  phrases: Phrase[];
+}) {
   const [view, setView] = useState<View>({ kind: "list" });
   const [done, setDone] = useState<string[]>([]);
 
   useEffect(() => {
     setDone(loadDone());
+    return stopSpeech;
   }, []);
+
+  // Boshqa ekranga o'tganda ovoz to'xtaydi
+  useEffect(() => {
+    stopSpeech();
+  }, [view]);
 
   const markDone = (id: string) => {
     setDone((d) => {
@@ -80,7 +104,7 @@ export default function SuhbatClient({ scenarios, phrases }: { scenarios: Scenar
         desc="Ruslar bilan hayotda eng ko'p kerak bo'ladigan suhbatlar. O'qing, tinglang va mashq qiling."
       >
         <HeroChip>
-          ✅ {done.length} / {scenarios.length}
+          ✅ {done.length} / {scenarios.length + locked.length}
         </HeroChip>
         <HeroChip>🔓 Ochiq</HeroChip>
       </PageHero>
@@ -108,6 +132,35 @@ export default function SuhbatClient({ scenarios, phrases }: { scenarios: Scenar
           );
         })}
       </div>
+
+      {locked.length > 0 && (
+        <>
+          <h3 className="mb-2 mt-5 flex flex-wrap items-center gap-2 text-sm font-extrabold uppercase tracking-wide text-slate-500">
+            🔒 Tez orada ochiladi
+            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] normal-case tracking-normal text-amber-700">
+              har kuni 1 ta yangisi
+            </span>
+          </h3>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {locked.map((l) => (
+              <div
+                key={l.id}
+                className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-800 via-indigo-900 to-violet-900 p-3.5 text-white shadow-sm"
+              >
+                <div aria-hidden className="pointer-events-none absolute -right-4 -top-4 h-16 w-16 rounded-full bg-fuchsia-500/25 blur-xl" />
+                <span className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-2xl ring-1 ring-white/15">
+                  <span className="opacity-50 blur-[1.5px]">{l.icon}</span>
+                  <span className="absolute inset-0 flex items-center justify-center text-lg">🔒</span>
+                </span>
+                <span className="mt-2 block font-extrabold">{l.title}</span>
+                <span className="mt-1 inline-block rounded-full bg-amber-400/20 px-2 py-0.5 text-[11px] font-extrabold text-amber-200 ring-1 ring-amber-300/30">
+                  {l.daysLeft === 1 ? "Ertaga ochiladi" : `${l.daysLeft} kundan keyin`}
+                </span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
 
       <button
         onClick={() => setView({ kind: "phrases" })}
@@ -158,12 +211,39 @@ function BackBar({ onBack, title }: { onBack: () => void; title: string }) {
 function Reader({ sc, onBack, onQuiz }: { sc: Scenario; onBack: () => void; onQuiz: () => void }) {
   const [showUz, setShowUz] = useState(true);
   const [playing, setPlaying] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
+  const cancelled = useRef(false);
+
+  // Ovoz hozir eshittirilayotganini kuzatamiz (bitta gap yoki hammasi)
+  useEffect(() => {
+    const t = setInterval(() => {
+      try {
+        setSpeaking(window.speechSynthesis.speaking);
+      } catch {
+        // e'tiborsiz
+      }
+    }, 250);
+    return () => {
+      clearInterval(t);
+      cancelled.current = true;
+      stopSpeech();
+    };
+  }, []);
+
+  const stopAll = () => {
+    cancelled.current = true;
+    stopSpeech();
+    setPlaying(false);
+    setSpeaking(false);
+  };
 
   const playAll = async () => {
     if (playing) return;
+    cancelled.current = false;
     setPlaying(true);
     try {
       for (const l of sc.lines) {
+        if (cancelled.current) break;
         await new Promise<void>((resolve) => {
           try {
             const u = new SpeechSynthesisUtterance(l.ru);
@@ -182,13 +262,7 @@ function Reader({ sc, onBack, onQuiz }: { sc: Scenario; onBack: () => void; onQu
     }
   };
 
-  useEffect(() => () => {
-    try {
-      window.speechSynthesis.cancel();
-    } catch {
-      // e'tiborsiz
-    }
-  }, []);
+  const active = playing || speaking;
 
   return (
     <>
@@ -198,13 +272,21 @@ function Reader({ sc, onBack, onQuiz }: { sc: Scenario; onBack: () => void; onQu
         <p className="text-xs font-bold uppercase tracking-wide text-indigo-600">Vaziyat</p>
         <p className="mt-1 text-sm text-slate-700">{sc.situation}</p>
         <div className="mt-3 flex flex-wrap gap-2">
-          <button
-            onClick={playAll}
-            disabled={playing}
-            className="rounded-full bg-indigo-600 px-4 py-2 text-sm font-extrabold text-white transition active:scale-95 disabled:opacity-60"
-          >
-            {playing ? "🔊 O'qilyapti…" : "▶️ Hammasini tinglash"}
-          </button>
+          {active ? (
+            <button
+              onClick={stopAll}
+              className="rounded-full bg-rose-500 px-4 py-2 text-sm font-extrabold text-white transition active:scale-95"
+            >
+              ⏹ To&apos;xtatish
+            </button>
+          ) : (
+            <button
+              onClick={playAll}
+              className="rounded-full bg-indigo-600 px-4 py-2 text-sm font-extrabold text-white transition active:scale-95"
+            >
+              ▶️ Hammasini tinglash
+            </button>
+          )}
           <button
             onClick={() => setShowUz((v) => !v)}
             className="rounded-full bg-slate-100 px-4 py-2 text-sm font-extrabold text-slate-600 transition active:scale-95"
@@ -213,6 +295,16 @@ function Reader({ sc, onBack, onQuiz }: { sc: Scenario; onBack: () => void; onQu
           </button>
         </div>
       </div>
+
+      {/* Ovoz ketayotganda ekran pastida ham to'xtatish tugmasi turadi */}
+      {active && (
+        <button
+          onClick={stopAll}
+          className="fixed bottom-24 right-4 z-30 flex items-center gap-2 rounded-full bg-rose-500 px-4 py-3 text-sm font-extrabold text-white shadow-lg shadow-rose-500/30 active:scale-95 md:bottom-6"
+        >
+          ⏹ To&apos;xtatish
+        </button>
+      )}
 
       <div className="mt-4 space-y-3">
         {sc.lines.map((l, i) => (
