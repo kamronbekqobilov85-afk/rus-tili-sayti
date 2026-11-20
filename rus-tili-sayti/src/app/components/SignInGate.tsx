@@ -5,6 +5,7 @@ import { signIn } from "next-auth/react";
 import { useInstallPrompt } from "./useInstallPrompt";
 import ServiceWorkerRegister from "./ServiceWorkerRegister";
 import { isTelegramEnv } from "./TelegramWebApp";
+import ApkDownload from "./ApkDownload";
 
 const SKIP_KEY = "rus-tili-install-step-done";
 
@@ -95,6 +96,8 @@ export default function SignInGate() {
           >
             {inTelegram ? "🌐 Brauzerda ochib o'rnatish" : "📲 Ilovani o'rnatish"}
           </button>
+
+          <ApkDownload variant="gate" />
 
           {hint === "ios" && (
             <ol className="mt-5 max-w-sm space-y-2 rounded-2xl bg-white/15 p-4 text-left text-sm ring-1 ring-white/25">

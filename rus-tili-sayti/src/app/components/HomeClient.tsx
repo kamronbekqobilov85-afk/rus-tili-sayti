@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Header from "./Header";
 import MysteryChest from "./MysteryChest";
+import ApkDownload from "./ApkDownload";
 import { quotes, quoteOfTheDay } from "../data/quotes";
 import { getDisplayStats, DisplayStats } from "../data/stats";
 import { getDueIds } from "../data/gapSrs";
@@ -371,6 +372,8 @@ export default function HomeClient({ counts }: { counts: Counts }) {
             ))}
           </div>
         </section>
+
+        <ApkDownload variant="card" />
 
         {/* Ilovani Telegram orqali do'stlarga yuborish */}
         <a
