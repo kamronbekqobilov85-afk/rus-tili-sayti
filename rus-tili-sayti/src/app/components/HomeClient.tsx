@@ -372,6 +372,21 @@ export default function HomeClient({ counts }: { counts: Counts }) {
           </div>
         </section>
 
+        {/* Ilovani Telegram orqali do'stlarga yuborish */}
+        <a
+          href={`https://t.me/share/url?url=${encodeURIComponent("https://rus-tili-sayti.vercel.app")}&text=${encodeURIComponent("📲 Rus tilini o'zbek tilida bepul o'rganing — ilovani telefoningizga o'rnating!")}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3 flex items-center gap-3 rounded-2xl border border-indigo-200 bg-gradient-to-r from-indigo-50 to-fuchsia-50 p-3.5 transition active:scale-[0.98]"
+        >
+          <span className="text-3xl">📤</span>
+          <span className="min-w-0 flex-1">
+            <span className="block font-extrabold text-indigo-900">Ilovani Telegramda yuboring</span>
+            <span className="block text-sm text-indigo-800/80">Do&apos;stlaringiz havolani bosib o&apos;rnatib oladi</span>
+          </span>
+          <span className="text-xl font-bold text-indigo-700">→</span>
+        </a>
+
         {/* Telegram kanal */}
         <a
           href="https://t.me/rustili24soat"

@@ -25,6 +25,7 @@ export default function SignInGate() {
   const [step, setStep] = useState<Step>("loading");
   const [justInstalled, setJustInstalled] = useState(false);
   const [hint, setHint] = useState<"ios" | "manual" | null>(null);
+  const [inTelegram, setInTelegram] = useState(false);
 
   useEffect(() => {
     let done = false;
@@ -33,7 +34,8 @@ export default function SignInGate() {
     } catch {
       // localStorage mavjud emas
     }
-    setStep(isStandalone() || isTelegramEnv() || done ? "signin" : "install");
+    setInTelegram(isTelegramEnv());
+    setStep(isStandalone() || done ? "signin" : "install");
 
     const onInstalled = () => {
       try {
@@ -49,6 +51,14 @@ export default function SignInGate() {
   }, []);
 
   const handleInstall = async () => {
+    // Telegram ichida o'rnatib bo'lmaydi — havolani telefon brauzerida ochamiz
+    if (inTelegram) {
+      const url = window.location.origin;
+      const tg = (window as unknown as { Telegram?: { WebApp?: { openLink?: (u: string, o?: object) => void } } }).Telegram?.WebApp;
+      if (tg?.openLink) tg.openLink(url, { try_browser: true });
+      else window.open(url, "_blank");
+      return;
+    }
     const result = await install();
     if (result === "ios") setHint("ios");
     else if (result === null) setHint("manual");
@@ -74,15 +84,16 @@ export default function SignInGate() {
       {step === "install" && (
         <>
           <p className="mt-3 max-w-sm text-emerald-50/90">
-            Avval ilovani telefoningizga o'rnating — bepul, joy olmaydi va bir bosishda ochiladi. Keyin
-            hisobingiz bilan kirasiz.
+            {inTelegram
+              ? "Telegramdan ochildi. Ilovani telefoningizga o'rnatish uchun brauzerda oching — bepul va bir bosishda ochiladi."
+              : "Avval ilovani telefoningizga o'rnating — bepul, joy olmaydi va bir bosishda ochiladi. Keyin hisobingiz bilan kirasiz."}
           </p>
 
           <button
             onClick={handleInstall}
             className="mt-8 flex items-center gap-3 rounded-2xl border-b-4 border-emerald-800 bg-white px-7 py-3.5 text-lg font-extrabold text-emerald-700 shadow-lg transition hover:bg-emerald-50 active:translate-y-0.5 active:border-b-2"
           >
-            📲 Ilovani o'rnatish
+            {inTelegram ? "🌐 Brauzerda ochib o'rnatish" : "📲 Ilovani o'rnatish"}
           </button>
 
           {hint === "ios" && (
@@ -122,7 +133,7 @@ export default function SignInGate() {
           </div>
 
           <button onClick={skip} className="mt-8 text-xs text-emerald-100/70 underline underline-offset-2">
-            {available ? "O'rnatmasdan davom etish" : "Ilova o'rnatilgan yoki o'rnatib bo'lmayaptimi? Davom etish"}
+            {available || inTelegram ? "O'rnatmasdan davom etish" : "Ilova o'rnatilgan yoki o'rnatib bo'lmayaptimi? Davom etish"}
           </button>
         </>
       )}
