@@ -116,6 +116,15 @@ export default function HomeClient({ counts }: { counts: Counts }) {
       featured: true,
     },
     {
+      href: "/suhbat",
+      icon: "💬",
+      title: "Ko'cha suhbati",
+      desc: "Ruslar bilan gaplashish: taksi, bozor, dorixona — tayyor suhbatlar",
+      badge: "🔒 500 ball kerak",
+      grad: "from-slate-700 to-indigo-800",
+      featured: true,
+    },
+    {
       href: "/sozlar",
       icon: "📚",
       title: "So'zlar",

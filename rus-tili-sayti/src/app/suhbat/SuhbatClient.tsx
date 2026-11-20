@@ -1,0 +1,450 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import PageHero, { HeroChip } from "../components/PageHero";
+import { card, btnPrimary, btnSecondary } from "../components/ui";
+import { speak, shuffle } from "../components/GapSession";
+import type { Scenario, Phrase, Line } from "../data/suhbat";
+
+const DONE_KEY = "rus-tili-suhbat-done";
+
+function loadDone(): string[] {
+  try {
+    const raw = localStorage.getItem(DONE_KEY);
+    return raw ? (JSON.parse(raw) as string[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveDone(ids: string[]) {
+  try {
+    localStorage.setItem(DONE_KEY, JSON.stringify(ids));
+  } catch {
+    // saqlab bo'lmasa ham ishlayveradi
+  }
+}
+
+type View = { kind: "list" } | { kind: "phrases" } | { kind: "scenario"; id: string; mode: "read" | "quiz" };
+
+export default function SuhbatClient({ scenarios, phrases }: { scenarios: Scenario[]; phrases: Phrase[] }) {
+  const [view, setView] = useState<View>({ kind: "list" });
+  const [done, setDone] = useState<string[]>([]);
+
+  useEffect(() => {
+    setDone(loadDone());
+  }, []);
+
+  const markDone = (id: string) => {
+    setDone((d) => {
+      if (d.includes(id)) return d;
+      const next = [...d, id];
+      saveDone(next);
+      return next;
+    });
+  };
+
+  if (view.kind === "phrases") {
+    return <Phrases phrases={phrases} onBack={() => setView({ kind: "list" })} />;
+  }
+
+  if (view.kind === "scenario") {
+    const sc = scenarios.find((s) => s.id === view.id);
+    if (!sc) return null;
+    const pool = scenarios.flatMap((s) => s.lines.filter((l) => l.who === "you"));
+    return view.mode === "read" ? (
+      <Reader
+        sc={sc}
+        onBack={() => setView({ kind: "list" })}
+        onQuiz={() => setView({ kind: "scenario", id: sc.id, mode: "quiz" })}
+      />
+    ) : (
+      <Quiz
+        key={sc.id}
+        sc={sc}
+        pool={pool}
+        onBack={() => setView({ kind: "scenario", id: sc.id, mode: "read" })}
+        onFinish={(perfect) => {
+          if (perfect) markDone(sc.id);
+        }}
+        onExit={() => setView({ kind: "list" })}
+      />
+    );
+  }
+
+  return (
+    <>
+      <PageHero
+        icon="💬"
+        title="Ko'cha suhbati"
+        desc="Ruslar bilan hayotda eng ko'p kerak bo'ladigan suhbatlar. O'qing, tinglang va mashq qiling."
+      >
+        <HeroChip>
+          ✅ {done.length} / {scenarios.length}
+        </HeroChip>
+        <HeroChip>🔓 Ochiq</HeroChip>
+      </PageHero>
+
+      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {scenarios.map((s) => {
+          const isDone = done.includes(s.id);
+          return (
+            <button
+              key={s.id}
+              onClick={() => setView({ kind: "scenario", id: s.id, mode: "read" })}
+              className={`${card} relative flex flex-col items-start p-3.5 text-left transition active:scale-[0.98]`}
+            >
+              {isDone && (
+                <span className="absolute right-2.5 top-2.5 rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-extrabold text-green-700">
+                  ✓ Tayyor
+                </span>
+              )}
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-100 to-fuchsia-100 text-2xl">
+                {s.icon}
+              </span>
+              <span className="mt-2 font-extrabold text-slate-800">{s.title}</span>
+              <span className="mt-0.5 text-xs text-slate-500">{s.lines.length} ta gap</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <button
+        onClick={() => setView({ kind: "phrases" })}
+        className={`${card} mt-3 flex w-full items-center gap-3 p-3.5 text-left transition active:scale-[0.99]`}
+      >
+        <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-100 to-orange-100 text-2xl">
+          🗣️
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block font-extrabold text-slate-800">Ruslar ko&apos;p aytadigan iboralar</span>
+          <span className="block text-xs text-slate-500">{phrases.length} ta qisqa ibora — hayotiy va oddiy</span>
+        </span>
+        <span className="text-xl text-slate-300">→</span>
+      </button>
+    </>
+  );
+}
+
+function SpeakBtn({ text, small }: { text: string; small?: boolean }) {
+  return (
+    <button
+      onClick={() => speak(text)}
+      aria-label="Tinglash"
+      className={`flex shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700 transition active:scale-95 ${
+        small ? "h-8 w-8 text-sm" : "h-10 w-10"
+      }`}
+    >
+      🔊
+    </button>
+  );
+}
+
+function BackBar({ onBack, title }: { onBack: () => void; title: string }) {
+  return (
+    <div className="mb-3 flex items-center gap-2">
+      <button
+        onClick={onBack}
+        className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-xl font-extrabold text-slate-500 shadow-sm ring-1 ring-slate-200 active:scale-95"
+        aria-label="Orqaga"
+      >
+        ←
+      </button>
+      <span className="truncate font-extrabold text-slate-700">{title}</span>
+    </div>
+  );
+}
+
+function Reader({ sc, onBack, onQuiz }: { sc: Scenario; onBack: () => void; onQuiz: () => void }) {
+  const [showUz, setShowUz] = useState(true);
+  const [playing, setPlaying] = useState(false);
+
+  const playAll = async () => {
+    if (playing) return;
+    setPlaying(true);
+    try {
+      for (const l of sc.lines) {
+        await new Promise<void>((resolve) => {
+          try {
+            const u = new SpeechSynthesisUtterance(l.ru);
+            u.lang = "ru-RU";
+            u.rate = 0.9;
+            u.onend = () => resolve();
+            u.onerror = () => resolve();
+            window.speechSynthesis.speak(u);
+          } catch {
+            resolve();
+          }
+        });
+      }
+    } finally {
+      setPlaying(false);
+    }
+  };
+
+  useEffect(() => () => {
+    try {
+      window.speechSynthesis.cancel();
+    } catch {
+      // e'tiborsiz
+    }
+  }, []);
+
+  return (
+    <>
+      <BackBar onBack={onBack} title={`${sc.icon} ${sc.title}`} />
+
+      <div className={`${card} p-4`}>
+        <p className="text-xs font-bold uppercase tracking-wide text-indigo-600">Vaziyat</p>
+        <p className="mt-1 text-sm text-slate-700">{sc.situation}</p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button
+            onClick={playAll}
+            disabled={playing}
+            className="rounded-full bg-indigo-600 px-4 py-2 text-sm font-extrabold text-white transition active:scale-95 disabled:opacity-60"
+          >
+            {playing ? "🔊 O'qilyapti…" : "▶️ Hammasini tinglash"}
+          </button>
+          <button
+            onClick={() => setShowUz((v) => !v)}
+            className="rounded-full bg-slate-100 px-4 py-2 text-sm font-extrabold text-slate-600 transition active:scale-95"
+          >
+            {showUz ? "Tarjimani yashirish" : "Tarjimani ko'rsatish"}
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-4 space-y-3">
+        {sc.lines.map((l, i) => (
+          <Bubble key={i} line={l} showUz={showUz} />
+        ))}
+      </div>
+
+      <div className={`${card} mt-5 p-4`}>
+        <h3 className="font-extrabold text-slate-800">💡 Foydali iboralar</h3>
+        <ul className="mt-2 space-y-2">
+          {sc.tips.map((t) => (
+            <li key={t.ru} className="flex items-center gap-2">
+              <SpeakBtn text={t.ru} small />
+              <span className="min-w-0">
+                <span className="block font-bold text-slate-800">{t.ru}</span>
+                <span className="block text-sm text-slate-500">{t.uz}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <button onClick={onQuiz} className={`${btnPrimary} mt-5 w-full`}>
+        Mashq qilish
+      </button>
+    </>
+  );
+}
+
+function Bubble({ line, showUz }: { line: Line; showUz: boolean }) {
+  const you = line.who === "you";
+  return (
+    <div className={`flex ${you ? "justify-end" : "justify-start"}`}>
+      <div
+        className={`max-w-[88%] rounded-2xl px-3.5 py-2.5 shadow-sm ${
+          you ? "rounded-br-md bg-indigo-600 text-white" : "rounded-bl-md bg-white text-slate-800 ring-1 ring-slate-200"
+        }`}
+      >
+        <p className={`mb-0.5 text-[10px] font-extrabold uppercase tracking-wide ${you ? "text-indigo-200" : "text-slate-400"}`}>
+          {you ? "Siz" : "Suhbatdosh"}
+        </p>
+        <div className="flex items-start gap-2">
+          <div className="min-w-0 flex-1">
+            <p className="font-bold leading-snug">{line.ru}</p>
+            {showUz && (
+              <p className={`mt-1 text-sm leading-snug ${you ? "text-indigo-100" : "text-slate-500"}`}>{line.uz}</p>
+            )}
+          </div>
+          <button
+            onClick={() => speak(line.ru)}
+            aria-label="Tinglash"
+            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm active:scale-95 ${
+              you ? "bg-white/20" : "bg-indigo-100"
+            }`}
+          >
+            🔊
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type Q = { prompt: Line; correct: string; correctUz: string; options: string[] };
+
+function buildQuiz(sc: Scenario, pool: Line[]): Q[] {
+  const qs: Q[] = [];
+  sc.lines.forEach((l, i) => {
+    if (l.who !== "you") return;
+    const prev = sc.lines[i - 1];
+    const wrong = shuffle(pool.filter((p) => p.ru !== l.ru).map((p) => p.ru)).slice(0, 2);
+    qs.push({
+      prompt: prev ?? { who: "ru", ru: "…", uz: "Suhbatni siz boshlaysiz" },
+      correct: l.ru,
+      correctUz: l.uz,
+      options: shuffle([l.ru, ...wrong]),
+    });
+  });
+  return qs;
+}
+
+function Quiz({
+  sc,
+  pool,
+  onBack,
+  onFinish,
+  onExit,
+}: {
+  sc: Scenario;
+  pool: Line[];
+  onBack: () => void;
+  onFinish: (perfect: boolean) => void;
+  onExit: () => void;
+}) {
+  const [qs, setQs] = useState<Q[]>(() => buildQuiz(sc, pool));
+  const [i, setI] = useState(0);
+  const [picked, setPicked] = useState<string | null>(null);
+  const [mistakes, setMistakes] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  const q = qs[i];
+  const total = qs.length;
+  const pct = useMemo(() => Math.round((i / total) * 100), [i, total]);
+
+  const choose = (opt: string) => {
+    if (picked) return;
+    setPicked(opt);
+    if (opt !== q.correct) setMistakes((m) => m + 1);
+  };
+
+  const next = () => {
+    if (i + 1 >= total) {
+      setFinished(true);
+      onFinish(mistakes === 0);
+    } else {
+      setI(i + 1);
+      setPicked(null);
+    }
+  };
+
+  const restart = () => {
+    setQs(buildQuiz(sc, pool));
+    setI(0);
+    setPicked(null);
+    setMistakes(0);
+    setFinished(false);
+  };
+
+  if (finished) {
+    const perfect = mistakes === 0;
+    return (
+      <div className={`${card} p-6 text-center`}>
+        <p className="text-6xl">{perfect ? "🎉" : "💪"}</p>
+        <h2 className="mt-2 text-2xl font-extrabold text-slate-800">
+          {perfect ? "Ajoyib! Xatosiz!" : "Yaxshi urinish!"}
+        </h2>
+        <p className="mt-1 text-slate-500">
+          {sc.title}: {total - mistakes} / {total} to&apos;g&apos;ri
+          {perfect ? "" : ". Xatosiz o'tsangiz, bo'lim «Tayyor» deb belgilanadi."}
+        </p>
+        <div className="mt-5 grid gap-2">
+          <button onClick={restart} className={btnPrimary}>
+            Qayta mashq qilish
+          </button>
+          <button onClick={onBack} className={btnSecondary}>
+            Dialogni qayta o&apos;qish
+          </button>
+          <button onClick={onExit} className="mt-1 text-sm font-extrabold uppercase tracking-wide text-slate-400">
+            Bo&apos;limlar ro&apos;yxati
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <BackBar onBack={onBack} title={`${sc.icon} ${sc.title} — mashq`} />
+      <div className="mb-4 h-3 overflow-hidden rounded-full bg-slate-200">
+        <div
+          className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 transition-all"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+
+      <p className="text-sm font-bold text-slate-500">Suhbatdosh aytdi:</p>
+      <div className="mt-2 flex items-start gap-2 rounded-2xl bg-white p-3.5 shadow-sm ring-1 ring-slate-200">
+        <div className="min-w-0 flex-1">
+          <p className="text-lg font-extrabold text-slate-800">{q.prompt.ru}</p>
+          <p className="text-sm text-slate-500">{q.prompt.uz}</p>
+        </div>
+        {q.prompt.ru !== "…" && <SpeakBtn text={q.prompt.ru} />}
+      </div>
+
+      <h2 className="mb-2 mt-5 font-extrabold text-slate-700">Siz nima deb javob berasiz?</h2>
+      <div className="space-y-3">
+        {q.options.map((opt) => {
+          const isCorrect = opt === q.correct;
+          let cls = "border-slate-200 bg-white text-slate-700";
+          if (picked) {
+            if (isCorrect) cls = "border-green-500 bg-green-50 text-green-700";
+            else if (opt === picked) cls = "border-red-500 bg-red-50 text-red-600";
+            else cls = "border-slate-200 bg-white text-slate-400";
+          }
+          return (
+            <button
+              key={opt}
+              disabled={!!picked}
+              onClick={() => choose(opt)}
+              className={`w-full rounded-2xl border-2 border-b-4 px-4 py-3 text-left text-base font-bold transition active:translate-y-0.5 ${cls}`}
+            >
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+
+      {picked && (
+        <div className={`mt-4 rounded-2xl p-4 ${picked === q.correct ? "bg-green-50" : "bg-red-50"}`}>
+          <p className={`font-extrabold ${picked === q.correct ? "text-green-700" : "text-red-600"}`}>
+            {picked === q.correct ? "✅ To'g'ri!" : "❌ Noto'g'ri"}
+          </p>
+          <p className="mt-1 text-sm font-bold text-slate-700">{q.correct}</p>
+          <p className="text-sm text-slate-500">{q.correctUz}</p>
+          <button onClick={() => speak(q.correct)} className="mt-2 text-sm font-extrabold text-indigo-700">
+            🔊 Tinglash
+          </button>
+          <button onClick={next} className={`${btnPrimary} mt-3 w-full`}>
+            {i + 1 >= total ? "Natijani ko'rish" : "Davom etish"}
+          </button>
+        </div>
+      )}
+    </>
+  );
+}
+
+function Phrases({ phrases, onBack }: { phrases: Phrase[]; onBack: () => void }) {
+  return (
+    <>
+      <BackBar onBack={onBack} title="🗣️ Ruslar ko'p aytadigan iboralar" />
+      <div className="space-y-2">
+        {phrases.map((p) => (
+          <div key={p.ru} className={`${card} flex items-center gap-3 p-3`}>
+            <SpeakBtn text={p.ru} />
+            <div className="min-w-0 flex-1">
+              <p className="font-extrabold text-slate-800">{p.ru}</p>
+              <p className="text-sm text-slate-500">{p.uz}</p>
+              {p.note && <p className="mt-0.5 text-xs font-semibold text-indigo-600">{p.note}</p>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
