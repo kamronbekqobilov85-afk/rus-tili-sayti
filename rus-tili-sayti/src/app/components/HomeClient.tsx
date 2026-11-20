@@ -5,6 +5,7 @@ import Link from "next/link";
 import Header from "./Header";
 import MysteryChest from "./MysteryChest";
 import ApkDownload from "./ApkDownload";
+import SuhbatBanner from "./SuhbatBanner";
 import { quotes, quoteOfTheDay } from "../data/quotes";
 import { getDisplayStats, DisplayStats } from "../data/stats";
 import { getDueIds } from "../data/gapSrs";
@@ -113,15 +114,6 @@ export default function HomeClient({ counts }: { counts: Counts }) {
       desc: "Oddiydan murakkabga: darslar, yulduzlar va daraja imtihonlari",
       badge: `${fmt(counts.gaps)} ta gap · ${counts.levels} daraja`,
       grad: "from-indigo-500 to-violet-500",
-      featured: true,
-    },
-    {
-      href: "/suhbat",
-      icon: "💬",
-      title: "Ko'cha suhbati",
-      desc: "Ruslar bilan gaplashish: taksi, bozor, dorixona — tayyor suhbatlar",
-      badge: "🔒 500 ball kerak",
-      grad: "from-slate-700 to-indigo-800",
       featured: true,
     },
     {
@@ -325,6 +317,9 @@ export default function HomeClient({ counts }: { counts: Counts }) {
             <span className="text-xl font-bold text-amber-700">→</span>
           </Link>
         )}
+
+        {/* Ko'cha suhbati */}
+        <SuhbatBanner />
 
         {/* Sirli sandiq — kuniga bir marta */}
         <MysteryChest />
