@@ -108,7 +108,7 @@ export default function GroupSection({ myId }: { myId?: string }) {
             reyting qiling.
           </p>
           {error && <p className="mt-2 text-sm font-bold text-rose-600">{error}</p>}
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <div className="mt-3 grid gap-4">
             <div>
               <p className="text-xs font-bold uppercase text-slate-400">Yangi guruh</p>
               <div className="mt-1 flex gap-2">
@@ -116,9 +116,9 @@ export default function GroupSection({ myId }: { myId?: string }) {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Guruh nomi"
-                  className="flex-1 rounded-xl border-2 border-slate-200 px-3 py-2 text-sm font-bold text-slate-700 outline-none focus:border-emerald-400"
+                  className="min-w-0 flex-1 rounded-xl border-2 border-slate-200 px-3 py-2 text-sm font-bold text-slate-700 outline-none focus:border-emerald-400"
                 />
-                <button disabled={busy} onClick={createGroup} className={`${btnPrimary} px-4 py-2 text-sm`}>
+                <button disabled={busy} onClick={createGroup} className={`${btnPrimary} shrink-0 px-4 py-2 text-sm`}>
                   Yaratish
                 </button>
               </div>
@@ -130,9 +130,9 @@ export default function GroupSection({ myId }: { myId?: string }) {
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
                   placeholder="Masalan: AB12CD"
-                  className="flex-1 rounded-xl border-2 border-slate-200 px-3 py-2 text-sm font-bold uppercase text-slate-700 outline-none focus:border-emerald-400"
+                  className="min-w-0 flex-1 rounded-xl border-2 border-slate-200 px-3 py-2 text-sm font-bold uppercase text-slate-700 outline-none focus:border-emerald-400"
                 />
-                <button disabled={busy} onClick={joinGroup} className={`${btnSecondary} px-4 py-2 text-sm`}>
+                <button disabled={busy} onClick={joinGroup} className={`${btnSecondary} shrink-0 px-4 py-2 text-sm`}>
                   Qo'shilish
                 </button>
               </div>
