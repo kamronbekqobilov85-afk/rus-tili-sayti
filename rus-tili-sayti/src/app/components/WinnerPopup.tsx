@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
-type Winner = { id: string; name: string | null; image: string | null; xp: number; isMe: boolean };
+type Winner = { id: string; name: string | null; image: string | null; xp: number; isMe: boolean; prize?: string };
 
 const SEEN_KEY = "rus-tili-winner-seen";
 
@@ -81,12 +81,18 @@ export default function WinnerPopup() {
 
         <p className="mt-4 text-sm text-white/95">
           {winner.isMe
-            ? "Tabriklaymiz, siz g'olib bo'ldingiz! 🎉 Admin siz bilan bog'lanadi."
+            ? "Tabriklaymiz, siz g'olib bo'ldingiz! 🎉"
             : "G'olibni tabriklaymiz! 🎉"}
         </p>
-        <p className="mt-2 rounded-2xl bg-white/15 p-3 text-sm font-bold">
-          🔄 Barcha ballar 0 ga tushirildi — yangi bosqich boshlandi. Endi hammaning imkoniyati teng!
-        </p>
+        {winner.prize ? (
+          <p className="mt-2 rounded-2xl bg-white/15 p-3 text-sm font-bold">
+            🎁 {winner.prize} sovg&apos;a qilindi! Siz ham ball to&apos;plang va keyingi g&apos;olib bo&apos;ling.
+          </p>
+        ) : (
+          <p className="mt-2 rounded-2xl bg-white/15 p-3 text-sm font-bold">
+            🔄 Barcha ballar 0 ga tushirildi — yangi bosqich boshlandi. Endi hammaning imkoniyati teng!
+          </p>
+        )}
 
         <button
           onClick={close}
