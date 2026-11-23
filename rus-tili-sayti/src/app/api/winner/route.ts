@@ -10,6 +10,7 @@ const ANNOUNCE = {
   key: "premium-2026-11-23",
   nameContains: "Fayoza",
   prize: "Telegram Premium",
+  xp: 3365, // o'tgan haftadagi g'oliblik bali (hozirgi ball emas)
   from: "2026-11-23T00:00:00+05:00",
   days: 14,
 };
@@ -34,7 +35,7 @@ export async function GET() {
           id: ANNOUNCE.key,
           name: star.name,
           image: star.image,
-          xp: star.xp,
+          xp: ANNOUNCE.xp,
           isMe: star.id === session.user.id,
           prize: ANNOUNCE.prize,
         },
