@@ -53,7 +53,7 @@ export default function SuhbatBanner() {
             <div className="h-16 animate-pulse rounded-xl bg-white/10" />
           ) : unlocked ? (
             <>
-              <p className="text-sm font-bold text-indigo-100">16 ta vaziyat · 24 ta ibora</p>
+              <p className="text-sm font-bold text-indigo-100">21 ta vaziyat · 24 ta ibora</p>
               <span className="mt-2 block rounded-2xl border-b-4 border-fuchsia-800 bg-fuchsia-600 py-3 text-center font-extrabold uppercase tracking-wide">
                 Boshlash
               </span>
