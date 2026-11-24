@@ -56,9 +56,9 @@ export const videos: VideoItem[] = [
   { id: 209, category: "multfilm", title: "Фиксики — Батут", note: "Oddiy nutq · 6 daqiqa", youtubeId: "c1o4lPeZAaw" },
 
   // ───────── Musiqalar ─────────
-  { id: 1, category: "musiqa", title: "Катюша (subtitr bilan)", note: "Mashhur xalq qo'shig'i", youtubeId: "4rhp7Q7Ceq8" },
   { id: 2, category: "musiqa", title: "Пусть всегда будет солнце (subtitr bilan)", note: "Bolalar qo'shig'i", youtubeId: "2YoFSyKMMbg" },
   { id: 3, category: "musiqa", title: "В лесу родилась ёлочка (subtitr bilan)", note: "Yangi yil qo'shig'i", youtubeId: "oZw3cPM1wws" },
+  { id: 1, category: "musiqa", title: "Катюша (subtitr bilan)", note: "Mashhur xalq qo'shig'i", youtubeId: "4rhp7Q7Ceq8" },
   { id: 4, category: "musiqa", title: "Калинка (subtitr bilan)", note: "Xalq qo'shig'i", youtubeId: "pGZ8SVB_vWM" },
   { id: 5, category: "musiqa", title: "103 ta qo'shiq (to'plam, matn bilan)", note: "Pleylist", playlistId: "PL-7NkxlnsDlVQB5wBSWVUyBPjKm5smjDh" },
   { id: 301, category: "musiqa", title: "Разговор со счастьем", note: "«Иван Васильевич меняет профессию» filmidan", youtubeId: "1t3h9osiFuE" },
