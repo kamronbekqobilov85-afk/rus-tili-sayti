@@ -17,13 +17,36 @@ type Exercise = {
 
 export const MAX_HEARTS = 5;
 
+function findRuVoice(): SpeechSynthesisVoice | null {
+  try {
+    const vs = window.speechSynthesis.getVoices();
+    return (
+      vs.find((v) => v.lang.replace("_", "-").toLowerCase() === "ru-ru") ||
+      vs.find((v) => v.lang.toLowerCase().startsWith("ru")) ||
+      null
+    );
+  } catch {
+    return null;
+  }
+}
+
+// Qurilmada rus ovozi bormi? (ovozlar kech yuklanishi mumkin)
+export function hasRussianVoice(): boolean {
+  return typeof window !== "undefined" && "speechSynthesis" in window && findRuVoice() !== null;
+}
+
 export function speak(text: string) {
   try {
+    const synth = window.speechSynthesis;
     const u = new SpeechSynthesisUtterance(text);
     u.lang = "ru-RU";
     u.rate = 0.85;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(u);
+    const v = findRuVoice();
+    if (v) u.voice = v;
+    // cancel() dan keyin darhol speak() ba'zi brauzerlarda ovozni yutib yuboradi — biroz kutamiz
+    if (synth.speaking || synth.pending) synth.cancel();
+    synth.resume();
+    setTimeout(() => synth.speak(u), 80);
   } catch {
     // ovoz mavjud emas
   }
@@ -113,6 +136,23 @@ export default function GapSession({
   const [result, setResult] = useState<"idle" | "correct" | "wrong">("idle");
 
   const current: Exercise | undefined = queue[qi];
+
+  const [noVoice, setNoVoice] = useState(false);
+  useEffect(() => {
+    if (!("speechSynthesis" in window)) {
+      setNoVoice(true);
+      return;
+    }
+    const check = () => setNoVoice(!hasRussianVoice());
+    check();
+    // ovozlar kech yuklanadi — tekshiruvni takrorlaymiz
+    const t = setTimeout(check, 1500);
+    window.speechSynthesis.addEventListener?.("voiceschanged", check);
+    return () => {
+      clearTimeout(t);
+      window.speechSynthesis.removeEventListener?.("voiceschanged", check);
+    };
+  }, []);
 
   useEffect(() => {
     if (current && current.type === "listen" && result === "idle") {
@@ -231,6 +271,12 @@ export default function GapSession({
         </p>
       )}
       <h2 className="mb-4 text-xl font-extrabold text-slate-700">{prompt}</h2>
+      {noVoice && (current.type === "listen" || current.type === "ru-uz") && (
+        <p className="mb-4 rounded-2xl bg-amber-50 p-3 text-sm font-bold text-amber-800">
+          🔇 Telefoningizda rus ovozi topilmadi. Sozlamalar → Til va kiritish → Matndan nutqqa (Google) bo'limida
+          «Русский» ovozini yuklab oling.
+        </p>
+      )}
 
       {current.type === "listen" && (
         <button
