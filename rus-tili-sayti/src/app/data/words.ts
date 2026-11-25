@@ -977,6 +977,7 @@ export const words: Word[] = [
   { id: 865, russian: "бритва", uzbek: "ustara (britva)", transcription: "britva", category: "uy-anjomlari", level: "o'rta" },
   { id: 866, russian: "туалет", uzbek: "hojatxona", transcription: "tualet", category: "uy-anjomlari", level: "boshlang'ich" },
   { id: 867, russian: "раковина", uzbek: "cho'michak (rakovina)", transcription: "rakovina", category: "uy-anjomlari", level: "o'rta" },
+  { id: 2030, russian: "кран", uzbek: "jumrak (kran)", transcription: "kran", category: "uy-anjomlari", level: "boshlang'ich" },
   // ish
   { id: 868, russian: "математика", uzbek: "matematika", transcription: "matematika", category: "ish", level: "boshlang'ich" },
   { id: 869, russian: "физика", uzbek: "fizika", transcription: "fizika", category: "ish", level: "boshlang'ich" },
