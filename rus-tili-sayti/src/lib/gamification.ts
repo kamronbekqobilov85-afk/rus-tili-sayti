@@ -53,9 +53,19 @@ export async function unlockReferralAchievements(userId: string): Promise<string
   return fresh;
 }
 
-// Firibgarlikdan himoya: bitta foydalanuvchi bir kunda faoliyat uchun olishi mumkin bo'lgan eng ko'p ball.
-// (Haqiqiy faol foydalanuvchi kuniga ~300-700 ball oladi; sandiq va challenge bundan tashqari.)
-export const DAILY_XP_CAP = 1200;
+// Firibgarlikdan himoya: bir kunda faoliyat uchun olish mumkin bo'lgan ball chegarasi.
+// Hisob: kuniga 12 soat o'qiydigan juda faol odam ~6-10 soniyada bitta javob beradi (+5 ball),
+// har ~22 javobda dars tugaydi (+20 ball) => soatiga ~2000-2500, 12 soatda ~25 000 ball.
+export const DAILY_XP_CAP = 25000;
+
+// Vaqt bo'yicha ham cheklaymiz: skript kun boshida bir zumda 25 000 ball yig'ib ololmasin.
+// Ruxsat etilgan ball = 1000 + kun boshidan o'tgan soniyalar * 0.7 (haqiqiy odam bundan sekinroq ishlaydi)
+export function xpAllowedNow(): number {
+  const now = new Date();
+  const secs =
+    now.getUTCHours() * 3600 + now.getUTCMinutes() * 60 + now.getUTCSeconds();
+  return Math.min(DAILY_XP_CAP, Math.round(1000 + secs * 0.7));
+}
 
 export async function todayXpOf(userId: string): Promise<number> {
   const stat = await prisma.dailyStat.findUnique({

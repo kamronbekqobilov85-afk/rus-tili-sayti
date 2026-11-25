@@ -1,5 +1,5 @@
 import { auth } from "../../../auth";
-import { awardXp, todayXpOf, DAILY_XP_CAP, XP_PER_TEST, XP_PER_WORD } from "../../../lib/gamification";
+import { awardXp, todayXpOf, xpAllowedNow, XP_PER_TEST, XP_PER_WORD } from "../../../lib/gamification";
 
 // Tezlik chegarasi: bir foydalanuvchi soniyasiga bir necha marta so'rov yubora olmaydi
 // (serverless'da har nusxada alohida, lekin oddiy skript/looplarni to'xtatadi)
@@ -27,8 +27,8 @@ export async function POST(req: Request) {
   lastCall.set(userId, now);
   if (lastCall.size > 5000) lastCall.clear();
 
-  // Kunlik chegaradan oshgan bo'lsa, ball qo'shilmaydi
-  if ((await todayXpOf(userId)) >= DAILY_XP_CAP) {
+  // Kunlik (va vaqt bo'yicha) chegaradan oshgan bo'lsa, ball qo'shilmaydi
+  if ((await todayXpOf(userId)) >= xpAllowedNow()) {
     return Response.json({ ok: true, skipped: "cap" });
   }
 
