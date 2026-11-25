@@ -475,8 +475,8 @@ function Quiz({
     if (opt !== q.correct) {
       setMistakes((m) => m + 1);
     } else if (earn.current) {
-      recordActivity("word"); // +5 ball
-      setEarned((e) => e + 5);
+      recordActivity("word"); // ~+2,5 ball
+      setEarned((e) => e + 2.5);
       markEarned(sc.id); // chiqib qayta kirib ball yig'ib bo'lmaydi
     }
   };
@@ -485,8 +485,8 @@ function Quiz({
     if (i + 1 >= total) {
       setFinished(true);
       if (earn.current) {
-        recordActivity("test"); // +20 ball
-        setEarned((e) => e + 20);
+        recordActivity("test"); // +10 ball
+        setEarned((e) => e + 10);
         markEarned(sc.id);
         earn.current = false;
       }
@@ -519,7 +519,7 @@ function Quiz({
         </p>
         {earned > 0 ? (
           <p className="mt-3 inline-block rounded-full bg-amber-100 px-4 py-1.5 text-sm font-extrabold text-amber-700">
-            ⭐ +{earned} ball qo&apos;shildi!
+            ⭐ +{String(earned).replace(".", ",")} ball qo&apos;shildi!
           </p>
         ) : (
           <p className="mt-3 text-xs font-bold text-slate-400">

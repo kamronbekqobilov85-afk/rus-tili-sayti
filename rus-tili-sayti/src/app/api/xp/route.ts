@@ -1,7 +1,7 @@
 import { auth } from "../../../auth";
 import { prisma } from "../../../lib/prisma";
 import { words } from "../../data/words";
-import { awardXp, todayXpOf, xpAllowedNow, XP_PER_TEST, XP_PER_WORD } from "../../../lib/gamification";
+import { awardXp, todayXpOf, xpAllowedNow, XP_PER_TEST } from "../../../lib/gamification";
 
 // Tezlik chegarasi: bir foydalanuvchi soniyasiga bir necha marta so'rov yubora olmaydi
 // (serverless'da har nusxada alohida, lekin oddiy skript/looplarni to'xtatadi)
@@ -26,7 +26,9 @@ export async function POST(req: Request) {
           ? "section"
           : body?.type === "pair"
             ? "pair"
-            : null;
+            : body?.type === "watch"
+              ? "watch"
+              : null;
   if (!type) {
     return Response.json({ ok: false }, { status: 400 });
   }
@@ -62,8 +64,18 @@ export async function POST(req: Request) {
   } else if (type === "pair") {
     // So'z testida ikkita to'g'ri javob = 1 ball (har biri 0,5)
     amount = 1;
+  } else if (type === "watch") {
+    // Video ko'rish: har 5 daqiqaga 20 ball (mashq emas, shuning uchun kamaytirilmagan)
+    amount = 20;
+  } else if (type === "word") {
+    // Javob uchun 2,5 ball: butun son saqlanadi, shuning uchun navbat bilan 2 va 3 beriladi
+    const dayStart = new Date(new Date().toISOString().slice(0, 10) + "T00:00:00.000Z");
+    const countToday = await prisma.xpEvent.count({
+      where: { userId, source: "word", createdAt: { gte: dayStart } },
+    });
+    amount = countToday % 2 === 0 ? 2 : 3;
   } else {
-    amount = type === "test" ? XP_PER_TEST : XP_PER_WORD;
+    amount = XP_PER_TEST;
   }
   const result = await awardXp(userId, amount, { source: type });
 

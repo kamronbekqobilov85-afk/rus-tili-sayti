@@ -30,7 +30,7 @@ const POOLS: Record<Slot, PushPayload[]> = {
     { title: "🧠 Maqol: «Тише едешь — дальше будешь»", body: "Sekin yursang, uzoqqa borasan. Kuniga ozgina, lekin har kuni!", url: "/yol" },
     { title: "🚕 Taksida ruscha gapira olasizmi?", body: "«Куда едем?» — Qayerga boramiz? Ko'cha suhbatida to'liq dialogni tinglang.", url: "/suhbat" },
     { title: "🎵 Ruscha qo'shiq tinglang", body: "«Катюша» va «Калинка»ni matn bilan kuylang: talaffuzga zo'r mashq.", url: "/video" },
-    { title: "⭐ Ball yig'ish vaqti", body: "Ko'cha suhbati mashqi: har to'g'ri javob +5 ball, tugatsangiz yana +20!", url: "/suhbat" },
+    { title: "⭐ Ball yig'ish vaqti", body: "Ko'cha suhbati mashqi: har to'g'ri javob +2,5 ball, tugatsangiz yana +10!", url: "/suhbat" },
     { title: "📚 Bugun qaysi mavzu?", body: "Fe'llar, sifatlar yoki ovqat? Mavzuni oxirigacha o'qib chiqsangiz, +10 ball!", url: "/sozlar" },
   ],
   evening: [

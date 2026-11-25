@@ -84,7 +84,7 @@ export function getDisplayStats(): DisplayStats {
 }
 
 // Serverga ball yuborish (tizimga kirgan bo'lsa hisobga qo'shiladi, bo'lmasa jim e'tiborsiz qoldiriladi)
-export function syncXp(body: { type: "word" | "test" | "section" | "pair"; key?: string }) {
+export function syncXp(body: { type: "word" | "test" | "section" | "pair" | "watch"; key?: string }) {
   try {
     fetch("/api/xp", {
       method: "POST",

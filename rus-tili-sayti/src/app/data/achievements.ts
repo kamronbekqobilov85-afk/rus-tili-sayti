@@ -1,10 +1,11 @@
 // Gamifikatsiya konstantalari — bu fayl client komponentlarda ham ishlatiladi,
 // shuning uchun bazaga (prisma) hech qanday bog'liqligi yo'q.
 
-export const XP_PER_WORD = 5;
-export const XP_PER_TEST = 20;
+// Mashqlar uchun ball 50% ga kamaytirilgan (So'z testi va boshqa maxsus tizimlar bundan mustasno)
+export const XP_PER_WORD = 2.5; // serverda navbat bilan 2 va 3 beriladi (o'rtacha 2,5)
+export const XP_PER_TEST = 10;
 export const XP_REFERRAL_BONUS = 100;
-export const DAILY_CHALLENGE_XP = 30;
+export const DAILY_CHALLENGE_XP = 15;
 export const XP_PER_VOICE = 10;
 export const XP_TELEGRAM_BONUS = 500;
 

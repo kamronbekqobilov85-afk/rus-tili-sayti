@@ -4,7 +4,7 @@ import Header from "../components/Header";
 import PageHero, { HeroChip } from "../components/PageHero";
 import { card, pageShell } from "../components/ui";
 import { videos, categories, type VideoCategory } from "../data/videos";
-import { recordActivity } from "../data/stats";
+import { recordActivity, syncXp } from "../data/stats";
 
 const TAB_KEY = "rus-tili-video-tab";
 const INDEX_KEY = "rus-tili-video-index";
@@ -180,7 +180,8 @@ export default function VideoPage() {
           sec = 0;
           const done = getAwardsToday();
           if (done < MAX_AWARDS_PER_DAY) {
-            recordActivity("test"); // +20 ball
+            recordActivity("test", { noXp: true }); // statistika
+            syncXp({ type: "watch" }); // +20 ball
             setAwardsToday(done + 1);
             setAwards(done + 1);
             setToast(true);
