@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import PageHero, { HeroChip } from "../components/PageHero";
 import { card, btnPrimary, btnSecondary } from "../components/ui";
 import { speak, shuffle } from "../components/GapSession";
+import { recordActivity } from "../data/stats";
 import type { Scenario, Phrase, Line } from "../data/suhbat";
 
 const DONE_KEY = "rus-tili-suhbat-done";
@@ -22,6 +23,32 @@ function saveDone(ids: string[]) {
     localStorage.setItem(DONE_KEY, JSON.stringify(ids));
   } catch {
     // saqlab bo'lmasa ham ishlayveradi
+  }
+}
+
+// Ball: har bir bo'lim uchun kuniga bir marta (qayta-qayta mashq qilib ball yig'ib bo'lmaydi)
+const XP_KEY = "rus-tili-suhbat-xp";
+
+function xpToday(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function canEarn(id: string): boolean {
+  try {
+    const m = JSON.parse(localStorage.getItem(XP_KEY) || "{}") as Record<string, string>;
+    return m[id] !== xpToday();
+  } catch {
+    return true;
+  }
+}
+
+function markEarned(id: string) {
+  try {
+    const m = JSON.parse(localStorage.getItem(XP_KEY) || "{}") as Record<string, string>;
+    m[id] = xpToday();
+    localStorage.setItem(XP_KEY, JSON.stringify(m));
+  } catch {
+    // ignore
   }
 }
 
@@ -404,6 +431,9 @@ function Quiz({
   const [picked, setPicked] = useState<string | null>(null);
   const [mistakes, setMistakes] = useState(0);
   const [finished, setFinished] = useState(false);
+  // Bu mashqda ball olish mumkinmi (bugun bu bo'limdan hali ball olinmagan bo'lsa)
+  const earn = useRef(canEarn(sc.id));
+  const [earned, setEarned] = useState(0);
 
   const q = qs[i];
   const total = qs.length;
@@ -412,12 +442,24 @@ function Quiz({
   const choose = (opt: string) => {
     if (picked) return;
     setPicked(opt);
-    if (opt !== q.correct) setMistakes((m) => m + 1);
+    if (opt !== q.correct) {
+      setMistakes((m) => m + 1);
+    } else if (earn.current) {
+      recordActivity("word"); // +5 ball
+      setEarned((e) => e + 5);
+      markEarned(sc.id); // chiqib qayta kirib ball yig'ib bo'lmaydi
+    }
   };
 
   const next = () => {
     if (i + 1 >= total) {
       setFinished(true);
+      if (earn.current) {
+        recordActivity("test"); // +20 ball
+        setEarned((e) => e + 20);
+        markEarned(sc.id);
+        earn.current = false;
+      }
       onFinish(mistakes === 0);
     } else {
       setI(i + 1);
@@ -445,6 +487,15 @@ function Quiz({
           {sc.title}: {total - mistakes} / {total} to&apos;g&apos;ri
           {perfect ? "" : ". Xatosiz o'tsangiz, bo'lim «Tayyor» deb belgilanadi."}
         </p>
+        {earned > 0 ? (
+          <p className="mt-3 inline-block rounded-full bg-amber-100 px-4 py-1.5 text-sm font-extrabold text-amber-700">
+            ⭐ +{earned} ball qo&apos;shildi!
+          </p>
+        ) : (
+          <p className="mt-3 text-xs font-bold text-slate-400">
+            Bu bo&apos;limdan bugun ball olingan. Ertaga yana ball olasiz.
+          </p>
+        )}
         <div className="mt-5 grid gap-2">
           <button onClick={restart} className={btnPrimary}>
             Qayta mashq qilish
