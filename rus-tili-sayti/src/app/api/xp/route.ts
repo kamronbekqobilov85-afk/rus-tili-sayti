@@ -1,10 +1,13 @@
 import { auth } from "../../../auth";
+import { prisma } from "../../../lib/prisma";
+import { words } from "../../data/words";
 import { awardXp, todayXpOf, xpAllowedNow, XP_PER_TEST, XP_PER_WORD } from "../../../lib/gamification";
 
 // Tezlik chegarasi: bir foydalanuvchi soniyasiga bir necha marta so'rov yubora olmaydi
 // (serverless'da har nusxada alohida, lekin oddiy skript/looplarni to'xtatadi)
 const lastCall = new Map<string, number>();
 const MIN_GAP_MS = 600;
+const SECTION_XP = 10;
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -14,7 +17,16 @@ export async function POST(req: Request) {
   const userId = session.user.id;
 
   const body = await req.json().catch(() => null);
-  const type = body?.type === "test" ? "test" : body?.type === "word" ? "word" : null;
+  const type =
+    body?.type === "test"
+      ? "test"
+      : body?.type === "word"
+        ? "word"
+        : body?.type === "section"
+          ? "section"
+          : body?.type === "pair"
+            ? "pair"
+            : null;
   if (!type) {
     return Response.json({ ok: false }, { status: 400 });
   }
@@ -32,7 +44,27 @@ export async function POST(req: Request) {
     return Response.json({ ok: true, skipped: "cap" });
   }
 
-  const amount = type === "test" ? XP_PER_TEST : XP_PER_WORD;
+  let amount: number;
+  if (type === "section") {
+    // So'zlar bo'limini o'qib chiqqani uchun +10: har bir mavzudan bir marta (serverda belgilanadi)
+    const key = typeof body?.key === "string" ? body.key : "";
+    if (!words.some((w) => w.category === key)) {
+      return Response.json({ ok: false }, { status: 400 });
+    }
+    const created = await prisma.userAchievement.createMany({
+      data: [{ userId, key: `sozlar-${key}` }],
+      skipDuplicates: true,
+    });
+    if (created.count === 0) {
+      return Response.json({ ok: true, skipped: "already" });
+    }
+    amount = SECTION_XP;
+  } else if (type === "pair") {
+    // So'z testida ikkita to'g'ri javob = 1 ball (har biri 0,5)
+    amount = 1;
+  } else {
+    amount = type === "test" ? XP_PER_TEST : XP_PER_WORD;
+  }
   const result = await awardXp(userId, amount);
 
   return Response.json({ ok: true, ...result });
