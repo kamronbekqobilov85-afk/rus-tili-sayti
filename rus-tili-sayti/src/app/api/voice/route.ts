@@ -51,7 +51,7 @@ export async function POST(req: Request) {
     },
   });
 
-  const result = await awardXp(session.user.id, XP_PER_VOICE);
+  const result = await awardXp(session.user.id, XP_PER_VOICE, { source: "voice" });
 
   return Response.json({ ok: true, ...result });
 }

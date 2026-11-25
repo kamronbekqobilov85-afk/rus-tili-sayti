@@ -225,3 +225,16 @@ model Visit {
   @@index([createdAt])
   @@index([userId])
 }
+
+// --- Ball hodisalari: kim, qachon, qancha va qaysi yo'l bilan ball oldi (firibgarlikni aniqlash uchun, 14 kun saqlanadi) ---
+
+model XpEvent {
+  id        String   @id @default(cuid())
+  userId    String
+  amount    Int
+  source    String // word | test | section | pair | chest | challenge | voice | referral | telegram
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([createdAt])
+}

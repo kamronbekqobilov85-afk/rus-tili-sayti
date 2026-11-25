@@ -83,7 +83,7 @@ export async function POST() {
     });
   }
 
-  const result = await awardXp(userId, reward);
+  const result = await awardXp(userId, reward, { source: "chest" });
 
   return Response.json({
     ok: true,

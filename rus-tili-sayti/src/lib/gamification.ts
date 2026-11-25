@@ -75,7 +75,11 @@ export async function todayXpOf(userId: string): Promise<number> {
   return stat?.xp ?? 0;
 }
 
-export async function awardXp(userId: string, amount: number, opts?: { isReferral?: boolean }) {
+export async function awardXp(
+  userId: string,
+  amount: number,
+  opts?: { isReferral?: boolean; source?: string }
+) {
   const date = todayStr();
   const isReferral = opts?.isReferral ?? false;
 
@@ -84,6 +88,11 @@ export async function awardXp(userId: string, amount: number, opts?: { isReferra
     data: { xp: { increment: amount } },
     select: { xp: true },
   });
+
+  // Nazorat uchun hodisani yozib qo'yamiz (xato bo'lsa ball berishga xalaqit qilmaydi)
+  await prisma.xpEvent
+    .create({ data: { userId, amount, source: opts?.source ?? (isReferral ? "referral" : "other") } })
+    .catch(() => {});
 
   const stat = await prisma.dailyStat.upsert({
     where: { userId_date: { userId, date } },

@@ -5,6 +5,7 @@ import PageHero, { HeroChip } from "../components/PageHero";
 import { card, pageShell } from "../components/ui";
 import FeedbackRow from "../components/FeedbackRow";
 import SeasonResetButton from "../components/SeasonResetButton";
+import XpMonitor from "../components/XpMonitor";
 import { auth } from "../../auth";
 import { prisma, daysAgo } from "../../lib/prisma";
 
@@ -125,6 +126,8 @@ export default async function AdminPage() {
           />
           <StatCard icon="💬" value={newFeedbackCount} label="Yangi xabarlar" color="text-rose-600" />
         </div>
+
+        <XpMonitor />
 
         <section className={`${card} mt-6 p-5`}>
           <h2 className="text-lg font-extrabold text-slate-800">🏆 Mavsumni yakunlash</h2>

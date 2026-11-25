@@ -37,7 +37,7 @@ export async function POST() {
     return Response.json({ ok: true, alreadyDone: true });
   }
 
-  const result = await awardXp(userId, DAILY_CHALLENGE_XP);
+  const result = await awardXp(userId, DAILY_CHALLENGE_XP, { source: "challenge" });
 
   return Response.json({ ok: true, alreadyDone: false, ...result });
 }

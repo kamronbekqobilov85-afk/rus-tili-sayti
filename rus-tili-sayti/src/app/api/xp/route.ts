@@ -65,7 +65,7 @@ export async function POST(req: Request) {
   } else {
     amount = type === "test" ? XP_PER_TEST : XP_PER_WORD;
   }
-  const result = await awardXp(userId, amount);
+  const result = await awardXp(userId, amount, { source: type });
 
   return Response.json({ ok: true, ...result });
 }
