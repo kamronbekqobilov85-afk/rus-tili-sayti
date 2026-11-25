@@ -6,6 +6,7 @@ import { useInstallPrompt } from "./useInstallPrompt";
 import ServiceWorkerRegister from "./ServiceWorkerRegister";
 import { isTelegramEnv } from "./TelegramWebApp";
 import ApkDownload from "./ApkDownload";
+import InstallGuide from "./InstallGuide";
 
 const SKIP_KEY = "rus-tili-install-step-done";
 
@@ -25,7 +26,7 @@ export default function SignInGate() {
   const { available, install } = useInstallPrompt();
   const [step, setStep] = useState<Step>("loading");
   const [justInstalled, setJustInstalled] = useState(false);
-  const [hint, setHint] = useState<"ios" | "manual" | null>(null);
+  const [, setHint] = useState<"ios" | "manual" | null>(null);
   const [inTelegram, setInTelegram] = useState(false);
 
   useEffect(() => {
@@ -99,35 +100,7 @@ export default function SignInGate() {
 
           <ApkDownload variant="gate" />
 
-          {hint === "ios" && (
-            <ol className="mt-5 max-w-sm space-y-2 rounded-2xl bg-white/15 p-4 text-left text-sm ring-1 ring-white/25">
-              <li>
-                1. Pastdagi <strong>Ulashish</strong> (kvadrat ichida yuqoriga qarab turgan strelka) tugmasini
-                bosing
-              </li>
-              <li>
-                2. <strong>«Bosh ekranga qo'shish»</strong> (Add to Home Screen) bandini tanlang
-              </li>
-              <li>
-                3. <strong>«Qo'shish»</strong> tugmasini bosing va bosh ekrandagi ilovani oching
-              </li>
-            </ol>
-          )}
-          {hint === "manual" && (
-            <ol className="mt-5 max-w-sm space-y-2 rounded-2xl bg-white/15 p-4 text-left text-sm ring-1 ring-white/25">
-              <li>
-                1. Brauzerning yuqori o'ng burchagidagi <strong>⋮</strong> menyusini oching
-              </li>
-              <li>
-                2. <strong>«Ilovani o'rnatish»</strong> yoki <strong>«Bosh ekranga qo'shish»</strong> bandini
-                tanlang
-              </li>
-              <li>3. Bosh ekrandagi «Rus tili» ilovasini oching va hisobingiz bilan kiring</li>
-              <li className="text-emerald-100/80">
-                Bu band ko'rinmasa, sahifani Chrome brauzerida oching yoki ilova allaqachon o'rnatilgan.
-              </li>
-            </ol>
-          )}
+          <InstallGuide />
 
           <div className="mt-6 flex items-center gap-2 text-xs font-bold text-emerald-100/80">
             <span className="rounded-full bg-white px-2 py-0.5 text-emerald-700">1</span> O'rnatish
