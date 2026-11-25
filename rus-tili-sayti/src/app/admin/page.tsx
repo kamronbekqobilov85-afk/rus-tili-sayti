@@ -5,7 +5,7 @@ import PageHero, { HeroChip } from "../components/PageHero";
 import { card, pageShell } from "../components/ui";
 import FeedbackRow from "../components/FeedbackRow";
 import SeasonResetButton from "../components/SeasonResetButton";
-import XpMonitor from "../components/XpMonitor";
+import XpMonitor, { type Range } from "../components/XpMonitor";
 import { auth } from "../../auth";
 import { prisma, daysAgo } from "../../lib/prisma";
 
@@ -29,7 +29,13 @@ function formatDate(d: Date): string {
   }).format(d);
 }
 
-export default async function AdminPage() {
+export default async function AdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ r?: string }>;
+}) {
+  const { r } = await searchParams;
+  const range: Range = r === "1h" || r === "7d" ? r : "24h";
   const session = await auth();
 
   if (!session?.user) {
@@ -127,7 +133,7 @@ export default async function AdminPage() {
           <StatCard icon="💬" value={newFeedbackCount} label="Yangi xabarlar" color="text-rose-600" />
         </div>
 
-        <XpMonitor />
+        <XpMonitor range={range} />
 
         <section className={`${card} mt-6 p-5`}>
           <h2 className="text-lg font-extrabold text-slate-800">🏆 Mavsumni yakunlash</h2>
