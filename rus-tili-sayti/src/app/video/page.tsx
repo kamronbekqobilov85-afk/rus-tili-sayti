@@ -9,6 +9,7 @@ import { recordActivity } from "../data/stats";
 const TAB_KEY = "rus-tili-video-tab";
 const INDEX_KEY = "rus-tili-video-index";
 const XP_DAY_KEY = "rus-tili-video-xp";
+const BROKEN_KEY = "rus-tili-video-broken"; // shu qurilmada ochilmaydigan (cheklangan) videolar
 
 // Ko'rish uchun ball: har 5 daqiqalik haqiqiy ko'rish = +20 ball, kuniga ko'pi bilan 5 marta (100 ball)
 const WATCH_SECONDS = 300;
@@ -102,9 +103,35 @@ export default function VideoPage() {
     setAwards(getAwardsToday());
   }, []);
 
+  const [broken, setBroken] = useState<number[]>([]);
+  useEffect(() => {
+    try {
+      setBroken(JSON.parse(localStorage.getItem(BROKEN_KEY) || "[]") as number[]);
+    } catch {
+      // ignore
+    }
+  }, []);
+
   const cat = categories.find((c) => c.key === tab)!;
-  const list = videos.filter((v) => v.category === tab);
+  const all = videos.filter((v) => v.category === tab);
+  // Ochilmaydigan videolar yashiriladi (hammasi buzilgan bo'lsa, to'liq ro'yxat qoladi)
+  const playable = all.filter((v) => !broken.includes(v.id));
+  const list = playable.length > 0 ? playable : all;
   const selected = list.find((v) => v.id === selectedId) || list[0];
+
+  // Video bu qurilmada/mamlakatda ochilmasa: ro'yxatdan chiqarib, keyingisiga o'tamiz
+  const onBroken = useRef<(id: number) => void>(() => {});
+  onBroken.current = (id: number) => {
+    const next = Array.from(new Set([...broken, id]));
+    setBroken(next);
+    try {
+      localStorage.setItem(BROKEN_KEY, JSON.stringify(next));
+    } catch {
+      // ignore
+    }
+    const rest = all.filter((v) => !next.includes(v.id));
+    if (rest.length > 0) setSelectedId(rest[0].id);
+  };
 
   // YouTube pleyeri: haqiqatan ko'rilgan vaqtni sanaymiz va ball beramiz
   useEffect(() => {
@@ -120,10 +147,16 @@ export default function VideoPage() {
       playerBox.current.innerHTML = "";
       playerBox.current.appendChild(holder);
       const vars: Record<string, unknown> = { rel: 0, playsinline: 1 };
+      const vid = selected.id;
       const opts: Record<string, unknown> = {
         width: "100%",
         height: "100%",
         playerVars: vars,
+        events: {
+          onError: () => {
+            if (!cancelled) onBroken.current(vid);
+          },
+        },
       };
       if (selected.playlistId) {
         vars.listType = "playlist";
