@@ -1,12 +1,66 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Header from "../components/Header";
 import PageHero, { HeroChip } from "../components/PageHero";
 import { card, pageShell } from "../components/ui";
 import { videos, categories, type VideoCategory } from "../data/videos";
+import { recordActivity } from "../data/stats";
 
 const TAB_KEY = "rus-tili-video-tab";
 const INDEX_KEY = "rus-tili-video-index";
+const XP_DAY_KEY = "rus-tili-video-xp";
+
+// Ko'rish uchun ball: har 5 daqiqalik haqiqiy ko'rish = +20 ball, kuniga ko'pi bilan 5 marta (100 ball)
+const WATCH_SECONDS = 300;
+const MAX_AWARDS_PER_DAY = 5;
+
+type YTPlayer = { destroy: () => void; getPlayerState: () => number };
+type YTApi = {
+  Player: new (el: HTMLElement, opts: Record<string, unknown>) => YTPlayer;
+};
+declare global {
+  interface Window {
+    YT?: YTApi;
+    onYouTubeIframeAPIReady?: () => void;
+  }
+}
+
+function loadYT(): Promise<YTApi> {
+  return new Promise((resolve) => {
+    if (window.YT && window.YT.Player) return resolve(window.YT);
+    const prev = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = () => {
+      prev?.();
+      resolve(window.YT as YTApi);
+    };
+    if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
+      const tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.head.appendChild(tag);
+    }
+  });
+}
+
+function todayKey(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function getAwardsToday(): number {
+  try {
+    const raw = JSON.parse(localStorage.getItem(XP_DAY_KEY) || "{}");
+    return raw.date === todayKey() ? Number(raw.count) || 0 : 0;
+  } catch {
+    return 0;
+  }
+}
+
+function setAwardsToday(count: number) {
+  try {
+    localStorage.setItem(XP_DAY_KEY, JSON.stringify({ date: todayKey(), count }));
+  } catch {
+    // ignore
+  }
+}
 
 export default function VideoPage() {
   const [tab, setTab] = useState<VideoCategory>("kino");
@@ -39,13 +93,81 @@ export default function VideoPage() {
     }
   };
 
+  const playerBox = useRef<HTMLDivElement>(null);
+  const [watched, setWatched] = useState(0);
+  const [awards, setAwards] = useState(0);
+  const [toast, setToast] = useState(false);
+
+  useEffect(() => {
+    setAwards(getAwardsToday());
+  }, []);
+
   const cat = categories.find((c) => c.key === tab)!;
   const list = videos.filter((v) => v.category === tab);
   const selected = list.find((v) => v.id === selectedId) || list[0];
 
-  const embedSrc = selected.playlistId
-    ? `https://www.youtube.com/embed/videoseries?list=${selected.playlistId}`
-    : `https://www.youtube.com/embed/${selected.youtubeId}?rel=0`;
+  // YouTube pleyeri: haqiqatan ko'rilgan vaqtni sanaymiz va ball beramiz
+  useEffect(() => {
+    let player: YTPlayer | null = null;
+    let timer: ReturnType<typeof setInterval> | null = null;
+    let cancelled = false;
+    let sec = 0;
+    setWatched(0);
+
+    loadYT().then((YT) => {
+      if (cancelled || !playerBox.current) return;
+      const holder = document.createElement("div");
+      playerBox.current.innerHTML = "";
+      playerBox.current.appendChild(holder);
+      const vars: Record<string, unknown> = { rel: 0, playsinline: 1 };
+      const opts: Record<string, unknown> = {
+        width: "100%",
+        height: "100%",
+        playerVars: vars,
+      };
+      if (selected.playlistId) {
+        vars.listType = "playlist";
+        vars.list = selected.playlistId;
+      } else {
+        opts.videoId = selected.youtubeId;
+      }
+      player = new YT.Player(holder, opts);
+
+      timer = setInterval(() => {
+        if (!player || document.visibilityState !== "visible") return;
+        let state = -1;
+        try {
+          state = player.getPlayerState();
+        } catch {
+          return;
+        }
+        if (state !== 1) return; // 1 = ijro etilmoqda
+        sec += 1;
+        if (sec >= WATCH_SECONDS) {
+          sec = 0;
+          const done = getAwardsToday();
+          if (done < MAX_AWARDS_PER_DAY) {
+            recordActivity("test"); // +20 ball
+            setAwardsToday(done + 1);
+            setAwards(done + 1);
+            setToast(true);
+            setTimeout(() => setToast(false), 4000);
+          }
+        }
+        setWatched(sec);
+      }, 1000);
+    });
+
+    return () => {
+      cancelled = true;
+      if (timer) clearInterval(timer);
+      try {
+        player?.destroy();
+      } catch {
+        // ignore
+      }
+    };
+  }, [selected.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className={pageShell}>
@@ -76,15 +198,15 @@ export default function VideoPage() {
         </div>
 
         <div className={`${card} mt-4 overflow-hidden`}>
-          <div className="aspect-video w-full bg-slate-900">
-            <iframe
-              key={selected.id}
-              className="h-full w-full"
-              src={embedSrc}
-              title={selected.title}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            ></iframe>
+          <div className="relative aspect-video w-full bg-slate-900">
+            <div ref={playerBox} className="h-full w-full [&_iframe]:h-full [&_iframe]:w-full" />
+            {toast && (
+              <div className="pointer-events-none absolute inset-x-0 top-3 flex justify-center">
+                <span className="rounded-full bg-amber-400 px-4 py-2 text-sm font-extrabold text-amber-950 shadow-lg">
+                  ⭐ +20 ball! Ko&apos;rganingiz uchun
+                </span>
+              </div>
+            )}
           </div>
           <div className="px-4 py-3">
             <div className="flex items-start gap-3">
@@ -95,6 +217,18 @@ export default function VideoPage() {
                 <p className="font-extrabold text-slate-800">{selected.title}</p>
                 {selected.note && <p className="text-sm text-slate-500">{selected.note}</p>}
               </div>
+            </div>
+            <div className="mt-2 rounded-xl bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-800">
+              {awards >= MAX_AWARDS_PER_DAY ? (
+                <>⭐ Bugungi ko&apos;rish uchun ball tugadi (100/100). Ertaga yana oling!</>
+              ) : (
+                <>
+                  ⭐ Har 5 daqiqa ko&apos;rish = +20 ball · Bugun: {awards * 20}/{MAX_AWARDS_PER_DAY * 20}
+                  {watched > 0 && (
+                    <> · Hozirgi: {Math.floor(watched / 60)}:{String(watched % 60).padStart(2, "0")} / 5:00</>
+                  )}
+                </>
+              )}
             </div>
             {tab !== "musiqa" && (
               <p className="mt-2 rounded-xl bg-amber-50 px-3 py-2 text-xs font-bold text-amber-800">
