@@ -1,5 +1,6 @@
 import { auth } from "../../../../auth";
 import { sendPushToAll } from "../../../../lib/push";
+import { pickMessage } from "./messages";
 
 // Kunига 3 marta (ertalab / tushlik / kechqurun) chaqirilishi mo'ljallangan —
 // Vercel'ning bepul tarifida cron kuniga 1 martagina ishga tushgani uchun bu
@@ -35,22 +36,7 @@ export async function GET(req: Request) {
     return Response.json({ ok: true, slot, push: null });
   }
 
-  const messages: Record<Exclude<typeof slot, "skip">, { title: string; body: string }> = {
-    morning: {
-      title: "☀️ Xayrli tong!",
-      body: "Kunni rus tili bilan boshlang — 5 daqiqalik mashq sizni kutmoqda.",
-    },
-    midday: {
-      title: "📖 Tanaffus vaqti",
-      body: "Bir chashka choy bilan birga bir nechta yangi so'z o'rganib oling.",
-    },
-    evening: {
-      title: "🌙 Kun yakunida",
-      body: "Bugungi mashqni bajarishni unutmang — ketma-ketlikni (streak) uzmang!",
-    },
-  };
-
-  const push = await sendPushToAll({ ...messages[slot], url: "/kunlik" });
+  const push = await sendPushToAll(pickMessage(slot, tashkentNow));
 
   return Response.json({ ok: true, slot, push });
 }
