@@ -53,6 +53,18 @@ export async function unlockReferralAchievements(userId: string): Promise<string
   return fresh;
 }
 
+// Firibgarlikdan himoya: bitta foydalanuvchi bir kunda faoliyat uchun olishi mumkin bo'lgan eng ko'p ball.
+// (Haqiqiy faol foydalanuvchi kuniga ~300-700 ball oladi; sandiq va challenge bundan tashqari.)
+export const DAILY_XP_CAP = 1200;
+
+export async function todayXpOf(userId: string): Promise<number> {
+  const stat = await prisma.dailyStat.findUnique({
+    where: { userId_date: { userId, date: todayStr() } },
+    select: { xp: true },
+  });
+  return stat?.xp ?? 0;
+}
+
 export async function awardXp(userId: string, amount: number, opts?: { isReferral?: boolean }) {
   const date = todayStr();
   const isReferral = opts?.isReferral ?? false;
