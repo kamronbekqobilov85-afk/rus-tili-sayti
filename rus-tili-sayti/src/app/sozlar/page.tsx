@@ -153,16 +153,6 @@ export default function SozlarPage() {
     const srsTotal = srsStats ? srsStats.dueCount + srsStats.newCount : 0;
     const modes = [
       {
-        key: "test" as Mode,
-        icon: "🧪",
-        title: "So'z testi",
-        count: null as number | null,
-        hint: "5 ta variantdan to'g'risini toping: har to'g'ri javob +0,5 ball",
-        disabled: false,
-        tint: "bg-amber-50 ring-amber-200",
-        accent: "text-amber-600",
-      },
-      {
         key: "srs" as Mode,
         icon: "🔥",
         title: "Bugungi takrorlash",
@@ -209,8 +199,31 @@ export default function SozlarPage() {
             {srsStats && <HeroChip>✅ {srsStats.learnedCount} ta o'rganilgan</HeroChip>}
           </PageHero>
 
+          <button
+            onClick={() => selectMode("test")}
+            className="relative mt-6 block w-full overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-900 to-violet-800 p-5 text-left text-white shadow-xl transition active:scale-[0.99] sm:p-6"
+          >
+            <div aria-hidden className="pointer-events-none absolute -right-4 -top-6 text-[110px] opacity-15">🧪</div>
+            <span className="inline-block rounded-full bg-amber-300 px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-amber-950">
+              ⭐ Yangi · ball yig&apos;ing
+            </span>
+            <span className="mt-3 block text-2xl font-extrabold sm:text-3xl">So&apos;z testi</span>
+            <span className="mt-1 block max-w-md text-sm text-indigo-100">
+              5 ta variantdan to&apos;g&apos;risini toping. Har bir to&apos;g&apos;ri javob <strong className="text-amber-300">+0,5 ball</strong>.
+              3 xil test: 🇷🇺 ruscha → o&apos;zbekcha, 🇺🇿 o&apos;zbekcha → ruscha va 🎧 eshitib top.
+            </span>
+            <span className="mt-4 flex flex-wrap items-center gap-2">
+              <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-bold ring-1 ring-white/25">10–30 savol</span>
+              <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-bold ring-1 ring-white/25">🔥 seriya</span>
+              <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-bold ring-1 ring-white/25">mavzu tanlash</span>
+            </span>
+            <span className="mt-4 block rounded-2xl border-b-4 border-fuchsia-900 bg-gradient-to-r from-fuchsia-500 to-violet-500 py-3 text-center text-base font-extrabold uppercase tracking-wide shadow-lg">
+              Testni boshlash →
+            </span>
+          </button>
+
           <h2 className="mt-8 text-lg font-extrabold text-slate-800">Qanday mashq qilasiz?</h2>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-3 grid gap-3 sm:grid-cols-3">
             {modes.map((m) => (
               <button
                 key={m.key}
