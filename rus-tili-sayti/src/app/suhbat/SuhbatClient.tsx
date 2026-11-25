@@ -28,6 +28,7 @@ function saveDone(ids: string[]) {
 
 // Ball: har bir bo'lim uchun kuniga bir marta (qayta-qayta mashq qilib ball yig'ib bo'lmaydi)
 const XP_KEY = "rus-tili-suhbat-xp";
+const BACKFILL_KEY = "rus-tili-suhbat-backfill";
 
 function xpToday(): string {
   return new Date().toISOString().slice(0, 10);
@@ -75,10 +76,33 @@ export default function SuhbatClient({
 }) {
   const [view, setView] = useState<View>({ kind: "list" });
   const [done, setDone] = useState<string[]>([]);
+  const [bonus, setBonus] = useState(0);
 
   useEffect(() => {
-    setDone(loadDone());
-    return stopSpeech;
+    const loaded = loadDone();
+    setDone(loaded);
+
+    // Bir martalik: oldin tugatilgan bo'limlar uchun ball (har biriga +20)
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    try {
+      if (!localStorage.getItem(BACKFILL_KEY)) {
+        const n = loaded.filter((id) => scenarios.some((s) => s.id === id)).length;
+        localStorage.setItem(BACKFILL_KEY, "1");
+        if (n > 0) {
+          for (let k = 0; k < n; k++) {
+            // server so'rovlar orasida kamida ~0,6 soniya kutadi
+            timers.push(setTimeout(() => recordActivity("test"), k * 800));
+          }
+          setBonus(n * 20);
+        }
+      }
+    } catch {
+      // ignore
+    }
+    return () => {
+      stopSpeech();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Boshqa ekranga o'tganda ovoz to'xtaydi
@@ -135,6 +159,12 @@ export default function SuhbatClient({
         </HeroChip>
         <HeroChip>🔓 Ochiq</HeroChip>
       </PageHero>
+
+      {bonus > 0 && (
+        <p className="mt-4 rounded-2xl bg-amber-100 p-3 text-center text-sm font-extrabold text-amber-800">
+          ⭐ Oldin tugatgan bo&apos;limlaringiz uchun +{bonus} ball qo&apos;shildi!
+        </p>
+      )}
 
       <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
         {scenarios.map((s) => {
