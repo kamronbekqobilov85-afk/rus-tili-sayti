@@ -5,6 +5,7 @@ import PageHero, { HeroChip } from "../components/PageHero";
 import { card, pageShell } from "../components/ui";
 import FeedbackRow from "../components/FeedbackRow";
 import SeasonResetButton from "../components/SeasonResetButton";
+import BroadcastForm from "../components/BroadcastForm";
 import XpMonitor, { type Range } from "../components/XpMonitor";
 import { auth } from "../../auth";
 import { prisma, daysAgo } from "../../lib/prisma";
@@ -142,6 +143,14 @@ export default async function AdminPage({
             tushiriladi.
           </p>
           <SeasonResetButton />
+        </section>
+
+        <section className={`${card} mt-6 p-5`}>
+          <h2 className="text-lg font-extrabold text-slate-800">🔔 Xabarnoma yuborish</h2>
+          <p className="mt-1 text-sm text-slate-500">
+            Push-xabarni ilovani o&apos;rnatgan va ruxsat bergan hamma foydalanuvchilarga yuboring.
+          </p>
+          <BroadcastForm />
         </section>
 
         <section className="mt-8">
