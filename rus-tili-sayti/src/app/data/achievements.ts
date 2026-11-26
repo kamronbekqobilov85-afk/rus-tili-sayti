@@ -4,6 +4,7 @@
 export const XP_PER_WORD = 5;
 export const XP_PER_TEST = 20;
 export const XP_REFERRAL_BONUS = 100;
+export const XP_PER_RUN_GATE = 4; // "Yugur va o'rgan": har bir to'g'ri ochilgan eshik uchun
 export const DAILY_CHALLENGE_XP = 30;
 export const XP_PER_VOICE = 10;
 export const XP_TELEGRAM_BONUS = 500;

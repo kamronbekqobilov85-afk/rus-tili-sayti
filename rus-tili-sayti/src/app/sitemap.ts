@@ -20,5 +20,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/video`,
       lastModified: new Date(),
     },
+    {
+      url: `${baseUrl}/yugur`,
+      lastModified: new Date(),
+    },
   ];
 }
