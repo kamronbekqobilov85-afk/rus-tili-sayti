@@ -97,7 +97,13 @@ export type Engine = {
   destroy: () => void;
 };
 
-export function createEngine(canvas: HTMLCanvasElement, bank: Bank, cb: Callbacks): Engine {
+export function createEngine(
+  canvas: HTMLCanvasElement,
+  bank: Bank,
+  cb: Callbacks,
+  opts: { demo?: boolean } = {}
+): Engine {
+  const demo = !!opts.demo; // menyu orqasida: to'siqsiz, o'zi yuguradi
   const ctx = canvas.getContext("2d", { alpha: false })!;
   let W = 300;
   let H = 400;
@@ -413,6 +419,21 @@ export function createEngine(canvas: HTMLCanvasElement, bank: Bank, cb: Callback
   // ───────── Yangilash ─────────
   function update(dt: number) {
     time += dt;
+
+    if (demo) {
+      // Menyu orqasidagi jonli sahna: bola yo'lda shunchaki yuguradi
+      const dz = 8 * dt;
+      distance += dz;
+      px = Math.sin(time * 0.7) * 0.85;
+      for (const sc of scn) sc.d -= dz;
+      sinceScn += dz;
+      while (sinceScn > 2.4) {
+        sinceScn -= 2.4;
+        spawnScenery(SPAWN_D + 2);
+      }
+      if (scn.length && scn[0].d < -5) scn = scn.filter((sc) => sc.d > -5);
+      return;
+    }
 
     if (phase === "over") {
       overT += dt;

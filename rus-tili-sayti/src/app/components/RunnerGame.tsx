@@ -4,10 +4,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createEngine, levelName } from "../yugur/engine";
 import type { Bank, Engine, Hud, Question, RunResult, Sfx } from "../yugur/engine";
 import RunnerLeaderboard from "./RunnerLeaderboard";
-import { btnPrimary, btnSecondary, card } from "./ui";
+import { card } from "./ui";
 
 const BEST_KEY = "yugur-best";
 const MUTE_KEY = "yugur-mute";
+const EMPTY_BANK: Bank = { words: [], gaps: () => [] };
 
 // Tovush effektlari: tashqi fayllarsiz, Web Audio bilan hosil qilinadi
 type Note = { f: number; t: number; d: number; type?: OscillatorType; v?: number; to?: number };
@@ -143,8 +144,10 @@ export default function RunnerGame() {
 
   // O'yinni ishga tushirish (runId o'zgarganda)
   useEffect(() => {
-    if (runId === 0 || !canvasRef.current || !bankRef.current) return;
-    const engine = createEngine(canvasRef.current, bankRef.current, {
+    if (!canvasRef.current) return;
+    const demo = runId === 0;
+    if (!demo && !bankRef.current) return;
+    const engine = createEngine(canvasRef.current, bankRef.current ?? EMPTY_BANK, {
       sfx: playSfx,
       onHud: setHud,
       onQuestion: (q) => setQuestion(q),
@@ -201,7 +204,7 @@ export default function RunnerGame() {
             .catch(() => setXpGain(null));
         }
       },
-    });
+    }, { demo });
     engineRef.current = engine;
     return () => {
       engine.destroy();
@@ -327,191 +330,241 @@ export default function RunnerGame() {
   const isGap = question?.kind === "gap";
 
   return (
-    <div className="mx-auto w-full max-w-md select-none">
-      {/* O'yin maydoni */}
-      <div
-        ref={boxRef}
-        className="relative w-full overflow-hidden rounded-2xl border-2 border-slate-200 bg-sky-200 shadow-sm"
-        style={{ height: "clamp(300px, 46dvh, 520px)" }}
-      >
-        <canvas ref={canvasRef} className="block h-full w-full" style={{ touchAction: "none" }} />
+    <div className="mx-auto w-full max-w-md select-none lg:grid lg:max-w-4xl lg:grid-cols-[28rem_minmax(0,1fr)] lg:items-start lg:gap-5">
+      <style>{`@keyframes poygaPop{0%,100%{transform:scale(1)}50%{transform:scale(1.045)}}`}</style>
 
-        {/* Tovushni o'chirish/yoqish */}
-        <button
-          onClick={toggleMute}
-          aria-label={muted ? "Tovushni yoqish" : "Tovushni o'chirish"}
-          className="absolute bottom-2 right-2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/35 text-base text-white backdrop-blur-sm active:scale-95"
+      {/* ───── Chap ustun: o'yin ───── */}
+      <div>
+        <div
+          ref={boxRef}
+          className="relative h-[clamp(300px,46dvh,520px)] w-full overflow-hidden rounded-3xl border-2 border-white bg-sky-200 shadow-lg ring-1 ring-slate-200 lg:h-[clamp(400px,66dvh,600px)]"
         >
-          {muted ? "🔇" : "🔊"}
-        </button>
+          <canvas ref={canvasRef} className="block h-full w-full" style={{ touchAction: "none" }} />
 
-        {/* HUD */}
-        {playing && (
-          <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between p-2.5">
-            <div className="rounded-xl bg-black/35 px-2.5 py-1 text-base leading-none text-white backdrop-blur-sm">
-              {Array.from({ length: 3 }, (_, i) => (
-                <span key={i} className={i < hud.lives ? "" : "opacity-25 grayscale"}>
-                  ❤️
-                </span>
-              ))}
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="rounded-xl bg-black/35 px-2.5 py-1 text-sm font-extrabold text-white backdrop-blur-sm">
-                🚪 {hud.gates}
+          {/* Tovushni o'chirish/yoqish */}
+          <button
+            onClick={toggleMute}
+            aria-label={muted ? "Tovushni yoqish" : "Tovushni o'chirish"}
+            className="absolute bottom-2 right-2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/35 text-base text-white backdrop-blur-sm active:scale-95"
+          >
+            {muted ? "🔇" : "🔊"}
+          </button>
+
+          {/* HUD */}
+          {playing && (
+            <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between p-2.5">
+              <div className="rounded-xl bg-black/35 px-2.5 py-1 text-base leading-none text-white backdrop-blur-sm">
+                {Array.from({ length: 3 }, (_, i) => (
+                  <span key={i} className={i < hud.lives ? "" : "opacity-25 grayscale"}>
+                    ❤️
+                  </span>
+                ))}
               </div>
-              <div className="min-w-[4.5rem] rounded-xl bg-black/35 px-2.5 py-1 text-right text-sm font-extrabold tabular-nums text-white backdrop-blur-sm">
-                {hud.score}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Menyu */}
-        {phase !== "playing" && phase !== "over" && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-slate-900/55 p-5 text-center text-white backdrop-blur-[2px]">
-            <p className="text-5xl">🏁</p>
-            <h2 className="text-2xl font-extrabold leading-tight">So&apos;z Poygasi</h2>
-            <p className="-mt-1 text-xs font-bold uppercase tracking-widest text-amber-300">yugur · o&apos;rgan · g&apos;olib bo&apos;l</p>
-            <ul className="space-y-1 text-sm font-semibold text-white/90">
-              <li>⬅️ ➡️ yo&apos;lakni almashtiring</li>
-              <li>⬆️ sakrang (pastdagi to&apos;siq) · ⬇️ egiling (tepadagi to&apos;siq)</li>
-              <li>🚪 Har ~10 soniyada eshik: to&apos;g&apos;ri tarjimani tanlang</li>
-            </ul>
-            <p className="text-xs text-white/70">Telefonda — barmoq bilan suring · Kompyuterda — strelkalar yoki WASD</p>
-            <button onClick={start} disabled={phase === "loading"} className={`${btnPrimary} mt-1 px-10`}>
-              {phase === "loading" ? "Yuklanmoqda..." : "Boshlash"}
-            </button>
-            {best > 0 && <p className="text-sm font-bold text-amber-300">🏅 Eng yaxshi: {best}</p>}
-          </div>
-        )}
-
-        {/* Natija */}
-        {phase === "over" && result && (
-          <div className="absolute inset-0 overflow-y-auto bg-slate-900/70 p-4 text-white backdrop-blur-[2px]">
-            <div className="mx-auto flex min-h-full max-w-xs flex-col items-center justify-center gap-2 text-center">
-              <p className="text-4xl">{newBest ? "🏆" : "🏁"}</p>
-              <h2 className="text-xl font-extrabold">{newBest ? "Yangi rekord!" : "O'yin tugadi"}</h2>
-              <p className="text-4xl font-extrabold tabular-nums text-amber-300">{result.score}</p>
-              <p className="text-sm font-semibold text-white/85">
-                {result.distance} m · 🚪 {result.gates} ta eshik ochildi
-              </p>
-              <p className="text-xs font-bold text-sky-200">
-                {result.level}-daraja · {levelName(result.level)}
-              </p>
-              {rank !== null && <p className="text-sm font-extrabold text-amber-200">🏅 Reytingda {rank}-o&apos;rin</p>}
-              {xpGain !== null && xpGain > 0 && <p className="text-lg font-extrabold text-emerald-300">+{xpGain} ball</p>}
-              {best > 0 && <p className="text-xs font-bold text-white/70">Eng yaxshi: {best}</p>}
-              {result.mistakes.length > 0 && (
-                <div className="mt-1 w-full rounded-xl bg-white/10 p-2.5 text-left text-sm">
-                  <p className="mb-1 text-xs font-bold uppercase tracking-wide text-white/60">Xatolar — eslab qoling</p>
-                  <ul className="space-y-1.5">
-                    {result.mistakes.slice(0, 4).map((m, i) => (
-                      <li key={i}>
-                        <span className="font-bold">{m.prompt}</span>
-                        <span className="text-white/60"> → </span>
-                        <span className="font-semibold text-emerald-300">{m.correct}</span>
-                      </li>
-                    ))}
-                  </ul>
+              <div className="flex items-center gap-1.5">
+                <div className="rounded-xl bg-black/35 px-2.5 py-1 text-sm font-extrabold text-white backdrop-blur-sm">
+                  🚪 {hud.gates}
                 </div>
+                <div className="min-w-[4.5rem] rounded-xl bg-black/35 px-2.5 py-1 text-right text-sm font-extrabold tabular-nums text-white backdrop-blur-sm">
+                  {hud.score}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Menyu */}
+          {phase !== "playing" && phase !== "over" && (
+            <div className="absolute inset-0 flex flex-col items-center justify-between bg-gradient-to-b from-indigo-950/80 via-slate-900/20 to-slate-950/85 p-4 text-center text-white">
+              <div className="mt-1">
+                <span className="inline-block rounded-full bg-white/15 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.2em] text-amber-200 ring-1 ring-white/20 backdrop-blur-sm">
+                  yugur · o&apos;rgan · g&apos;olib bo&apos;l
+                </span>
+                <h2 className="mt-2 text-4xl font-black leading-[0.95] tracking-tight drop-shadow-lg sm:text-5xl">
+                  So&apos;z
+                  <br />
+                  <span className="bg-gradient-to-r from-amber-300 via-orange-300 to-rose-300 bg-clip-text text-transparent">
+                    Poygasi
+                  </span>
+                </h2>
+              </div>
+
+              <p className="max-w-[17rem] text-sm font-bold leading-snug text-white/90 drop-shadow">
+                Yuguring, eshikda ruscha tarjimani toping va hamma bilan bellashing!
+              </p>
+
+              <div className="w-full pb-1">
+                <button
+                  onClick={start}
+                  disabled={phase === "loading"}
+                  className="rounded-2xl border-b-4 border-emerald-800 bg-gradient-to-b from-emerald-300 to-emerald-500 px-14 py-3.5 text-lg font-black uppercase tracking-wide text-emerald-950 shadow-xl transition active:translate-y-0.5 active:border-b-2 disabled:opacity-70"
+                  style={{ animation: phase === "loading" ? undefined : "poygaPop 1.8s ease-in-out infinite" }}
+                >
+                  {phase === "loading" ? "Yuklanmoqda..." : "▶ Boshlash"}
+                </button>
+                <p className="mt-2 text-[11px] font-semibold text-white/60">Kompyuterda: strelkalar yoki WASD · javob: 1–4</p>
+                {best > 0 && (
+                  <p className="mt-1 inline-block rounded-full bg-black/30 px-3 py-1 text-xs font-extrabold text-amber-300">
+                    🏅 Rekordingiz: {best}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Natija */}
+          {phase === "over" && result && (
+            <div className="absolute inset-0 overflow-y-auto bg-gradient-to-b from-slate-900/80 to-indigo-950/90 p-4 text-white backdrop-blur-[2px]">
+              <div className="mx-auto flex min-h-full max-w-xs flex-col items-center justify-center gap-2 text-center">
+                <p className="text-5xl drop-shadow">{newBest ? "🏆" : "🏁"}</p>
+                <h2 className="text-xl font-black">{newBest ? "Yangi rekord!" : "Poyga tugadi"}</h2>
+                <p className="text-5xl font-black tabular-nums text-amber-300 drop-shadow">{result.score}</p>
+                <p className="-mt-1 text-[10px] font-bold uppercase tracking-[0.25em] text-white/50">ball</p>
+
+                <div className="mt-1 grid w-full grid-cols-3 gap-2 text-center">
+                  {[
+                    [`${result.distance} m`, "masofa"],
+                    [`${result.gates}`, "eshik ochildi"],
+                    [`${result.level}`, "daraja"],
+                  ].map(([v, l]) => (
+                    <div key={l} className="rounded-xl bg-white/12 px-1 py-2 ring-1 ring-white/15">
+                      <p className="text-base font-black tabular-nums">{v}</p>
+                      <p className="text-[10px] font-bold uppercase tracking-wide text-white/55">{l}</p>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs font-bold text-sky-200">{levelName(result.level)}</p>
+
+                {rank !== null && (
+                  <p className="rounded-full bg-amber-400/20 px-3 py-1 text-sm font-extrabold text-amber-200 ring-1 ring-amber-300/30">
+                    🏅 Reytingda {rank}-o&apos;rin
+                  </p>
+                )}
+                {xpGain !== null && xpGain > 0 && <p className="text-base font-extrabold text-emerald-300">+{xpGain} ball hisobingizga</p>}
+
+                {result.mistakes.length > 0 && (
+                  <div className="mt-1 w-full rounded-xl bg-white/10 p-2.5 text-left text-sm ring-1 ring-white/10">
+                    <p className="mb-1 text-[10px] font-extrabold uppercase tracking-wide text-white/55">Xatolar: eslab qoling</p>
+                    <ul className="space-y-1.5">
+                      {result.mistakes.slice(0, 4).map((m, i) => (
+                        <li key={i}>
+                          <span className="font-bold">{m.prompt}</span>
+                          <span className="text-white/50"> → </span>
+                          <span className="font-semibold text-emerald-300">{m.correct}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                <button
+                  onClick={start}
+                  className="mt-2 w-full rounded-2xl border-b-4 border-emerald-800 bg-gradient-to-b from-emerald-300 to-emerald-500 py-3 text-base font-black uppercase tracking-wide text-emerald-950 shadow-lg transition active:translate-y-0.5 active:border-b-2"
+                >
+                  ↻ Yana o&apos;ynash
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Pastki panel: savol yoki ko'rsatma */}
+        <div className={`${card} mt-3 p-3.5`} style={{ minHeight: 168 }}>
+          {playing && question ? (
+            <div>
+              <div className="h-2.5 overflow-hidden rounded-full bg-slate-200">
+                <div
+                  ref={askBarRef}
+                  className="h-full origin-left rounded-full bg-gradient-to-r from-amber-400 to-rose-400"
+                  style={{ transform: "scaleX(1)" }}
+                />
+              </div>
+              <div className="mt-2.5 flex items-baseline justify-between gap-2">
+                <p className={`break-words font-extrabold text-slate-800 ${isGap ? "text-lg leading-snug" : "text-2xl"}`}>
+                  {question.prompt}
+                </p>
+                {question.hint && <span className="shrink-0 text-xs font-bold text-slate-400">[{question.hint}]</span>}
+              </div>
+              <div className={`mt-2.5 grid gap-2 ${isGap ? "grid-cols-1" : "grid-cols-2"}`}>
+                {question.options.map((opt, i) => {
+                  let cls = "border-slate-200 bg-white text-slate-700 active:bg-slate-100";
+                  if (reveal) {
+                    if (i === reveal.correct) cls = "border-emerald-500 bg-emerald-50 text-emerald-700";
+                    else if (i === reveal.chosen) cls = "border-rose-500 bg-rose-50 text-rose-600";
+                    else cls = "border-slate-200 bg-white text-slate-400";
+                  }
+                  return (
+                    <button
+                      key={i}
+                      disabled={!!reveal}
+                      onClick={() => engineRef.current?.answer(i)}
+                      className={`flex items-center gap-2 rounded-xl border-2 px-3 py-2.5 text-left text-sm font-bold transition ${cls}`}
+                    >
+                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-slate-100 text-[11px] font-extrabold text-slate-500">
+                        {i + 1}
+                      </span>
+                      <span className="min-w-0 break-words">{opt}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              {reveal && (
+                <p className={`mt-2 text-sm font-extrabold ${reveal.chosen === reveal.correct ? "text-emerald-600" : "text-rose-600"}`}>
+                  {reveal.chosen === reveal.correct
+                    ? "✅ To'g'ri! Eshik ochilmoqda..."
+                    : reveal.chosen < 0
+                      ? "⏰ Vaqt tugadi: bitta jon ketdi"
+                      : "❌ Xato: bitta jon ketdi"}
+                </p>
               )}
-              <button onClick={start} className={`${btnPrimary} mt-2 w-full`}>
-                Yana o&apos;ynash
-              </button>
             </div>
-          </div>
-        )}
+          ) : playing ? (
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wide text-slate-400">Keyingi eshik</p>
+              <div className="mt-1.5 h-2.5 overflow-hidden rounded-full bg-slate-200">
+                <div
+                  ref={gateBarRef}
+                  className="h-full origin-left rounded-full bg-gradient-to-r from-sky-400 to-indigo-500"
+                  style={{ transform: "scaleX(0)" }}
+                />
+              </div>
+              <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs font-bold text-slate-500">
+                <div className="rounded-xl bg-slate-50 p-2">
+                  <p className="text-xl">↔️</p>
+                  <p>Yo&apos;lak</p>
+                </div>
+                <div className="rounded-xl bg-slate-50 p-2">
+                  <p className="text-xl">⬆️</p>
+                  <p>Sakrash</p>
+                </div>
+                <div className="rounded-xl bg-slate-50 p-2">
+                  <p className="text-xl">⬇️</p>
+                  <p>Egilish</p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400">Qanday o&apos;ynaladi</p>
+              <div className="mt-2 grid grid-cols-3 gap-2 text-center">
+                {[
+                  ["🏃", "Yuguring", "To'siqlardan sakrab, egilib, yo'lakni almashtirib o'ting", "bg-emerald-50 text-emerald-700"],
+                  ["🚪", "Eshik oching", "Ruscha so'zning tarjimasini toping. Oxirida gaplar!", "bg-amber-50 text-amber-700"],
+                  ["🏆", "G'olib bo'ling", "Ball yig'ing va peshqadamlar ro'yxatiga kiring", "bg-violet-50 text-violet-700"],
+                ].map(([icon, title, text, tone]) => (
+                  <div key={title} className={`rounded-xl p-2.5 ${tone}`}>
+                    <p className="text-2xl">{icon}</p>
+                    <p className="mt-0.5 text-xs font-black">{title}</p>
+                    <p className="mt-0.5 text-[10.5px] font-semibold leading-snug opacity-80">{text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Pastki panel: savol yoki ko'rsatma */}
-      <div className={`${card} mt-3 p-3.5`} style={{ minHeight: 168 }}>
-        {playing && question ? (
-          <div>
-            <div className="h-2 overflow-hidden rounded-full bg-slate-200">
-              <div
-                ref={askBarRef}
-                className="h-full origin-left rounded-full bg-amber-400"
-                style={{ transform: "scaleX(1)" }}
-              />
-            </div>
-            <div className="mt-2.5 flex items-baseline justify-between gap-2">
-              <p className={`font-extrabold text-slate-800 break-words ${isGap ? "text-lg leading-snug" : "text-2xl"}`}>
-                {question.prompt}
-              </p>
-              {question.hint && <span className="shrink-0 text-xs font-bold text-slate-400">[{question.hint}]</span>}
-            </div>
-            <div className={`mt-2.5 grid gap-2 ${isGap ? "grid-cols-1" : "grid-cols-2"}`}>
-              {question.options.map((opt, i) => {
-                let cls = "border-slate-200 bg-white text-slate-700 active:bg-slate-100";
-                if (reveal) {
-                  if (i === reveal.correct) cls = "border-emerald-500 bg-emerald-50 text-emerald-700";
-                  else if (i === reveal.chosen) cls = "border-rose-500 bg-rose-50 text-rose-600";
-                  else cls = "border-slate-200 bg-white text-slate-400";
-                }
-                return (
-                  <button
-                    key={i}
-                    disabled={!!reveal}
-                    onClick={() => engineRef.current?.answer(i)}
-                    className={`flex items-center gap-2 rounded-xl border-2 px-3 py-2.5 text-left text-sm font-bold transition ${cls}`}
-                  >
-                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-slate-100 text-[11px] font-extrabold text-slate-500">
-                      {i + 1}
-                    </span>
-                    <span className="min-w-0 break-words">{opt}</span>
-                  </button>
-                );
-              })}
-            </div>
-            {reveal && (
-              <p className={`mt-2 text-sm font-extrabold ${reveal.chosen === reveal.correct ? "text-emerald-600" : "text-rose-600"}`}>
-                {reveal.chosen === reveal.correct
-                  ? "✅ To'g'ri! Eshik ochilmoqda..."
-                  : reveal.chosen < 0
-                    ? "⏰ Vaqt tugadi — bitta jon ketdi"
-                    : "❌ Xato — bitta jon ketdi"}
-              </p>
-            )}
-          </div>
-        ) : playing ? (
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wide text-slate-400">Keyingi eshik</p>
-            <div className="mt-1.5 h-2.5 overflow-hidden rounded-full bg-slate-200">
-              <div
-                ref={gateBarRef}
-                className="h-full origin-left rounded-full bg-sky-500"
-                style={{ transform: "scaleX(0)" }}
-              />
-            </div>
-            <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs font-bold text-slate-500">
-              <div className="rounded-xl bg-slate-50 p-2">
-                <p className="text-xl">↔️</p>
-                <p>Yo&apos;lak</p>
-              </div>
-              <div className="rounded-xl bg-slate-50 p-2">
-                <p className="text-xl">⬆️</p>
-                <p>Sakrash</p>
-              </div>
-              <div className="rounded-xl bg-slate-50 p-2">
-                <p className="text-xl">⬇️</p>
-                <p>Egilish</p>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="flex h-full min-h-[140px] flex-col items-center justify-center text-center">
-            <p className="text-sm font-bold text-slate-500">
-              Eshikda ruscha so&apos;z yoki gap chiqadi — o&apos;zbekcha tarjimasini toping.
-            </p>
-            <p className="mt-1 text-xs text-slate-400">Avval oson so&apos;zlar, keyin qiyinroq, oxirida gaplar. Har bir to&apos;g&apos;ri javob uchun ball beriladi.</p>
-            <button onClick={start} className={`${btnSecondary} mt-3 px-6 py-2 text-sm`} disabled={phase === "loading"}>
-              Boshlash
-            </button>
-          </div>
-        )}
+      {/* ───── O'ng ustun: reyting ───── */}
+      <div className="lg:sticky lg:top-20">
+        <RunnerLeaderboard refreshKey={boardKey} />
       </div>
-
-      <RunnerLeaderboard refreshKey={boardKey} />
     </div>
   );
 }
