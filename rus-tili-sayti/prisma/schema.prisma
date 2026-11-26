@@ -41,6 +41,7 @@ model User {
   dailyChests       DailyChest[]
   voiceRecordings   VoiceRecording[]
   pushSubscriptions PushSubscription[]
+  runScore          RunScore?
   telegramLink      TelegramLink?
   group             Group?             @relation(fields: [groupId], references: [id], onDelete: SetNull)
 }
@@ -238,4 +239,20 @@ model XpEvent {
 
   @@index([userId, createdAt])
   @@index([createdAt])
+}
+
+// "Yugur va o'rgan" o'yini: har bir foydalanuvchining eng yaxshi natijasi (reyting uchun)
+model RunScore {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  bestScore    Int      @default(0)
+  bestDistance Int      @default(0)
+  bestGates    Int      @default(0)
+  bestLevel    Int      @default(0)
+  plays        Int      @default(0)
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([bestScore])
 }

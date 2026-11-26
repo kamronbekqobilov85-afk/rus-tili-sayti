@@ -24,8 +24,17 @@ export type RunResult = {
   distance: number;
   score: number;
   gates: number; // to'g'ri ochilgan eshiklar soni
+  level: number; // yetib borilgan daraja (uchragan eshiklar soni)
+  seconds: number; // o'yin davomiyligi
   mistakes: Mistake[];
 };
+
+// Daraja nomi: avval oson so'zlar, keyin qiyinroq so'zlar, oxirida gaplar
+export function levelName(level: number): string {
+  if (level <= 3) return "Oson so'zlar";
+  if (level <= 6) return "Qiyin so'zlar";
+  return "Gaplar";
+}
 
 export type Hud = { score: number; lives: number; gates: number };
 
@@ -338,7 +347,14 @@ export function createEngine(canvas: HTMLCanvasElement, bank: Bank, cb: Callback
       cb.onQuestion(null);
       cb.onReveal(null);
     }
-    cb.onOver({ distance: Math.floor(distance), score: score(), gates: gatesOk, mistakes: [...mistakes] });
+    cb.onOver({
+      distance: Math.floor(distance),
+      score: score(),
+      gates: gatesOk,
+      level: gatesSeen,
+      seconds: Math.ceil(time),
+      mistakes: [...mistakes],
+    });
   }
 
   function score() {

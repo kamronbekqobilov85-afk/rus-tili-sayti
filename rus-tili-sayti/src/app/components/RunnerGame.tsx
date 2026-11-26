@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { createEngine } from "../yugur/engine";
+import { createEngine, levelName } from "../yugur/engine";
 import type { Bank, Engine, Hud, Question, RunResult } from "../yugur/engine";
+import RunnerLeaderboard from "./RunnerLeaderboard";
 import { btnPrimary, btnSecondary, card } from "./ui";
 
 const BEST_KEY = "yugur-best";
@@ -34,6 +35,8 @@ export default function RunnerGame() {
   const [xpGain, setXpGain] = useState<number | null>(null);
   const [best, setBest] = useState(0);
   const [newBest, setNewBest] = useState(false);
+  const [rank, setRank] = useState<number | null>(null);
+  const [boardKey, setBoardKey] = useState(0);
   const phaseRef = useRef<Phase>("menu");
 
   useEffect(() => {
@@ -75,6 +78,25 @@ export default function RunnerGame() {
         }
         // O'yin tugaganini biroz kechiktirib ko'rsatamiz — to'qnashuv ko'rinib tursin
         setTimeout(() => setPhase("over"), 650);
+        // Natijani reytingga yuboramiz (serverda eng yaxshisi saqlanadi)
+        if (r.score > 0) {
+          fetch("/api/yugur/score", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              distance: r.distance,
+              gates: r.gates,
+              level: r.level,
+              seconds: r.seconds,
+            }),
+          })
+            .then((res) => (res.ok ? res.json() : null))
+            .then((d) => {
+              if (d?.ok && typeof d.rank === "number") setRank(d.rank);
+            })
+            .catch(() => {})
+            .finally(() => setBoardKey((n) => n + 1));
+        }
         if (r.gates > 0) {
           fetch("/api/xp", {
             method: "POST",
@@ -201,6 +223,7 @@ export default function RunnerGame() {
     setReveal(null);
     setResult(null);
     setXpGain(null);
+    setRank(null);
     setHud({ score: 0, lives: 3, gates: 0 });
     setPhase("playing");
     setRunId((n) => n + 1);
@@ -268,6 +291,10 @@ export default function RunnerGame() {
               <p className="text-sm font-semibold text-white/85">
                 {result.distance} m · 🚪 {result.gates} ta eshik ochildi
               </p>
+              <p className="text-xs font-bold text-sky-200">
+                {result.level}-daraja · {levelName(result.level)}
+              </p>
+              {rank !== null && <p className="text-sm font-extrabold text-amber-200">🏅 Reytingda {rank}-o&apos;rin</p>}
               {xpGain !== null && xpGain > 0 && <p className="text-lg font-extrabold text-emerald-300">+{xpGain} ball</p>}
               {best > 0 && <p className="text-xs font-bold text-white/70">Eng yaxshi: {best}</p>}
               {result.mistakes.length > 0 && (
@@ -379,6 +406,8 @@ export default function RunnerGame() {
           </div>
         )}
       </div>
+
+      <RunnerLeaderboard refreshKey={boardKey} />
     </div>
   );
 }
