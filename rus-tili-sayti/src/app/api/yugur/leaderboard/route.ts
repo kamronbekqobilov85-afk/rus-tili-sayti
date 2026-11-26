@@ -22,7 +22,7 @@ const SELECT = {
   user: { select: { name: true, image: true } },
 } as const;
 
-// "Yugur va o'rgan" reytingi: eng yuqori ball, yetib borilgan daraja va eshiklar soni
+// "So'z Poygasi" reytingi: eng yuqori ball, yetib borilgan daraja va eshiklar soni
 export async function GET() {
   const session = await auth();
   const myId = session?.user?.id;
@@ -30,7 +30,7 @@ export async function GET() {
   const top = await prisma.runScore.findMany({
     where: { bestScore: { gt: 0 } },
     orderBy: [{ bestScore: "desc" }, { updatedAt: "asc" }],
-    take: 20,
+    take: 50,
     select: SELECT,
   });
 

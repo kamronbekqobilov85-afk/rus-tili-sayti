@@ -344,16 +344,16 @@ export default function HomeClient({ counts }: { counts: Counts }) {
           </Link>
         </div>
 
-        {/* Yugur va o'rgan — o'yin */}
+        {/* So'z Poygasi — o'yin */}
         <Link
           href="/yugur"
           className="mt-3 flex items-center gap-3 rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-50 to-white p-3.5 transition active:scale-[0.98]"
         >
-          <span className="text-3xl">🏃</span>
+          <span className="text-3xl">🏁</span>
           <span className="flex-1">
-            <span className="block font-extrabold text-sky-900">Yugur va o&apos;rgan</span>
+            <span className="block font-extrabold text-sky-900">So&apos;z Poygasi</span>
             <span className="block text-xs leading-snug text-sky-800/80">
-              To&apos;siqlardan sakrang, eshikda tarjimani toping — ball yig&apos;ing
+              Yuguring, eshikda tarjimani toping va hamma bilan reytingda bellashing
             </span>
           </span>
           <span className="text-xl font-bold text-sky-700">→</span>

@@ -266,8 +266,9 @@ export default function RunnerGame() {
         {/* Menyu */}
         {phase !== "playing" && phase !== "over" && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-slate-900/55 p-5 text-center text-white backdrop-blur-[2px]">
-            <p className="text-5xl">🏃</p>
-            <h2 className="text-2xl font-extrabold leading-tight">Yugur va o&apos;rgan</h2>
+            <p className="text-5xl">🏁</p>
+            <h2 className="text-2xl font-extrabold leading-tight">So&apos;z Poygasi</h2>
+            <p className="-mt-1 text-xs font-bold uppercase tracking-widest text-amber-300">yugur · o&apos;rgan · g&apos;olib bo&apos;l</p>
             <ul className="space-y-1 text-sm font-semibold text-white/90">
               <li>⬅️ ➡️ yo&apos;lakni almashtiring</li>
               <li>⬆️ sakrang (pastdagi to&apos;siq) · ⬇️ egiling (tepadagi to&apos;siq)</li>

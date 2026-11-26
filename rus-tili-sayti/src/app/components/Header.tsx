@@ -16,7 +16,7 @@ const links = [
   { href: "/tinglash", label: "Tinglash", short: "Tinglash", icon: "🎧" },
   { href: "/yozish", label: "Yozish", short: "Yozish", icon: "✍️" },
   { href: "/video", label: "Video", short: "Video", icon: "🎬" },
-  { href: "/yugur", label: "Yugur", short: "O'yin", icon: "🏃" },
+  { href: "/yugur", label: "So'z Poygasi", short: "Poyga", icon: "🏁" },
 ];
 
 function isActive(pathname: string, href: string) {

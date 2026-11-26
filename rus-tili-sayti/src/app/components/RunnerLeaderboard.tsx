@@ -58,7 +58,7 @@ function RowView({ row, rank, mine }: { row: Row; rank: number; mine: boolean })
   );
 }
 
-// "Yugur va o'rgan" reytingi: eng yuqori ball, yetib borilgan daraja, eshiklar soni
+// "So'z Poygasi" reytingi: eng yuqori ball, yetib borilgan daraja, eshiklar soni
 export default function RunnerLeaderboard({ refreshKey }: { refreshKey: number }) {
   const { data: session } = useSession();
   const [items, setItems] = useState<Row[] | null>(null);
@@ -95,9 +95,9 @@ export default function RunnerLeaderboard({ refreshKey }: { refreshKey: number }
 
   return (
     <section className={`${card} mt-4 p-3.5`}>
-      <h2 className="text-lg font-extrabold text-slate-800">🏆 O&apos;yin reytingi</h2>
+      <h2 className="text-lg font-extrabold text-slate-800">🏆 Poyga peshqadamlari</h2>
       <p className="mt-0.5 text-xs font-semibold text-slate-500">
-        Eng yuqori ball to&apos;plaganlar va ular yetib borgan daraja
+        Barcha o&apos;yinchilar reytingi: kim qancha ball to&apos;plagan va qaysi darajaga yetgan
       </p>
 
       {items === null && !failed && <p className="mt-4 text-center text-sm text-slate-400">Yuklanmoqda...</p>}
@@ -106,7 +106,7 @@ export default function RunnerLeaderboard({ refreshKey }: { refreshKey: number }
       )}
       {items && items.length === 0 && (
         <p className="mt-4 text-center text-sm font-bold text-slate-500">
-          Hali hech kim o&apos;ynamagan. Birinchi bo&apos;ling! 🏃
+          Poyga hali boshlanmadi. Birinchi bo&apos;ling! 🏁
         </p>
       )}
       {items && items.length > 0 && (

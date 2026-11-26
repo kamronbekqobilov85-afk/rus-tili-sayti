@@ -4,8 +4,8 @@ import RunnerGame from "../components/RunnerGame";
 import { pageShell } from "../components/ui";
 
 export const metadata: Metadata = {
-  title: "Yugur va o'rgan — Rus tili",
-  description: "Yuguring, to'siqlardan sakrab o'ting va eshiklarda ruscha so'z va gaplarning tarjimasini toping.",
+  title: "So'z Poygasi — Rus tili",
+  description: "So'z Poygasi: yuguring, to'siqlardan o'ting, eshiklarda ruscha so'z va gaplarni tarjima qiling va reytingda hamma bilan bellashing.",
 };
 
 export default function YugurPage() {
