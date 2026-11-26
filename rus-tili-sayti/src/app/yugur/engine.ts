@@ -38,7 +38,10 @@ export function levelName(level: number): string {
 
 export type Hud = { score: number; lives: number; gates: number };
 
+export type Sfx = "jump" | "slide" | "lane" | "hit" | "ok" | "bad" | "gate" | "over";
+
 export type Callbacks = {
+  sfx: (name: Sfx) => void;
   onHud: (h: Hud) => void;
   onQuestion: (q: Question | null) => void;
   onReveal: (r: { chosen: number; correct: number } | null) => void;
@@ -293,17 +296,25 @@ export function createEngine(canvas: HTMLCanvasElement, bank: Bank, cb: Callback
   function input(cmd: "left" | "right" | "jump" | "slide") {
     if (phase !== "run" || paused) return;
     if (gate && (gate.state === "ask" || gate.state === "reveal")) return;
-    if (cmd === "left") laneTarget = Math.max(-1, laneTarget - 1);
-    else if (cmd === "right") laneTarget = Math.min(1, laneTarget + 1);
-    else if (cmd === "jump") {
+    if (cmd === "left" || cmd === "right") {
+      const next = Math.max(-1, Math.min(1, laneTarget + (cmd === "left" ? -1 : 1)));
+      if (next !== laneTarget) {
+        laneTarget = next;
+        cb.sfx("lane");
+      }
+    } else if (cmd === "jump") {
       if (!airborne) {
+        cb.sfx("jump");
         airborne = true;
         jumpV = JUMP_V;
         slideT = 0;
       }
     } else if (cmd === "slide") {
       if (airborne) jumpV = Math.min(jumpV, -14); // tez tushish
-      else slideT = SLIDE_TIME;
+      else {
+        slideT = SLIDE_TIME;
+        cb.sfx("slide");
+      }
     }
   }
 
@@ -330,6 +341,7 @@ export function createEngine(canvas: HTMLCanvasElement, bank: Bank, cb: Callback
     flashColor = "255,60,60";
     vibrate(why === "obstacle" ? 90 : 60);
     if (why === "obstacle") {
+      cb.sfx("hit");
       invT = 1.5;
       resumeT = 0.35;
       burst(W / 2 + px * laneW, playerY - laneW * 0.5, ["#ffd34d", "#ff7a59", "#ffffff"], 14, 160);
@@ -342,6 +354,7 @@ export function createEngine(canvas: HTMLCanvasElement, bank: Bank, cb: Callback
     if (phase === "over") return;
     phase = "over";
     overT = 0;
+    cb.sfx("over");
     if (curQ) {
       curQ = null;
       cb.onQuestion(null);
@@ -378,6 +391,7 @@ export function createEngine(canvas: HTMLCanvasElement, bank: Bank, cb: Callback
     revealT = 0;
     if (ok) {
       gatesOk++;
+      cb.sfx("ok");
       gate.result = "ok";
       flash = 0.35;
       flashColor = "80,220,120";
@@ -385,6 +399,7 @@ export function createEngine(canvas: HTMLCanvasElement, bank: Bank, cb: Callback
       vibrate(25);
     } else {
       gate.result = "bad";
+      cb.sfx("bad");
       mistakes.push({ prompt: q.prompt, correct: q.options[q.correct] });
       cb.onReveal({ chosen: index, correct: q.correct });
       loseLife("wrong");
@@ -505,6 +520,7 @@ export function createEngine(canvas: HTMLCanvasElement, bank: Bank, cb: Callback
         gate.label = curQ.kind === "word" ? curQ.prompt : "🔒";
         askT = 0;
         cb.onReveal(null);
+        cb.sfx("gate");
         cb.onQuestion(curQ);
       } else if (gate.state === "ask" && curQ) {
         askT += dt;

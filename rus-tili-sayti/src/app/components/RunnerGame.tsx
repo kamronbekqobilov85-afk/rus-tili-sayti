@@ -2,11 +2,47 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createEngine, levelName } from "../yugur/engine";
-import type { Bank, Engine, Hud, Question, RunResult } from "../yugur/engine";
+import type { Bank, Engine, Hud, Question, RunResult, Sfx } from "../yugur/engine";
 import RunnerLeaderboard from "./RunnerLeaderboard";
 import { btnPrimary, btnSecondary, card } from "./ui";
 
 const BEST_KEY = "yugur-best";
+const MUTE_KEY = "yugur-mute";
+
+// Tovush effektlari: tashqi fayllarsiz, Web Audio bilan hosil qilinadi
+type Note = { f: number; t: number; d: number; type?: OscillatorType; v?: number; to?: number };
+const SOUNDS: Record<Sfx, Note[]> = {
+  jump: [{ f: 360, to: 720, t: 0, d: 0.14, type: "square", v: 0.05 }],
+  slide: [{ f: 420, to: 160, t: 0, d: 0.16, type: "sawtooth", v: 0.04 }],
+  lane: [{ f: 520, to: 600, t: 0, d: 0.05, type: "triangle", v: 0.04 }],
+  hit: [{ f: 160, to: 50, t: 0, d: 0.28, type: "sawtooth", v: 0.1 }],
+  ok: [
+    { f: 660, t: 0, d: 0.1, type: "triangle", v: 0.09 },
+    { f: 880, t: 0.1, d: 0.1, type: "triangle", v: 0.09 },
+    { f: 1320, t: 0.2, d: 0.2, type: "triangle", v: 0.09 },
+  ],
+  bad: [
+    { f: 220, t: 0, d: 0.16, type: "square", v: 0.07 },
+    { f: 150, t: 0.16, d: 0.26, type: "square", v: 0.07 },
+  ],
+  gate: [
+    { f: 520, t: 0, d: 0.1, type: "sine", v: 0.08 },
+    { f: 520, t: 0.16, d: 0.1, type: "sine", v: 0.08 },
+  ],
+  over: [
+    { f: 392, t: 0, d: 0.2, type: "triangle", v: 0.09 },
+    { f: 330, t: 0.2, d: 0.2, type: "triangle", v: 0.09 },
+    { f: 262, t: 0.4, d: 0.4, type: "triangle", v: 0.09 },
+  ],
+};
+
+function readMuted(): boolean {
+  try {
+    return localStorage.getItem(MUTE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
 
 type Phase = "menu" | "loading" | "playing" | "over";
 
@@ -38,6 +74,62 @@ export default function RunnerGame() {
   const [rank, setRank] = useState<number | null>(null);
   const [boardKey, setBoardKey] = useState(0);
   const phaseRef = useRef<Phase>("menu");
+  const audioRef = useRef<AudioContext | null>(null);
+  const mutedRef = useRef(false);
+  const [muted, setMuted] = useState(false);
+
+  const playSfx = useCallback((name: Sfx) => {
+    if (mutedRef.current) return;
+    try {
+      let ac = audioRef.current;
+      if (!ac) {
+        const Ctor = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+        if (!Ctor) return;
+        ac = new Ctor();
+        audioRef.current = ac;
+      }
+      if (ac.state === "suspended") void ac.resume();
+      const t0 = ac.currentTime;
+      for (const n of SOUNDS[name]) {
+        const osc = ac.createOscillator();
+        const g = ac.createGain();
+        osc.type = n.type ?? "sine";
+        osc.frequency.setValueAtTime(n.f, t0 + n.t);
+        if (n.to) osc.frequency.exponentialRampToValueAtTime(n.to, t0 + n.t + n.d);
+        g.gain.setValueAtTime(0.0001, t0 + n.t);
+        g.gain.exponentialRampToValueAtTime(n.v ?? 0.06, t0 + n.t + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + n.t + n.d);
+        osc.connect(g).connect(ac.destination);
+        osc.start(t0 + n.t);
+        osc.stop(t0 + n.t + n.d + 0.02);
+      }
+    } catch {
+      // tovush ishlamasa ham o'yin davom etadi
+    }
+  }, []);
+
+  const toggleMute = useCallback(() => {
+    const next = !mutedRef.current;
+    mutedRef.current = next;
+    setMuted(next);
+    try {
+      localStorage.setItem(MUTE_KEY, next ? "1" : "0");
+    } catch {
+      // saqlab bo'lmadi
+    }
+  }, []);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      const m = readMuted();
+      mutedRef.current = m;
+      setMuted(m);
+    }, 0);
+    return () => {
+      clearTimeout(t);
+      void audioRef.current?.close();
+    };
+  }, []);
 
   useEffect(() => {
     phaseRef.current = phase;
@@ -53,6 +145,7 @@ export default function RunnerGame() {
   useEffect(() => {
     if (runId === 0 || !canvasRef.current || !bankRef.current) return;
     const engine = createEngine(canvasRef.current, bankRef.current, {
+      sfx: playSfx,
       onHud: setHud,
       onQuestion: (q) => setQuestion(q),
       onReveal: (r) => setReveal(r),
@@ -114,7 +207,7 @@ export default function RunnerGame() {
       engine.destroy();
       engineRef.current = null;
     };
-  }, [runId]);
+  }, [runId, playSfx]);
 
   // O'lcham o'zgarishi va sahifadan chiqib ketganda to'xtatish
   useEffect(() => {
@@ -198,6 +291,7 @@ export default function RunnerGame() {
 
   const start = useCallback(async () => {
     setPhase("loading");
+    playSfx("lane"); // brauzer tovushga ruxsat berishi uchun (bosish paytida yoqiladi)
     try {
       if (!bankRef.current) {
         // Katta ma'lumotlar faqat o'yin boshlanganda yuklanadi — sahifa tez ochiladi
@@ -227,7 +321,7 @@ export default function RunnerGame() {
     setHud({ score: 0, lives: 3, gates: 0 });
     setPhase("playing");
     setRunId((n) => n + 1);
-  }, []);
+  }, [playSfx]);
 
   const playing = phase === "playing";
   const isGap = question?.kind === "gap";
@@ -241,6 +335,15 @@ export default function RunnerGame() {
         style={{ height: "clamp(300px, 46dvh, 520px)" }}
       >
         <canvas ref={canvasRef} className="block h-full w-full" style={{ touchAction: "none" }} />
+
+        {/* Tovushni o'chirish/yoqish */}
+        <button
+          onClick={toggleMute}
+          aria-label={muted ? "Tovushni yoqish" : "Tovushni o'chirish"}
+          className="absolute bottom-2 right-2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/35 text-base text-white backdrop-blur-sm active:scale-95"
+        >
+          {muted ? "🔇" : "🔊"}
+        </button>
 
         {/* HUD */}
         {playing && (
