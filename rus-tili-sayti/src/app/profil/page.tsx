@@ -62,6 +62,11 @@ export default function ProfilPage() {
   const referralLink =
     typeof window !== "undefined" ? `${window.location.origin}/?ref=${stats.referralCode}` : "";
 
+  // Telegram/WhatsApp'da ulashilganda chiroyli ko'rinishi uchun tayyor matn —
+  // URL alohida yuboriladi, shunda Telegram o'zining rasmli preview kartasini chiqaradi
+  const inviteText =
+    "🎓 Rus tilini BEPUL o'rganing!\n\nMen shu ilovada mashq qilyapman — qo'shiling, birga o'rganamiz! 📚🏆\n\nHavolam orqali kirsangiz, menga 100 ball sovg'a bo'ladi 🎁";
+
   const sharePercent = Math.min(100, Math.round((stats.todayXp / stats.dailyGoal) * 100));
 
   async function changeGoal(goal: number) {
@@ -207,7 +212,7 @@ export default function ProfilPage() {
             <div className="mt-3 flex flex-wrap gap-2">
               <a
                 href={`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(
-                  "Men rus tilini bu saytda o'rganyapman, sen ham urinib ko'r:"
+                  inviteText
                 )}`}
                 target="_blank"
                 rel="noreferrer"
@@ -216,9 +221,7 @@ export default function ProfilPage() {
                 Telegram
               </a>
               <a
-                href={`https://wa.me/?text=${encodeURIComponent(
-                  `Men rus tilini bu saytda o'rganyapman, sen ham urinib ko'r: ${referralLink}`
-                )}`}
+                href={`https://wa.me/?text=${encodeURIComponent(`${inviteText}\n${referralLink}`)}`}
                 target="_blank"
                 rel="noreferrer"
                 className={`${btnSecondary} px-4 py-2 text-sm`}

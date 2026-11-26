@@ -52,7 +52,7 @@ export default function ReviewPage() {
 
   if (phase === "loading") {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 via-white to-white">
         <Header />
       </div>
     );
@@ -60,12 +60,12 @@ export default function ReviewPage() {
 
   if (phase === "empty") {
     return (
-      <div className="min-h-screen bg-white flex flex-col">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 via-white to-white flex flex-col">
         <Header />
         <div className="mx-auto w-full max-w-md px-4 py-10 text-center">
           <div className="mb-2 text-7xl">✅</div>
-          <h1 className="mb-2 text-3xl font-extrabold text-gray-800">Bugun takrorlash yo'q</h1>
-          <p className="mb-6 font-bold text-gray-500">
+          <h1 className="mb-2 text-3xl font-extrabold text-slate-800">Bugun takrorlash yo'q</h1>
+          <p className="mb-6 font-bold text-slate-500">
             Yangi darslarni tugatgan sari, gaplar takrorlash uchun shu yerga qo'shiladi.
           </p>
           <Link
@@ -81,12 +81,12 @@ export default function ReviewPage() {
 
   if (phase === "intro") {
     return (
-      <div className="min-h-screen bg-white flex flex-col">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 via-white to-white flex flex-col">
         <Header />
         <div className="mx-auto w-full max-w-md px-4 py-10 text-center">
           <div className="mb-2 text-7xl">🔁</div>
-          <h1 className="mb-2 text-3xl font-extrabold text-gray-800">Gaplarni takrorlash</h1>
-          <p className="mb-6 font-bold text-gray-500">
+          <h1 className="mb-2 text-3xl font-extrabold text-slate-800">Gaplarni takrorlash</h1>
+          <p className="mb-6 font-bold text-slate-500">
             Bugun takrorlash kerak: {due.length} ta gap. Bu safar {Math.min(due.length, SESSION_SIZE)} tasi so'raladi.
             Jon yo'qotmaysiz.
           </p>
@@ -97,7 +97,7 @@ export default function ReviewPage() {
             >
               Boshlash
             </button>
-            <Link href="/yol" className="block text-sm font-extrabold uppercase tracking-wide text-gray-400">
+            <Link href="/yol" className="block text-sm font-extrabold uppercase tracking-wide text-slate-400">
               ← Yo'l
             </Link>
           </div>
@@ -108,12 +108,12 @@ export default function ReviewPage() {
 
   if (phase === "done") {
     return (
-      <div className="min-h-screen bg-white flex flex-col">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 via-white to-white flex flex-col">
         <Header />
         <div className="mx-auto w-full max-w-md px-4 py-10 text-center">
           <div className="mb-2 text-7xl">🎉</div>
-          <h1 className="mb-2 text-3xl font-extrabold text-gray-800">Takrorlash tugadi!</h1>
-          <p className="mb-6 text-xl font-extrabold text-gray-500">
+          <h1 className="mb-2 text-3xl font-extrabold text-slate-800">Takrorlash tugadi!</h1>
+          <p className="mb-6 text-xl font-extrabold text-slate-500">
             Birinchi urinishda to'g'ri: <span className="text-green-600">{percent}%</span>
           </p>
           <div className="space-y-3">
@@ -127,7 +127,7 @@ export default function ReviewPage() {
             )}
             <Link
               href="/yol"
-              className={`${btn3d} block border-sky-700 bg-sky-500 text-white hover:bg-sky-400`}
+              className={`${btn3d} block border-indigo-700 bg-indigo-500 text-white hover:bg-indigo-400`}
             >
               Yo'lga qaytish
             </Link>
@@ -138,7 +138,7 @@ export default function ReviewPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-b from-indigo-50 via-white to-white flex flex-col">
       <Header />
       <GapSession
         key={attempt}

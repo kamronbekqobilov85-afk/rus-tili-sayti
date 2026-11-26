@@ -17,6 +17,11 @@ export async function GET(req: Request) {
   const today = new Date();
   const todayKey = todayStr();
 
+  // 14 kundan eski ball hodisalarini o'chiramiz (jadval kattalashib ketmasligi uchun)
+  await prisma.xpEvent
+    .deleteMany({ where: { createdAt: { lt: new Date(Date.now() - 14 * 86_400_000) } } })
+    .catch(() => {});
+
   const users = await prisma.user.findMany({
     where: { email: { not: null } },
     select: { id: true, email: true, name: true, createdAt: true },

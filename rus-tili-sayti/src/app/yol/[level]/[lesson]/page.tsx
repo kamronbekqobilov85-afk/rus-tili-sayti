@@ -52,11 +52,11 @@ export default function LessonPage({
 
   if (!info || gaps.length === 0) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 via-white to-white">
         <Header />
         <div className="p-8 text-center">
-          <p className="mb-4 text-lg font-bold text-gray-600">Dars topilmadi.</p>
-          <Link href="/yol" className="font-extrabold text-sky-600">← Yo'lga qaytish</Link>
+          <p className="mb-4 text-lg font-bold text-slate-600">Dars topilmadi.</p>
+          <Link href="/yol" className="font-extrabold text-indigo-600">← Yo'lga qaytish</Link>
         </div>
       </div>
     );
@@ -64,14 +64,14 @@ export default function LessonPage({
 
   if (unlocked === false) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 via-white to-white">
         <Header />
         <div className="p-8 text-center">
           <p className="mb-2 text-5xl">🔒</p>
-          <p className="mb-4 text-lg font-bold text-gray-600">
+          <p className="mb-4 text-lg font-bold text-slate-600">
             Bu dars hali yopiq. Avval oldingi darsni tugating.
           </p>
-          <Link href="/yol" className="font-extrabold text-sky-600">← Yo'lga qaytish</Link>
+          <Link href="/yol" className="font-extrabold text-indigo-600">← Yo'lga qaytish</Link>
         </div>
       </div>
     );
@@ -97,21 +97,21 @@ export default function LessonPage({
 
   if (phase === "intro") {
     return (
-      <div className="min-h-screen bg-white flex flex-col">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 via-white to-white flex flex-col">
         <Header />
         <div className="mx-auto w-full max-w-xl px-4 py-6">
-          <Link href="/yol" className="text-sm font-extrabold text-sky-600">← Yo'l</Link>
-          <p className="mt-2 text-xs font-extrabold uppercase tracking-wide text-gray-400">
+          <Link href="/yol" className="text-sm font-extrabold text-indigo-600">← Yo'l</Link>
+          <p className="mt-2 text-xs font-extrabold uppercase tracking-wide text-slate-400">
             {level}-daraja · {lesson}-dars
           </p>
-          <h1 className="mb-1 text-3xl font-extrabold text-gray-800">{title}</h1>
-          <p className="mb-3 font-medium text-gray-500">
+          <h1 className="mb-1 text-3xl font-extrabold text-slate-800">{title}</h1>
+          <p className="mb-3 font-medium text-slate-500">
             {gaps.length} ta gap · ❤️ {MAX_HEARTS} jon · 70% dan keyingi dars ochiladi
           </p>
           {dueReview > 0 && (
             <p
               className="mb-4 rounded-2xl px-3 py-2 text-sm font-extrabold"
-              style={{ backgroundColor: "#ddf4ff", color: "#1899d6" }}
+              style={{ backgroundColor: "#e0e7ff", color: "#4338ca" }}
             >
               🔁 Dars boshida oldingi darslardan {Math.min(dueReview, MAX_REVIEW)} ta gap takrorlanadi
             </p>
@@ -132,7 +132,7 @@ export default function LessonPage({
 
           <button
             onClick={() => setShowList((v) => !v)}
-            className="mt-4 w-full text-center text-sm font-extrabold uppercase tracking-wide text-sky-600"
+            className="mt-4 w-full text-center text-sm font-extrabold uppercase tracking-wide text-indigo-600"
           >
             {showList ? "Gaplar ro'yxatini yashirish" : "📋 Avval gaplarni ko'rib chiqish"}
           </button>
@@ -142,18 +142,18 @@ export default function LessonPage({
               {gaps.map((g, i) => (
                 <li
                   key={g.id}
-                  className="flex items-center gap-3 rounded-2xl border-2 border-b-4 border-gray-200 bg-white p-3"
+                  className="flex items-center gap-3 rounded-2xl border-2 border-b-4 border-slate-200 bg-white p-3"
                 >
                   <button
                     onClick={() => speak(g.ru)}
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-b-4 border-sky-700 bg-sky-500 text-lg text-white active:translate-y-0.5 active:border-b-0"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-b-4 border-indigo-700 bg-indigo-500 text-lg text-white active:translate-y-0.5 active:border-b-0"
                     aria-label="Tinglash"
                   >
                     🔊
                   </button>
                   <div className="min-w-0">
-                    <p className="font-extrabold text-gray-800 break-words">{i + 1}. {g.ru}</p>
-                    <p className="text-sm font-medium text-gray-500 break-words">{g.uz}</p>
+                    <p className="font-extrabold text-slate-800 break-words">{i + 1}. {g.ru}</p>
+                    <p className="text-sm font-medium text-slate-500 break-words">{g.uz}</p>
                   </div>
                 </li>
               ))}
@@ -168,22 +168,22 @@ export default function LessonPage({
     const passed = finalStars >= 1;
     const nextHref = lesson < LESSONS_PER_LEVEL ? `/yol/${level}/${lesson + 1}` : `/yol/${level}/imtihon`;
     return (
-      <div className="min-h-screen bg-white flex flex-col">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 via-white to-white flex flex-col">
         <Header />
         <div className="mx-auto w-full max-w-md px-4 py-10 text-center">
           <div className="mb-2 text-7xl">{passed ? "🎉" : "💪"}</div>
-          <h1 className="mb-2 text-3xl font-extrabold text-gray-800">
+          <h1 className="mb-2 text-3xl font-extrabold text-slate-800">
             {passed ? "Dars tugadi!" : "Deyarli bo'ldi!"}
           </h1>
           <p className="mb-2 text-4xl text-yellow-400">
             {"★".repeat(finalStars)}
-            <span className="text-gray-300">{"★".repeat(MAX_STARS - finalStars)}</span>
+            <span className="text-slate-300">{"★".repeat(MAX_STARS - finalStars)}</span>
           </p>
-          <p className="mb-6 text-xl font-extrabold text-gray-500">
+          <p className="mb-6 text-xl font-extrabold text-slate-500">
             Aniqlik: <span className={passed ? "text-green-600" : "text-red-500"}>{finalPercent}%</span>
           </p>
           {!passed && (
-            <p className="mb-6 font-bold text-gray-500">
+            <p className="mb-6 font-bold text-slate-500">
               Keyingi dars ochilishi uchun kamida 70% kerak. Qayta urinib ko'ring!
             </p>
           )}
@@ -198,13 +198,13 @@ export default function LessonPage({
             )}
             <button
               onClick={startLesson}
-              className={`${btn3d} border-sky-700 bg-sky-500 text-white hover:bg-sky-400`}
+              className={`${btn3d} border-indigo-700 bg-indigo-500 text-white hover:bg-indigo-400`}
             >
               Qayta o'ynash
             </button>
             <Link
               href="/yol"
-              className="block text-sm font-extrabold uppercase tracking-wide text-gray-400"
+              className="block text-sm font-extrabold uppercase tracking-wide text-slate-400"
             >
               ← Yo'l
             </Link>
@@ -216,12 +216,12 @@ export default function LessonPage({
 
   if (phase === "failed") {
     return (
-      <div className="min-h-screen bg-white flex flex-col">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 via-white to-white flex flex-col">
         <Header />
         <div className="mx-auto w-full max-w-md px-4 py-10 text-center">
           <div className="mb-2 text-7xl">💔</div>
-          <h1 className="mb-2 text-3xl font-extrabold text-gray-800">Jonlar tugadi</h1>
-          <p className="mb-6 font-bold text-gray-500">
+          <h1 className="mb-2 text-3xl font-extrabold text-slate-800">Jonlar tugadi</h1>
+          <p className="mb-6 font-bold text-slate-500">
             Xavotir olmang, xatolar o'rganishning bir qismi. Gaplarni qayta ko'rib, yana urinib ko'ring.
           </p>
           <div className="space-y-3">
@@ -231,7 +231,7 @@ export default function LessonPage({
             >
               Qayta urinish
             </button>
-            <Link href="/yol" className="block text-sm font-extrabold uppercase tracking-wide text-gray-400">
+            <Link href="/yol" className="block text-sm font-extrabold uppercase tracking-wide text-slate-400">
               ← Yo'l
             </Link>
           </div>
@@ -241,7 +241,7 @@ export default function LessonPage({
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-b from-indigo-50 via-white to-white flex flex-col">
       <Header />
       <GapSession
         key={attempt}

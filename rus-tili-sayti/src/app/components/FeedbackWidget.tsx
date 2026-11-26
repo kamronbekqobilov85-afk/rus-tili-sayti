@@ -41,7 +41,7 @@ export default function FeedbackWidget() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-24 right-4 z-30 flex h-12 w-12 items-center justify-center rounded-full border-b-4 border-sky-700 bg-sky-500 text-xl text-white shadow-lg transition hover:bg-sky-400 active:translate-y-0.5 active:border-b-0 md:bottom-6"
+        className="fixed bottom-24 right-4 z-30 flex h-12 w-12 items-center justify-center rounded-full border-b-4 border-indigo-700 bg-indigo-500 text-xl text-white shadow-lg transition hover:bg-indigo-400 active:translate-y-0.5 active:border-b-0 md:bottom-6"
         aria-label="Fikr yoki taklif yuborish"
       >
         💬
@@ -83,7 +83,7 @@ export default function FeedbackWidget() {
                   rows={4}
                   maxLength={2000}
                   placeholder="Masalan: 5-darsda tovush chiqmayapti..."
-                  className="mt-3 w-full resize-none rounded-2xl border-2 border-slate-200 p-3 text-sm text-slate-700 outline-none transition focus:border-sky-400"
+                  className="mt-3 w-full resize-none rounded-2xl border-2 border-slate-200 p-3 text-sm text-slate-700 outline-none transition focus:border-indigo-400"
                 />
                 {status === "error" && (
                   <p className="mt-2 text-sm font-bold text-rose-600">
@@ -93,7 +93,7 @@ export default function FeedbackWidget() {
                 <button
                   onClick={submit}
                   disabled={!message.trim() || status === "sending"}
-                  className="mt-4 w-full rounded-xl border-b-4 border-sky-700 bg-sky-500 py-2.5 text-center font-extrabold uppercase tracking-wide text-white transition active:translate-y-0.5 active:border-b-2 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:translate-y-0 disabled:active:border-b-4"
+                  className="mt-4 w-full rounded-xl border-b-4 border-indigo-700 bg-indigo-500 py-2.5 text-center font-extrabold uppercase tracking-wide text-white transition active:translate-y-0.5 active:border-b-2 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:translate-y-0 disabled:active:border-b-4"
                 >
                   {status === "sending" ? "Yuborilmoqda..." : "Yuborish"}
                 </button>

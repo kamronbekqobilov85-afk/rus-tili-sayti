@@ -54,11 +54,11 @@ export default function ExamPage({ params }: { params: Promise<{ level: string }
 
   if (!info) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 via-white to-white">
         <Header />
         <div className="p-8 text-center">
-          <p className="mb-4 text-lg font-bold text-gray-600">Daraja topilmadi.</p>
-          <Link href="/yol" className="font-extrabold text-sky-600">← Yo'lga qaytish</Link>
+          <p className="mb-4 text-lg font-bold text-slate-600">Daraja topilmadi.</p>
+          <Link href="/yol" className="font-extrabold text-indigo-600">← Yo'lga qaytish</Link>
         </div>
       </div>
     );
@@ -66,14 +66,14 @@ export default function ExamPage({ params }: { params: Promise<{ level: string }
 
   if (unlocked === false) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 via-white to-white">
         <Header />
         <div className="p-8 text-center">
           <p className="mb-2 text-5xl">🔒</p>
-          <p className="mb-4 text-lg font-bold text-gray-600">
+          <p className="mb-4 text-lg font-bold text-slate-600">
             Imtihon uchun avval {level}-darajaning 5 ta darsini tugating.
           </p>
-          <Link href="/yol" className="font-extrabold text-sky-600">← Yo'lga qaytish</Link>
+          <Link href="/yol" className="font-extrabold text-indigo-600">← Yo'lga qaytish</Link>
         </div>
       </div>
     );
@@ -99,15 +99,15 @@ export default function ExamPage({ params }: { params: Promise<{ level: string }
 
   if (phase === "intro") {
     return (
-      <div className="min-h-screen bg-white flex flex-col">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 via-white to-white flex flex-col">
         <Header />
         <div className="mx-auto w-full max-w-xl px-4 py-6">
-          <Link href="/yol" className="text-sm font-extrabold text-sky-600">← Yo'l</Link>
-          <p className="mt-2 text-xs font-extrabold uppercase tracking-wide text-gray-400">
+          <Link href="/yol" className="text-sm font-extrabold text-indigo-600">← Yo'l</Link>
+          <p className="mt-2 text-xs font-extrabold uppercase tracking-wide text-slate-400">
             {level}-daraja
           </p>
-          <h1 className="mb-1 text-3xl font-extrabold text-gray-800">🏆 Daraja imtihoni</h1>
-          <p className="mb-5 font-medium text-gray-500">
+          <h1 className="mb-1 text-3xl font-extrabold text-slate-800">🏆 Daraja imtihoni</h1>
+          <p className="mb-5 font-medium text-slate-500">
             {info.icon} {info.title}: barcha darslardan aralash 20 ta gap. Keyingi daraja ochilishi uchun
             kamida {EXAM_PASS}% kerak. Ruxsat etilgan xatolar: ❤️ 5 ta jon.
           </p>
@@ -129,25 +129,25 @@ export default function ExamPage({ params }: { params: Promise<{ level: string }
 
   if (phase === "done") {
     return (
-      <div className="min-h-screen bg-white flex flex-col">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 via-white to-white flex flex-col">
         <Header />
         <div className="mx-auto w-full max-w-md px-4 py-10 text-center">
           <div className="mb-2 text-7xl">{passed ? "🏆" : "💪"}</div>
-          <h1 className="mb-2 text-3xl font-extrabold text-gray-800">
+          <h1 className="mb-2 text-3xl font-extrabold text-slate-800">
             {passed ? "Imtihondan o'tdingiz!" : "Biroz yetmadi"}
           </h1>
-          <p className="mb-6 text-xl font-extrabold text-gray-500">
+          <p className="mb-6 text-xl font-extrabold text-slate-500">
             Aniqlik:{" "}
             <span className={passed ? "text-green-600" : "text-red-500"}>{percent}%</span>
           </p>
           {passed ? (
-            <p className="mb-6 font-bold text-gray-500">
+            <p className="mb-6 font-bold text-slate-500">
               {hasNext
                 ? `${level + 1}-daraja ochildi!`
                 : "Siz hamma darajalarni tugatdingiz. Tabriklaymiz! 🎉"}
             </p>
           ) : (
-            <p className="mb-6 font-bold text-gray-500">
+            <p className="mb-6 font-bold text-slate-500">
               O'tish uchun {EXAM_PASS}% kerak. Darslarni yana bir bor takrorlab, qayta urinib ko'ring.
             </p>
           )}
@@ -162,11 +162,11 @@ export default function ExamPage({ params }: { params: Promise<{ level: string }
             )}
             <button
               onClick={start}
-              className={`${btn3d} border-sky-700 bg-sky-500 text-white hover:bg-sky-400`}
+              className={`${btn3d} border-indigo-700 bg-indigo-500 text-white hover:bg-indigo-400`}
             >
               {passed ? "Qayta topshirish" : "Qayta urinish"}
             </button>
-            <Link href="/yol" className="block text-sm font-extrabold uppercase tracking-wide text-gray-400">
+            <Link href="/yol" className="block text-sm font-extrabold uppercase tracking-wide text-slate-400">
               ← Yo'l
             </Link>
           </div>
@@ -177,12 +177,12 @@ export default function ExamPage({ params }: { params: Promise<{ level: string }
 
   if (phase === "failed") {
     return (
-      <div className="min-h-screen bg-white flex flex-col">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 via-white to-white flex flex-col">
         <Header />
         <div className="mx-auto w-full max-w-md px-4 py-10 text-center">
           <div className="mb-2 text-7xl">💔</div>
-          <h1 className="mb-2 text-3xl font-extrabold text-gray-800">Jonlar tugadi</h1>
-          <p className="mb-6 font-bold text-gray-500">
+          <h1 className="mb-2 text-3xl font-extrabold text-slate-800">Jonlar tugadi</h1>
+          <p className="mb-6 font-bold text-slate-500">
             Imtihon bu safar o'tmadi. Darslarni takrorlab, qayta urinib ko'ring.
           </p>
           <div className="space-y-3">
@@ -192,7 +192,7 @@ export default function ExamPage({ params }: { params: Promise<{ level: string }
             >
               Qayta urinish
             </button>
-            <Link href="/yol" className="block text-sm font-extrabold uppercase tracking-wide text-gray-400">
+            <Link href="/yol" className="block text-sm font-extrabold uppercase tracking-wide text-slate-400">
               ← Yo'l
             </Link>
           </div>
@@ -202,7 +202,7 @@ export default function ExamPage({ params }: { params: Promise<{ level: string }
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-b from-indigo-50 via-white to-white flex flex-col">
       <Header />
       <GapSession
         key={attempt}

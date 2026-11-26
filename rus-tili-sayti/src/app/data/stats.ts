@@ -84,12 +84,12 @@ export function getDisplayStats(): DisplayStats {
 }
 
 // Serverga ball yuborish (tizimga kirgan bo'lsa hisobga qo'shiladi, bo'lmasa jim e'tiborsiz qoldiriladi)
-function syncXp(type: "word" | "test") {
+export function syncXp(body: { type: "word" | "test" | "section" | "pair" | "watch"; key?: string }) {
   try {
     fetch("/api/xp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type }),
+      body: JSON.stringify(body),
       keepalive: true,
     }).catch(() => {});
   } catch {
@@ -97,9 +97,10 @@ function syncXp(type: "word" | "test") {
   }
 }
 
-// Faoliyatni qayd etish (so'z ko'rilganda yoki test tugaganda chaqiriladi)
-export function recordActivity(type: "word" | "test") {
-  syncXp(type);
+// Faoliyatni qayd etish (so'z ko'rilganda yoki test tugaganda chaqiriladi).
+// opts.noXp: faqat kunlik statistika va seriya yangilanadi, ball berilmaydi.
+export function recordActivity(type: "word" | "test", opts?: { noXp?: boolean }) {
+  if (!opts?.noXp) syncXp({ type });
   const today = todayStr();
   const yesterday = yesterdayStr();
   const raw = loadRaw();

@@ -5,6 +5,8 @@ import { signIn } from "next-auth/react";
 import { useInstallPrompt } from "./useInstallPrompt";
 import ServiceWorkerRegister from "./ServiceWorkerRegister";
 import { isTelegramEnv } from "./TelegramWebApp";
+import ApkDownload from "./ApkDownload";
+import InstallGuide from "./InstallGuide";
 
 const SKIP_KEY = "rus-tili-install-step-done";
 
@@ -24,7 +26,8 @@ export default function SignInGate() {
   const { available, install } = useInstallPrompt();
   const [step, setStep] = useState<Step>("loading");
   const [justInstalled, setJustInstalled] = useState(false);
-  const [hint, setHint] = useState<"ios" | "manual" | null>(null);
+  const [, setHint] = useState<"ios" | "manual" | null>(null);
+  const [inTelegram, setInTelegram] = useState(false);
 
   useEffect(() => {
     let done = false;
@@ -33,7 +36,8 @@ export default function SignInGate() {
     } catch {
       // localStorage mavjud emas
     }
-    setStep(isStandalone() || isTelegramEnv() || done ? "signin" : "install");
+    setInTelegram(isTelegramEnv());
+    setStep(isStandalone() || done ? "signin" : "install");
 
     const onInstalled = () => {
       try {
@@ -49,6 +53,14 @@ export default function SignInGate() {
   }, []);
 
   const handleInstall = async () => {
+    // Telegram ichida o'rnatib bo'lmaydi — havolani telefon brauzerida ochamiz
+    if (inTelegram) {
+      const url = window.location.origin;
+      const tg = (window as unknown as { Telegram?: { WebApp?: { openLink?: (u: string, o?: object) => void } } }).Telegram?.WebApp;
+      if (tg?.openLink) tg.openLink(url, { try_browser: true });
+      else window.open(url, "_blank");
+      return;
+    }
     const result = await install();
     if (result === "ios") setHint("ios");
     else if (result === null) setHint("manual");
@@ -64,7 +76,7 @@ export default function SignInGate() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-emerald-600 via-teal-600 to-blue-700 px-4 py-10 text-center text-white">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 px-4 py-10 text-center text-white">
       <ServiceWorkerRegister />
       <span className="flex h-20 w-20 items-center justify-center rounded-3xl bg-white/15 text-5xl ring-1 ring-white/25">
         🐻
@@ -74,46 +86,21 @@ export default function SignInGate() {
       {step === "install" && (
         <>
           <p className="mt-3 max-w-sm text-emerald-50/90">
-            Avval ilovani telefoningizga o'rnating — bepul, joy olmaydi va bir bosishda ochiladi. Keyin
-            hisobingiz bilan kirasiz.
+            {inTelegram
+              ? "Telegramdan ochildi. Ilovani telefoningizga o'rnatish uchun brauzerda oching — bepul va bir bosishda ochiladi."
+              : "Avval ilovani telefoningizga o'rnating — bepul, joy olmaydi va bir bosishda ochiladi. Keyin hisobingiz bilan kirasiz."}
           </p>
 
           <button
             onClick={handleInstall}
             className="mt-8 flex items-center gap-3 rounded-2xl border-b-4 border-emerald-800 bg-white px-7 py-3.5 text-lg font-extrabold text-emerald-700 shadow-lg transition hover:bg-emerald-50 active:translate-y-0.5 active:border-b-2"
           >
-            📲 Ilovani o'rnatish
+            {inTelegram ? "🌐 Brauzerda ochib o'rnatish" : "📲 Ilovani o'rnatish"}
           </button>
 
-          {hint === "ios" && (
-            <ol className="mt-5 max-w-sm space-y-2 rounded-2xl bg-white/15 p-4 text-left text-sm ring-1 ring-white/25">
-              <li>
-                1. Pastdagi <strong>Ulashish</strong> (kvadrat ichida yuqoriga qarab turgan strelka) tugmasini
-                bosing
-              </li>
-              <li>
-                2. <strong>«Bosh ekranga qo'shish»</strong> (Add to Home Screen) bandini tanlang
-              </li>
-              <li>
-                3. <strong>«Qo'shish»</strong> tugmasini bosing va bosh ekrandagi ilovani oching
-              </li>
-            </ol>
-          )}
-          {hint === "manual" && (
-            <ol className="mt-5 max-w-sm space-y-2 rounded-2xl bg-white/15 p-4 text-left text-sm ring-1 ring-white/25">
-              <li>
-                1. Brauzerning yuqori o'ng burchagidagi <strong>⋮</strong> menyusini oching
-              </li>
-              <li>
-                2. <strong>«Ilovani o'rnatish»</strong> yoki <strong>«Bosh ekranga qo'shish»</strong> bandini
-                tanlang
-              </li>
-              <li>3. Bosh ekrandagi «Rus tili» ilovasini oching va hisobingiz bilan kiring</li>
-              <li className="text-emerald-100/80">
-                Bu band ko'rinmasa, sahifani Chrome brauzerida oching yoki ilova allaqachon o'rnatilgan.
-              </li>
-            </ol>
-          )}
+          <ApkDownload variant="gate" />
+
+          <InstallGuide />
 
           <div className="mt-6 flex items-center gap-2 text-xs font-bold text-emerald-100/80">
             <span className="rounded-full bg-white px-2 py-0.5 text-emerald-700">1</span> O'rnatish
@@ -122,7 +109,7 @@ export default function SignInGate() {
           </div>
 
           <button onClick={skip} className="mt-8 text-xs text-emerald-100/70 underline underline-offset-2">
-            {available ? "O'rnatmasdan davom etish" : "Ilova o'rnatilgan yoki o'rnatib bo'lmayaptimi? Davom etish"}
+            {available || inTelegram ? "O'rnatmasdan davom etish" : "Ilova o'rnatilgan yoki o'rnatib bo'lmayaptimi? Davom etish"}
           </button>
         </>
       )}

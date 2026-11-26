@@ -23,7 +23,7 @@ export async function sendReminderEmail(to: string, name: string | null, daysIna
           <h2>Salom${name ? `, ${name}` : ""}! ${isWinBack ? "😔" : "👋"}</h2>
           <p>${body}</p>
           <p>
-            <a href="https://rus-tili-sayti.vercel.app" style="display:inline-block; background:#10b981; color:#fff; padding:10px 20px; border-radius:10px; font-weight:bold; text-decoration:none;">
+            <a href="https://rus-tili-sayti.vercel.app" style="display:inline-block; background:#6366f1; color:#fff; padding:10px 20px; border-radius:10px; font-weight:bold; text-decoration:none;">
               Davom etish →
             </a>
           </p>
@@ -83,7 +83,7 @@ export async function sendFeedbackNotification(
           <p><strong>Kimdan:</strong> ${from.name || "Noma'lum"} (${from.email || "email yo'q"})</p>
           <p style="white-space: pre-wrap; background:#f1f5f9; padding:12px; border-radius:10px;">${from.message}</p>
           <p>
-            <a href="https://rus-tili-sayti.vercel.app/admin" style="display:inline-block; background:#10b981; color:#fff; padding:10px 20px; border-radius:10px; font-weight:bold; text-decoration:none;">
+            <a href="https://rus-tili-sayti.vercel.app/admin" style="display:inline-block; background:#6366f1; color:#fff; padding:10px 20px; border-radius:10px; font-weight:bold; text-decoration:none;">
               Admin panelda ko'rish →
             </a>
           </p>

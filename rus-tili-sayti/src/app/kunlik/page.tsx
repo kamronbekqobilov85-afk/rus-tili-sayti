@@ -114,7 +114,7 @@ export default function KunlikPage() {
             {correctCount} / {questions.length} to'g'ri!
           </h1>
           {xpEarned > 0 ? (
-            <p className="mt-2 text-lg font-extrabold text-emerald-600">+{xpEarned} bonus ball</p>
+            <p className="mt-2 text-lg font-extrabold text-green-600">+{xpEarned} bonus ball</p>
           ) : (
             <p className="mt-2 text-slate-500">Bugungi bonus allaqachon olingan edi.</p>
           )}
@@ -151,8 +151,8 @@ export default function KunlikPage() {
                 const isSel = selected === opt;
                 const isCorrectOpt = opt === current.correct;
                 let cls = "border-slate-200 bg-white text-slate-700 hover:bg-slate-50";
-                if (!answered && isSel) cls = "border-sky-400 bg-sky-50 text-sky-700";
-                if (answered && isCorrectOpt) cls = "border-emerald-500 bg-emerald-50 text-emerald-700";
+                if (!answered && isSel) cls = "border-indigo-400 bg-indigo-50 text-indigo-700";
+                if (answered && isCorrectOpt) cls = "border-green-500 bg-green-50 text-green-700";
                 if (answered && isSel && !isCorrectOpt) cls = "border-rose-500 bg-rose-50 text-rose-600";
                 return (
                   <button

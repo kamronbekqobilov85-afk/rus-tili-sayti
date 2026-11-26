@@ -36,7 +36,7 @@ export default function Header() {
       <style>{`@media (max-width: 767px) { body { padding-bottom: calc(76px + env(safe-area-inset-bottom)); } }`}</style>
 
       {/* Yuqori panel */}
-      <header className="sticky top-0 z-40 bg-white border-b-2 border-gray-200">
+      <header className="sticky top-0 z-40 bg-white border-b-2 border-slate-200">
         <nav className="max-w-5xl mx-auto flex items-center justify-between gap-2 px-4 py-3">
           <div className="flex flex-col items-start">
             <Link href="/" className="flex items-center gap-2">
@@ -57,8 +57,8 @@ export default function Header() {
                   href={l.href}
                   className={`whitespace-nowrap rounded-xl px-2 py-2 text-[11px] lg:px-2.5 lg:text-xs font-extrabold uppercase tracking-wide border-2 transition ${
                     active
-                      ? "bg-sky-100 text-sky-600 border-sky-300"
-                      : "border-transparent text-gray-500 hover:bg-gray-100"
+                      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                      : "border-transparent text-slate-500 hover:bg-slate-100"
                   }`}
                 >
                   {l.label}
@@ -73,7 +73,7 @@ export default function Header() {
 
       {/* Telefonda pastki menyu */}
       <nav
-        className="md:hidden fixed bottom-0 inset-x-0 z-40 flex bg-white border-t-2 border-gray-200 px-1 pt-1"
+        className="md:hidden fixed bottom-0 inset-x-0 z-40 flex bg-white border-t-2 border-slate-200 px-1 pt-1"
         style={{ paddingBottom: "max(4px, env(safe-area-inset-bottom))" }}
       >
         {links.map((l) => {
@@ -84,8 +84,8 @@ export default function Header() {
               href={l.href}
               className={`flex flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5 text-[10px] font-bold transition ${
                 active
-                  ? "bg-sky-100 text-sky-600"
-                  : "text-gray-400 active:bg-gray-100"
+                  ? "bg-emerald-50 text-emerald-700"
+                  : "text-slate-400 active:bg-slate-100"
               }`}
             >
               <span className="text-lg leading-none">{l.icon}</span>

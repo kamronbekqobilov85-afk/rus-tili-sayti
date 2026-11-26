@@ -110,7 +110,7 @@ export default function TinglashPage() {
           <div className={`${card} mt-4 p-8 text-center`}>
             <p className="text-5xl">{percentage >= 70 ? "🎉" : "💪"}</p>
             <p className="mt-3 text-sm font-bold uppercase tracking-wide text-slate-400">Sizning natijangiz</p>
-            <p className={`text-6xl font-extrabold ${percentage >= 70 ? "text-emerald-600" : "text-amber-500"}`}>
+            <p className={`text-6xl font-extrabold ${percentage >= 70 ? "text-green-600" : "text-amber-500"}`}>
               {percentage}%
             </p>
             <p className="mt-2 mb-8 text-lg text-slate-600">
@@ -128,7 +128,7 @@ export default function TinglashPage() {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => speak()}
-                  className="flex h-24 w-24 items-center justify-center rounded-full border-b-[6px] border-blue-800 bg-blue-600 text-5xl text-white shadow-lg transition hover:bg-blue-500 active:translate-y-0.5 active:border-b-2"
+                  className="flex h-24 w-24 items-center justify-center rounded-full border-b-[6px] border-violet-800 bg-violet-600 text-5xl text-white shadow-lg transition hover:bg-violet-500 active:translate-y-0.5 active:border-b-2"
                   aria-label="Qayta tinglash"
                 >
                   🔊
@@ -151,12 +151,12 @@ export default function TinglashPage() {
               {options.map((option, i) => {
                 const isCorrect = option === sentence.uz;
                 const isSelected = option === selected;
-                let style = "border-slate-200 hover:border-emerald-400 hover:bg-emerald-50/40";
+                let style = "border-slate-200 hover:border-green-400 hover:bg-green-50/40";
                 let badge = "bg-slate-100 text-slate-500";
                 if (selected) {
                   if (isCorrect) {
-                    style = "border-emerald-500 bg-emerald-50";
-                    badge = "bg-emerald-500 text-white";
+                    style = "border-green-500 bg-green-50";
+                    badge = "bg-green-500 text-white";
                   } else if (isSelected) {
                     style = "border-rose-500 bg-rose-50";
                     badge = "bg-rose-500 text-white";
@@ -182,10 +182,10 @@ export default function TinglashPage() {
             {selected && (
               <div
                 className={`mt-5 rounded-xl p-4 ${
-                  selected === sentence.uz ? "bg-emerald-50 ring-1 ring-emerald-200" : "bg-rose-50 ring-1 ring-rose-200"
+                  selected === sentence.uz ? "bg-green-50 ring-1 ring-green-200" : "bg-rose-50 ring-1 ring-rose-200"
                 }`}
               >
-                <p className={`font-extrabold ${selected === sentence.uz ? "text-emerald-700" : "text-rose-700"}`}>
+                <p className={`font-extrabold ${selected === sentence.uz ? "text-green-700" : "text-rose-700"}`}>
                   {selected === sentence.uz ? "To'g'ri! 🎉" : "Noto'g'ri"}
                 </p>
                 <p className="mt-1 text-sm text-slate-600">

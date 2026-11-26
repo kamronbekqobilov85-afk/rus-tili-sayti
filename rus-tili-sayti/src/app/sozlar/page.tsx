@@ -3,15 +3,28 @@
 import { useState, useMemo, useEffect } from "react";
 import Header from "../components/Header";
 import Flashcard from "../components/Flashcard";
+import WordTest from "../components/WordTest";
 import PageHero, { HeroChip, SessionBar } from "../components/PageHero";
 import { card, pageShell, btnPrimary, btnSecondary, btnDanger } from "../components/ui";
 import { words, Word } from "../data/words";
-import { recordActivity } from "../data/stats";
+import { recordActivity, syncXp } from "../data/stats";
 import { getCategoryLabel } from "../data/categories";
 import { recordResult, getDueWordIds, getSrsStats } from "../data/srs";
 import { getMistakeIds, addMistake, removeMistake } from "../data/mistakes";
 
-type Mode = "srs" | "mistakes" | "all" | string; // string = category slug
+type Mode = "srs" | "mistakes" | "all" | "test" | string; // string = category slug
+
+// Mavzuni o'qib chiqqani uchun +10 ball (har mavzudan bir marta; server ham tekshiradi)
+const SECTION_XP = 10;
+const SECTIONS_KEY = "rus-tili-sozlar-sections";
+
+function loadSections(): string[] {
+  try {
+    return JSON.parse(localStorage.getItem(SECTIONS_KEY) || "[]") as string[];
+  } catch {
+    return [];
+  }
+}
 
 export default function SozlarPage() {
   const [mode, setMode] = useState<Mode | null>(null);
@@ -26,6 +39,12 @@ export default function SozlarPage() {
   const [index, setIndex] = useState(0);
   const [knownCount, setKnownCount] = useState(0);
   const [finished, setFinished] = useState(false);
+  const [doneSections, setDoneSections] = useState<string[]>([]);
+  const [sectionBonus, setSectionBonus] = useState(0);
+
+  useEffect(() => {
+    setDoneSections(loadSections());
+  }, []);
 
   const allWordIds = useMemo(() => words.map((w) => w.id), []);
 
@@ -58,7 +77,7 @@ export default function SozlarPage() {
 
   const handleAnswer = (known: boolean) => {
     if (known) setKnownCount((prev) => prev + 1);
-    recordActivity("word");
+    recordActivity("word", { noXp: true }); // kartochka uchun ball yo'q: faqat statistika
 
     const word = activeWords[index];
     if (known) {
@@ -74,6 +93,21 @@ export default function SozlarPage() {
       setIndex((prev) => prev + 1);
     } else {
       setFinished(true);
+      // Mavzuni oxirigacha o'qib chiqdi: +10 ball (har mavzudan faqat bir marta)
+      const isTopic = mode !== null && !["srs", "mistakes", "all", "test"].includes(mode);
+      if (isTopic && !loadSections().includes(mode as string)) {
+        syncXp({ type: "section", key: mode as string });
+        const next = [...loadSections(), mode as string];
+        try {
+          localStorage.setItem(SECTIONS_KEY, JSON.stringify(next));
+        } catch {
+          // ignore
+        }
+        setDoneSections(next);
+        setSectionBonus(SECTION_XP);
+      } else {
+        setSectionBonus(0);
+      }
     }
   };
 
@@ -147,8 +181,8 @@ export default function SozlarPage() {
         count: words.length,
         hint: "Hammasini tartib bilan, 100 tadan bo'lib ko'rib chiqing",
         disabled: false,
-        tint: "bg-sky-50 ring-sky-200",
-        accent: "text-sky-600",
+        tint: "bg-indigo-50 ring-indigo-200",
+        accent: "text-indigo-600",
       },
     ];
 
@@ -164,6 +198,29 @@ export default function SozlarPage() {
             <HeroChip>{words.length.toLocaleString("ru-RU")} ta so'z</HeroChip>
             {srsStats && <HeroChip>✅ {srsStats.learnedCount} ta o'rganilgan</HeroChip>}
           </PageHero>
+
+          <button
+            onClick={() => selectMode("test")}
+            className="relative mt-6 block w-full overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-900 to-violet-800 p-5 text-left text-white shadow-xl transition active:scale-[0.99] sm:p-6"
+          >
+            <div aria-hidden className="pointer-events-none absolute -right-4 -top-6 text-[110px] opacity-15">🧪</div>
+            <span className="inline-block rounded-full bg-amber-300 px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-amber-950">
+              ⭐ Yangi · ball yig&apos;ing
+            </span>
+            <span className="mt-3 block text-2xl font-extrabold sm:text-3xl">So&apos;z testi</span>
+            <span className="mt-1 block max-w-md text-sm text-indigo-100">
+              5 ta variantdan to&apos;g&apos;risini toping. Har bir to&apos;g&apos;ri javob <strong className="text-amber-300">+0,5 ball</strong>.
+              3 xil test: 🇷🇺 ruscha → o&apos;zbekcha, 🇺🇿 o&apos;zbekcha → ruscha va 🎧 eshitib top.
+            </span>
+            <span className="mt-4 flex flex-wrap items-center gap-2">
+              <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-bold ring-1 ring-white/25">10–30 savol</span>
+              <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-bold ring-1 ring-white/25">🔥 seriya</span>
+              <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-bold ring-1 ring-white/25">mavzu tanlash</span>
+            </span>
+            <span className="mt-4 block rounded-2xl border-b-4 border-fuchsia-900 bg-gradient-to-r from-fuchsia-500 to-violet-500 py-3 text-center text-base font-extrabold uppercase tracking-wide shadow-lg">
+              Testni boshlash →
+            </span>
+          </button>
 
           <h2 className="mt-8 text-lg font-extrabold text-slate-800">Qanday mashq qilasiz?</h2>
           <div className="mt-3 grid gap-3 sm:grid-cols-3">
@@ -181,8 +238,8 @@ export default function SozlarPage() {
                   <span className="font-extrabold text-slate-800">{m.title}</span>
                 </span>
                 <span className={`mt-3 text-3xl font-extrabold ${m.accent}`}>
-                  {m.count ?? "–"}
-                  <span className="ml-1 text-sm font-semibold text-slate-400">ta so'z</span>
+                  {m.key === "test" ? "Yangi" : (m.count ?? "–")}
+                  {m.key !== "test" && <span className="ml-1 text-sm font-semibold text-slate-400">ta so'z</span>}
                 </span>
                 <span className="mt-1 text-sm leading-snug text-slate-500">{m.hint}</span>
               </button>
@@ -200,12 +257,30 @@ export default function SozlarPage() {
                 <span className="min-w-0">
                   <span className="block truncate font-extrabold text-slate-700">{getCategoryLabel(cat)}</span>
                   <span className="block text-xs font-bold text-slate-400">{count} ta so'z</span>
+                  {doneSections.includes(cat) ? (
+                    <span className="mt-1 inline-block rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-extrabold text-green-700">
+                      ✓ +10 olingan
+                    </span>
+                  ) : (
+                    <span className="mt-1 inline-block rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-extrabold text-amber-700">
+                      ⭐ +10 ball
+                    </span>
+                  )}
                 </span>
                 <span className="text-slate-300 transition group-hover:text-emerald-500">→</span>
               </button>
             ))}
           </div>
         </main>
+      </div>
+    );
+  }
+
+  if (mode === "test") {
+    return (
+      <div className={pageShell}>
+        <Header />
+        <WordTest onExit={() => selectMode(null)} />
       </div>
     );
   }
@@ -249,6 +324,11 @@ export default function SozlarPage() {
               {activeWords.length} ta so'zdan{" "}
               <span className="text-emerald-600">{knownCount}</span> tasini bilasiz
             </p>
+            {sectionBonus > 0 && (
+              <p className="mb-6 inline-block rounded-full bg-amber-100 px-4 py-1.5 text-sm font-extrabold text-amber-700">
+                ⭐ Mavzuni o&apos;qib chiqqaningiz uchun +{sectionBonus} ball!
+              </p>
+            )}
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
               <button onClick={restart} className={btnPrimary}>
                 Qaytadan

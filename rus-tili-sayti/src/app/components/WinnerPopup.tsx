@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
-type Winner = { id: string; name: string | null; image: string | null; xp: number; isMe: boolean };
+type Winner = { id: string; name: string | null; image: string | null; xp: number; isMe: boolean; prize?: string };
 
 const SEEN_KEY = "rus-tili-winner-seen";
 
@@ -81,16 +81,33 @@ export default function WinnerPopup() {
 
         <p className="mt-4 text-sm text-white/95">
           {winner.isMe
-            ? "Tabriklaymiz, siz g'olib bo'ldingiz! 🎉 Admin siz bilan bog'lanadi."
+            ? "Tabriklaymiz, siz g'olib bo'ldingiz! 🎉"
             : "G'olibni tabriklaymiz! 🎉"}
         </p>
-        <p className="mt-2 rounded-2xl bg-white/15 p-3 text-sm font-bold">
-          🔄 Barcha ballar 0 ga tushirildi — yangi bosqich boshlandi. Endi hammaning imkoniyati teng!
-        </p>
+        {winner.prize ? (
+          <p className="mt-2 rounded-2xl bg-white/15 p-3 text-sm font-bold">
+            🎁 {winner.prize} olib berildi! Siz ham ball to&apos;plang va keyingi g&apos;olib bo&apos;ling.
+          </p>
+        ) : (
+          <p className="mt-2 rounded-2xl bg-white/15 p-3 text-sm font-bold">
+            🔄 Barcha ballar 0 ga tushirildi — yangi bosqich boshlandi. Endi hammaning imkoniyati teng!
+          </p>
+        )}
+
+        {winner.prize && (
+          <a
+            href="https://t.me/rustili24soat"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 block rounded-xl bg-white/20 py-2.5 text-sm font-extrabold ring-1 ring-white/40 transition active:scale-[0.98]"
+          >
+            📢 Batafsil Telegram kanalda →
+          </a>
+        )}
 
         <button
           onClick={close}
-          className="mt-5 w-full rounded-xl border-b-4 border-orange-200 bg-white py-2.5 font-extrabold uppercase tracking-wide text-orange-600 transition active:translate-y-0.5 active:border-b-2"
+          className="mt-3 w-full rounded-xl border-b-4 border-orange-200 bg-white py-2.5 font-extrabold uppercase tracking-wide text-orange-600 transition active:translate-y-0.5 active:border-b-2"
         >
           Boshladik!
         </button>

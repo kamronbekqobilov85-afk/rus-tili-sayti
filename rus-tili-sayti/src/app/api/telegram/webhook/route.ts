@@ -60,7 +60,7 @@ export async function POST(req: Request) {
     where: { id: link.id },
     data: { verifiedAt: new Date() },
   });
-  await awardXp(link.userId, XP_TELEGRAM_BONUS, { isReferral: true });
+  await awardXp(link.userId, XP_TELEGRAM_BONUS, { isReferral: true, source: "telegram" });
   await tgSendMessage(chatId, `Tabriklaymiz! Obunangiz tasdiqlandi va +${XP_TELEGRAM_BONUS} ball berildi 🎉`);
 
   return Response.json({ ok: true });

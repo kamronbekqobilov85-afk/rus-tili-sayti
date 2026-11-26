@@ -97,7 +97,7 @@ export default function GrammarTopicPage({
     resultColor = "text-green-600";
   } else if (percentage >= 70) {
     resultMessage = "Yaxshi natija! Yana bir oz mashq qilsangiz mukammal bo'ladi. 👍";
-    resultColor = "text-blue-600";
+    resultColor = "text-violet-600";
   } else if (percentage >= 50) {
     resultMessage = "Yomon emas, lekin darsni qayta ko'rib chiqqan ma'qul. 📖";
     resultColor = "text-yellow-600";
@@ -107,42 +107,42 @@ export default function GrammarTopicPage({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-violet-50 to-white">
       <Header />
       <div className="max-w-3xl mx-auto py-12 px-4">
         <Link
           href="/grammatika"
-          className="text-blue-600 text-sm mb-6 block hover:underline"
+          className="text-violet-600 text-sm mb-6 block hover:underline"
         >
           ← Mavzular ro'yxatiga qaytish
         </Link>
 
-        <h1 className="text-3xl font-bold text-blue-900 mb-2">{topic.title}</h1>
+        <h1 className="text-3xl font-bold text-violet-900 mb-2">{topic.title}</h1>
 
         {phase === "lesson" && (
           <div className="bg-white rounded-2xl shadow-lg p-8 mt-6">
-            <p className="text-gray-700 leading-relaxed mb-6 text-lg">
+            <p className="text-slate-700 leading-relaxed mb-6 text-lg">
               {topic.lesson.intro}
             </p>
 
-            <h2 className="text-xl font-bold text-blue-900 mb-3">Qoidalar</h2>
+            <h2 className="text-xl font-bold text-violet-900 mb-3">Qoidalar</h2>
             <div className="flex flex-col gap-3 mb-6">
               {topic.lesson.rules.map((rule, i) => (
                 <div
                   key={i}
-                  className="border-l-4 border-blue-500 bg-blue-50 rounded-r-xl p-4"
+                  className="border-l-4 border-violet-500 bg-violet-50 rounded-r-xl p-4"
                 >
-                  <p className="font-semibold text-blue-900">{rule.title}</p>
-                  <p className="text-gray-700">{rule.text}</p>
+                  <p className="font-semibold text-violet-900">{rule.title}</p>
+                  <p className="text-slate-700">{rule.text}</p>
                 </div>
               ))}
             </div>
 
-            <h2 className="text-xl font-bold text-blue-900 mb-3">Jadval</h2>
+            <h2 className="text-xl font-bold text-violet-900 mb-3">Jadval</h2>
             <div className="overflow-x-auto mb-6">
               <table className="w-full border-collapse text-left">
                 <thead>
-                  <tr className="bg-blue-900 text-white">
+                  <tr className="bg-violet-900 text-white">
                     {topic.lesson.table.headers.map((h, i) => (
                       <th key={i} className="py-2 px-4 font-semibold">
                         {h}
@@ -154,10 +154,10 @@ export default function GrammarTopicPage({
                   {topic.lesson.table.rows.map((row, i) => (
                     <tr
                       key={i}
-                      className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                      className={i % 2 === 0 ? "bg-slate-50" : "bg-white"}
                     >
                       {row.map((cell, j) => (
-                        <td key={j} className="py-2 px-4 border-b border-gray-200">
+                        <td key={j} className="py-2 px-4 border-b border-slate-200">
                           {cell}
                         </td>
                       ))}
@@ -167,19 +167,19 @@ export default function GrammarTopicPage({
               </table>
             </div>
 
-            <h2 className="text-xl font-bold text-blue-900 mb-3">Misollar</h2>
+            <h2 className="text-xl font-bold text-violet-900 mb-3">Misollar</h2>
             <div className="flex flex-col gap-3 mb-8">
               {topic.lesson.examples.map((ex, i) => (
-                <div key={i} className="bg-gray-50 rounded-xl p-4">
-                  <p className="font-medium text-gray-900">{ex.ru}</p>
-                  <p className="text-gray-500 text-sm">{ex.uz}</p>
+                <div key={i} className="bg-slate-50 rounded-xl p-4">
+                  <p className="font-medium text-slate-900">{ex.ru}</p>
+                  <p className="text-slate-500 text-sm">{ex.uz}</p>
                 </div>
               ))}
             </div>
 
             <button
               onClick={startTest}
-              className="w-full bg-blue-600 text-white font-semibold py-3 rounded-xl hover:bg-blue-700 transition"
+              className="w-full bg-violet-600 text-white font-semibold py-3 rounded-xl hover:bg-violet-700 transition"
             >
               Testni boshlash →
             </button>
@@ -188,7 +188,7 @@ export default function GrammarTopicPage({
 
         {phase === "test" && (
           <div className="bg-white rounded-2xl shadow-lg p-8 mt-6">
-            <p className="text-gray-500 text-sm mb-8">
+            <p className="text-slate-500 text-sm mb-8">
               Mashq {currentIndex + 1} / {topic.exercises.length}
             </p>
             <p className="text-lg font-semibold mb-6">{exercise.question}</p>
@@ -196,7 +196,7 @@ export default function GrammarTopicPage({
               {shuffledOptions.map((option) => {
                 const isCorrect = option === exercise.correctAnswer;
                 const isSelected = option === selected;
-                let style = "border-gray-200 hover:border-blue-400";
+                let style = "border-slate-200 hover:border-violet-400";
                 if (selected) {
                   if (isCorrect) {
                     style = "border-green-500 bg-green-50";
@@ -219,14 +219,14 @@ export default function GrammarTopicPage({
               <button
                 onClick={handlePrev}
                 disabled={isFirst}
-                className="px-4 py-2 rounded-xl border border-gray-300 text-gray-600 disabled:opacity-40"
+                className="px-4 py-2 rounded-xl border border-slate-300 text-slate-600 disabled:opacity-40"
               >
                 ← Oldingi
               </button>
               <button
                 onClick={handleNext}
                 disabled={!selected}
-                className="px-4 py-2 rounded-xl bg-blue-600 text-white disabled:opacity-40"
+                className="px-4 py-2 rounded-xl bg-violet-600 text-white disabled:opacity-40"
               >
                 {isLast ? "Natijani ko'rish" : "Keyingisi"}
               </button>
@@ -236,9 +236,9 @@ export default function GrammarTopicPage({
 
         {phase === "result" && (
           <div className="bg-white rounded-2xl shadow-lg p-8 mt-6 text-center">
-            <p className="text-gray-500 mb-2">Sizning natijangiz</p>
-            <p className="text-6xl font-bold text-blue-900 mb-2">{percentage}%</p>
-            <p className="text-gray-600 mb-4">
+            <p className="text-slate-500 mb-2">Sizning natijangiz</p>
+            <p className="text-6xl font-bold text-violet-900 mb-2">{percentage}%</p>
+            <p className="text-slate-600 mb-4">
               {topic.exercises.length} tadan {correctCount} tasini to'g'ri
               topdingiz
             </p>
@@ -246,19 +246,19 @@ export default function GrammarTopicPage({
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button
                 onClick={backToLesson}
-                className="px-6 py-3 rounded-xl border border-blue-300 text-blue-700 font-semibold hover:bg-blue-50"
+                className="px-6 py-3 rounded-xl border border-violet-300 text-violet-700 font-semibold hover:bg-violet-50"
               >
                 Darsni qayta ko'rish
               </button>
               <button
                 onClick={retryTest}
-                className="px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700"
+                className="px-6 py-3 rounded-xl bg-violet-600 text-white font-semibold hover:bg-violet-700"
               >
                 Testni qayta ishlash
               </button>
               <Link
                 href="/grammatika"
-                className="px-6 py-3 rounded-xl bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200"
+                className="px-6 py-3 rounded-xl bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200"
               >
                 Boshqa mavzu
               </Link>

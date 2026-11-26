@@ -27,6 +27,15 @@ export async function POST(req: Request) {
     return Response.json({ ok: false, error: "size" }, { status: 400 });
   }
 
+  // Kuniga ko'pi bilan 10 ta yozuv (ball va xotirani suiiste'mol qilishdan himoya)
+  const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const todayCount = await prisma.voiceRecording.count({
+    where: { userId: session.user.id, createdAt: { gte: since } },
+  });
+  if (todayCount >= 10) {
+    return Response.json({ ok: false, error: "limit" }, { status: 429 });
+  }
+
   const blob = await put(`voice/${session.user.id}/${Date.now()}.webm`, file, {
     access: "public",
     contentType: file.type || "audio/webm",
@@ -42,7 +51,7 @@ export async function POST(req: Request) {
     },
   });
 
-  const result = await awardXp(session.user.id, XP_PER_VOICE);
+  const result = await awardXp(session.user.id, XP_PER_VOICE, { source: "voice" });
 
   return Response.json({ ok: true, ...result });
 }
