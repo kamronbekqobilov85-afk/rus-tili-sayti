@@ -157,7 +157,7 @@ export default function GrammarTopicPage({
                       className={i % 2 === 0 ? "bg-slate-50" : "bg-white"}
                     >
                       {row.map((cell, j) => (
-                        <td key={j} className="py-2 px-4 border-b border-slate-200">
+                        <td key={j} className="py-2 px-4 border-b border-slate-200 text-slate-800">
                           {cell}
                         </td>
                       ))}
@@ -191,7 +191,7 @@ export default function GrammarTopicPage({
             <p className="text-slate-500 text-sm mb-8">
               Mashq {currentIndex + 1} / {topic.exercises.length}
             </p>
-            <p className="text-lg font-semibold mb-6">{exercise.question}</p>
+            <p className="text-lg font-semibold mb-6 text-slate-900">{exercise.question}</p>
             <div className="flex flex-col gap-3">
               {shuffledOptions.map((option) => {
                 const isCorrect = option === exercise.correctAnswer;
@@ -208,7 +208,7 @@ export default function GrammarTopicPage({
                   <button
                     key={option}
                     onClick={() => handleSelect(option)}
-                    className={`border-2 rounded-xl py-3 px-4 text-left transition ${style}`}
+                    className={`border-2 rounded-xl py-3 px-4 text-left text-slate-800 transition ${style}`}
                   >
                     {option}
                   </button>

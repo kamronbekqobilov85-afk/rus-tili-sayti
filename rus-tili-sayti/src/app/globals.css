@@ -30,11 +30,11 @@
   --color-teal-700: #6d28d9;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Ilova faqat och (yorug') ko'rinishda ishlab chiqilgan: kartalar oq, matn to'q.
+   Qurilma qorong'i rejimda bo'lsa ham matn oq fonda yo'qolib qolmasligi uchun
+   qorong'i rejimga o'tkazilmaydi. */
+:root {
+  color-scheme: light;
 }
 
 body {
