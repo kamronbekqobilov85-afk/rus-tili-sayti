@@ -85,6 +85,7 @@ export default function LevelExam() {
   const [board, setBoard] = useState<Board | null>(null);
   const [boardFailed, setBoardFailed] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  const [pledged, setPledged] = useState(false); // halollik va'dasi
   const [picked, setPicked] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const topRef = useRef<HTMLDivElement>(null);
@@ -193,14 +194,41 @@ export default function LevelExam() {
               <li>📈 Har keyingi savol oldingisidan qiyinroq</li>
               <li>🔍 Variantlar bir-biriga o&apos;xshash, diqqat bilan o&apos;qing</li>
               <li>🚫 Javobni tasdiqlagach o&apos;zgartirib bo&apos;lmaydi, orqaga qaytilmaydi</li>
+              <li>🤝 Tarjimon, lug&apos;at, sun&apos;iy intellekt yoki do&apos;stdan yordam olmasdan, o&apos;zingiz yeching</li>
               <li className="rounded-xl bg-amber-50 p-3 font-extrabold text-amber-800 ring-1 ring-amber-200">
                 ⚠️ Imtihonni faqat BIR marta topshirasiz. Qayta topshirib bo&apos;lmaydi.
               </li>
             </ul>
+
+            {/* Halollik va'dasi */}
+            <div className="mt-4 rounded-2xl border-2 border-indigo-200 bg-gradient-to-br from-indigo-50 to-violet-50 p-4">
+              <p className="text-base font-black text-indigo-900">🤝 Halol bo&apos;ling: bu imtihon faqat o&apos;zingiz uchun</p>
+              <p className="mt-1.5 text-sm font-semibold leading-relaxed text-indigo-900/80">
+                Bu imtihon sizning <b>haqiqiy</b> darajangizni ko&apos;rsatadi, shunda qaysi mavzudan boshlash kerakligini aniq bilib olasiz.
+                Yordam bilan yechilgan natija sizni aldaydi: noto&apos;g&apos;ri darajadan boshlab, vaqtingizni yo&apos;qotasiz.
+                Reytingdagi o&apos;rin ham faqat o&apos;z bilimingiz bilan olinganda qadrli.
+              </p>
+              <p className="mt-1.5 text-sm font-extrabold text-indigo-900">
+                Bilmagan savolda taxmin qiling, xato qilishdan qo&apos;rqmang. Halol 15 ball soxta 30 balldan yaxshi!
+              </p>
+              <label className="mt-3 flex cursor-pointer items-start gap-3 rounded-xl bg-white/80 p-3 ring-1 ring-indigo-200">
+                <input
+                  type="checkbox"
+                  checked={pledged}
+                  onChange={(e) => setPledged(e.target.checked)}
+                  className="mt-0.5 h-5 w-5 shrink-0 accent-indigo-600"
+                />
+                <span className="text-sm font-bold text-slate-800">
+                  Vijdonan va&apos;da beraman: hech kimdan va hech narsadan yordam olmay, o&apos;zim yechaman.
+                </span>
+              </label>
+            </div>
+
             {!confirming ? (
               <button
                 onClick={() => setConfirming(true)}
-                className="mt-5 w-full rounded-2xl border-b-4 border-indigo-800 bg-gradient-to-b from-indigo-400 to-indigo-600 py-3.5 text-base font-black uppercase tracking-wide text-white shadow-lg transition active:translate-y-0.5 active:border-b-2"
+                disabled={!pledged}
+                className="mt-5 w-full rounded-2xl border-b-4 border-indigo-800 bg-gradient-to-b from-indigo-400 to-indigo-600 py-3.5 text-base font-black uppercase tracking-wide text-white shadow-lg transition active:translate-y-0.5 active:border-b-2 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 🎯 Imtihonni boshlash
               </button>
@@ -279,6 +307,7 @@ export default function LevelExam() {
               {busy ? "Saqlanmoqda..." : exam.question.index + 1 === exam.total ? "Yakunlash" : "Javobni tasdiqlash →"}
             </button>
             <p className="mt-2 text-center text-[11px] font-semibold text-slate-400">Klaviatura: 1–4 tanlash, Enter tasdiqlash</p>
+            <p className="mt-1 text-center text-[11px] font-bold text-indigo-400">🤝 O&apos;zingiz yeching. Natija faqat siz uchun halol bo&apos;lsin.</p>
           </div>
         )}
 
@@ -311,7 +340,10 @@ export default function LevelExam() {
                 </div>
               ))}
             </div>
-            <p className="mt-4 rounded-xl bg-slate-50 p-3 text-xs font-semibold text-slate-500">
+            <p className="mt-4 rounded-xl bg-indigo-50 p-3 text-sm font-extrabold text-indigo-900">
+              👏 Bu sizning halol natijangiz. Endi darajangizga mos mavzulardan boshlab, bilimingizni oshiring!
+            </p>
+            <p className="mt-3 rounded-xl bg-slate-50 p-3 text-xs font-semibold text-slate-500">
               Pog&apos;onadan o&apos;tish uchun 5 tadan kamida 3 ta to&apos;g&apos;ri javob kerak. Imtihonni qayta topshirib bo&apos;lmaydi.
             </p>
           </div>
