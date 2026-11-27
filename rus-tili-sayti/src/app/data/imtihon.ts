@@ -68,18 +68,18 @@ export const EXAM: ExamQuestion[] = [
 
 // Natijani hisoblash: pog'onadan o'tish = kamida PASS_PER_TIER ta to'g'ri javob;
 // daraja = pastdan boshlab ketma-ket o'tilgan pog'onalar soni;
-// ball = Σ (to'g'ri javoblar × pog'ona raqami) — qiyinroq savol ko'proq ball beradi.
-import { PASS_PER_TIER, PER_TIER, TIERS } from "./imtihonMeta";
+// ball = o'tilgan har bir daraja uchun: A1 50, A2 100, B1 150, B2 200, C1 250, C2 300
+// (jami: A1 gacha 50, A2 gacha 150, ... C2 gacha 1050). Reytingda ball teng bo'lsa,
+// to'g'ri javoblar ko'proq bo'lgan yuqorida turadi.
+import { PASS_PER_TIER, PER_TIER, TIERS, TIER_POINTS } from "./imtihonMeta";
 
 export function gradeExam(answers: number[]) {
   const tierCorrect = TIERS.map(() => 0);
   let correct = 0;
-  let score = 0;
   EXAM.forEach((q, i) => {
     if (answers[i] === q.correct) {
       tierCorrect[q.tier]++;
       correct++;
-      score += q.tier + 1;
     }
   });
   let level = 0;
@@ -87,6 +87,8 @@ export function gradeExam(answers: number[]) {
     if (c >= PASS_PER_TIER) level++;
     else break;
   }
+  let score = 0;
+  for (let i = 0; i < level; i++) score += TIER_POINTS[i];
   const tiers = TIERS.map((t, i) => ({ code: t.code, name: t.name, correct: tierCorrect[i], total: PER_TIER }));
   return { correct, score, level, tiers };
 }

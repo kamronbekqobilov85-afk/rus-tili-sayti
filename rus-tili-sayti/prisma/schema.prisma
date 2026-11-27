@@ -267,8 +267,9 @@ model LevelExam {
   startedAt  DateTime  @default(now())
   finishedAt DateTime?
   correct    Int       @default(0)
-  score      Int       @default(0)
+  score      Int       @default(0) // darajalar uchun ball (A1 50, A2 100, ...)
   level      Int       @default(0)
+  xpAwarded  Int       @default(0) // hisobga allaqachon qo'shilgan ball (ikki marta qo'shilmasligi uchun)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

@@ -1,6 +1,7 @@
 import { auth } from "../../../auth";
 import { prisma } from "../../../lib/prisma";
 import { EXAM, gradeExam } from "../../data/imtihon";
+import { examRank, settleExam } from "../../../lib/imtihon";
 import { EXAM_TOTAL } from "../../data/imtihonMeta";
 import type { ExamQuestionPublic, ExamResult } from "../../data/imtihonMeta";
 
@@ -14,19 +15,12 @@ function publicQuestion(index: number): ExamQuestionPublic {
   return { index, tier: q.tier, instruction: q.instruction, text: q.text, options: [...q.options] };
 }
 
-async function rankOf(score: number, finishedAt: Date): Promise<number> {
-  const better = await prisma.levelExam.count({
-    where: {
-      finishedAt: { not: null },
-      OR: [{ score: { gt: score } }, { score, finishedAt: { lt: finishedAt } }],
-    },
-  });
-  return better + 1;
-}
-
 async function stateFor(userId: string) {
-  const exam = await prisma.levelExam.findUnique({ where: { userId } });
+  let exam = await prisma.levelExam.findUnique({ where: { userId } });
   if (!exam) return { ok: true, state: "new" as const, total: EXAM_TOTAL };
+
+  // Tugatilgan bo'lsa: ballni hisobga qo'shish (agar hali qo'shilmagan bo'lsa) va natijani yangilash
+  if (exam.finishedAt) exam = (await settleExam(userId)) ?? exam;
 
   if (exam.finishedAt) {
     const answers = (exam.answers as number[]) ?? [];
@@ -36,8 +30,9 @@ async function stateFor(userId: string) {
       correct: exam.correct,
       total: EXAM_TOTAL,
       score: exam.score,
+      xp: exam.xpAwarded,
       tiers: g.tiers,
-      rank: await rankOf(exam.score, exam.finishedAt),
+      rank: await examRank(exam.score, exam.correct, exam.finishedAt),
     };
     return { ok: true, state: "done" as const, total: EXAM_TOTAL, result };
   }

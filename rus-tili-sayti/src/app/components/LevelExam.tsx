@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { TIERS, levelLabel } from "../data/imtihonMeta";
+import { TIERS, TIER_POINTS, levelLabel } from "../data/imtihonMeta";
 import type { ExamQuestionPublic, ExamResult } from "../data/imtihonMeta";
 
 type ExamState =
@@ -194,6 +194,16 @@ export default function LevelExam() {
               <li>📈 Har keyingi savol oldingisidan qiyinroq</li>
               <li>🔍 Variantlar bir-biriga o&apos;xshash, diqqat bilan o&apos;qing</li>
               <li>🚫 Javobni tasdiqlagach o&apos;zgartirib bo&apos;lmaydi, orqaga qaytilmaydi</li>
+              <li>
+                🎁 Har bir o&apos;tilgan daraja uchun hisobingizga ball qo&apos;shiladi:
+                <span className="mt-1.5 flex flex-wrap gap-1.5">
+                  {TIERS.map((t, i) => (
+                    <span key={t.code} className="rounded-lg bg-amber-50 px-2 py-1 text-xs font-extrabold text-amber-800 ring-1 ring-amber-200">
+                      {t.code} +{TIER_POINTS[i]}
+                    </span>
+                  ))}
+                </span>
+              </li>
               <li>🤝 Tarjimon, lug&apos;at, sun&apos;iy intellekt yoki do&apos;stdan yordam olmasdan, o&apos;zingiz yeching</li>
               <li className="rounded-xl bg-amber-50 p-3 font-extrabold text-amber-800 ring-1 ring-amber-200">
                 ⚠️ Imtihonni faqat BIR marta topshirasiz. Qayta topshirib bo&apos;lmaydi.
@@ -323,7 +333,9 @@ export default function LevelExam() {
             </p>
             <p className="text-xs font-bold text-slate-400">to&apos;g&apos;ri javob</p>
             <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
-              <span className="rounded-full bg-amber-100 px-3 py-1 text-sm font-extrabold text-amber-800">⭐ {exam.result.score} ball</span>
+              <span className="rounded-full bg-amber-100 px-3 py-1 text-sm font-extrabold text-amber-800">
+                ⭐ +{exam.result.xp} ball hisobingizga qo&apos;shildi
+              </span>
               {exam.result.rank !== null && <span className="rounded-full bg-indigo-100 px-3 py-1 text-sm font-extrabold text-indigo-800">🏅 Reytingda {exam.result.rank}-o&apos;rin</span>}
             </div>
 
@@ -332,7 +344,12 @@ export default function LevelExam() {
                 <div key={t.code}>
                   <div className="flex justify-between text-xs font-bold text-slate-500">
                     <span>{t.code} · {t.name}</span>
-                    <span>{t.correct}/{t.total}</span>
+                    <span>
+                      {t.correct}/{t.total}
+                      {exam.result.tiers.indexOf(t) < exam.result.level && (
+                        <b className="ml-1.5 text-emerald-600">+{TIER_POINTS[exam.result.tiers.indexOf(t)]}</b>
+                      )}
+                    </span>
                   </div>
                   <div className="mt-1 h-2.5 overflow-hidden rounded-full bg-slate-100">
                     <div className={`h-full rounded-full ${t.correct >= 3 ? "bg-gradient-to-r from-emerald-400 to-teal-500" : "bg-gradient-to-r from-amber-300 to-rose-400"}`} style={{ width: `${(t.correct / t.total) * 100}%` }} />

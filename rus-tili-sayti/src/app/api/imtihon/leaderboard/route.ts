@@ -1,6 +1,7 @@
 import { auth } from "../../../../auth";
 import { prisma } from "../../../../lib/prisma";
 import { EXAM_TOTAL } from "../../../data/imtihonMeta";
+import { examRank, settleExam } from "../../../../lib/imtihon";
 
 type Row = {
   id: string;
@@ -25,9 +26,18 @@ export async function GET() {
   const session = await auth();
   const myId = session?.user?.id;
 
+  // Ball hisobga hali qo'shilmagan (masalan, avvalgi baholash qoidasi bilan topshirilgan)
+  // tugatilgan imtihonlarni yangi qoida bo'yicha qayta hisoblab, ballini qo'shib chiqamiz
+  const unsettled = await prisma.levelExam.findMany({
+    where: { finishedAt: { not: null }, xpAwarded: 0 },
+    select: { userId: true },
+    take: 200,
+  });
+  await Promise.all(unsettled.map((u) => settleExam(u.userId).catch(() => null)));
+
   const top = await prisma.levelExam.findMany({
     where: { finishedAt: { not: null } },
-    orderBy: [{ score: "desc" }, { finishedAt: "asc" }],
+    orderBy: [{ score: "desc" }, { correct: "desc" }, { finishedAt: "asc" }],
     take: 50,
     select: SELECT,
   });
@@ -52,13 +62,7 @@ export async function GET() {
     } else {
       const mine = await prisma.levelExam.findUnique({ where: { userId: myId }, select: SELECT });
       if (mine?.finishedAt) {
-        const better = await prisma.levelExam.count({
-          where: {
-            finishedAt: { not: null },
-            OR: [{ score: { gt: mine.score } }, { score: mine.score, finishedAt: { lt: mine.finishedAt } }],
-          },
-        });
-        me = { ...toRow(mine), rank: better + 1 };
+        me = { ...toRow(mine), rank: await examRank(mine.score, mine.correct, mine.finishedAt) };
       }
     }
   }

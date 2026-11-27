@@ -13,6 +13,9 @@ export const TIERS = [
   { code: "C2", name: "Mukammal" },
 ] as const;
 
+// Har bir o'tilgan daraja uchun hisobga qo'shiladigan ball (A1 50, A2 100, ... C2 300)
+export const TIER_POINTS = [50, 100, 150, 200, 250, 300] as const;
+
 export const EXAM_TOTAL = TIERS.length * PER_TIER; // 30
 
 // Natija darajasi: ketma-ket nechta pog'ona muvaffaqiyatli o'tilgani (0..6)
@@ -40,7 +43,8 @@ export type ExamResult = {
   level: number;
   correct: number;
   total: number;
-  score: number;
+  score: number; // jami ball (o'tilgan darajalar yig'indisi)
+  xp: number; // hisobga qo'shilgan ball
   tiers: TierResult[];
   rank: number | null;
 };
