@@ -24,5 +24,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/yugur`,
       lastModified: new Date(),
     },
+    {
+      url: `${baseUrl}/imtihon`,
+      lastModified: new Date(),
+    },
   ];
 }

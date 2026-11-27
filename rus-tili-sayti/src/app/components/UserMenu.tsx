@@ -73,6 +73,13 @@ export default function UserMenu() {
             🏆 Reyting
           </Link>
           <Link
+            href="/imtihon"
+            onClick={() => setOpen(false)}
+            className="block rounded-xl px-3 py-2 text-sm font-bold text-indigo-700 hover:bg-indigo-50"
+          >
+            🎯 Daraja imtihoni
+          </Link>
+          <Link
             href="/challenge"
             onClick={() => setOpen(false)}
             className="block rounded-xl px-3 py-2 text-sm font-bold text-rose-700 hover:bg-rose-50"

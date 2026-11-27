@@ -42,6 +42,7 @@ model User {
   voiceRecordings   VoiceRecording[]
   pushSubscriptions PushSubscription[]
   runScore          RunScore?
+  levelExam         LevelExam?
   telegramLink      TelegramLink?
   group             Group?             @relation(fields: [groupId], references: [id], onDelete: SetNull)
 }
@@ -255,4 +256,21 @@ model RunScore {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([bestScore])
+}
+
+// "Daraja imtihoni": har bir foydalanuvchi faqat bir marta topshiradi (userId unique)
+model LevelExam {
+  id         String    @id @default(cuid())
+  userId     String    @unique
+  answers    Json      @default("[]") // tanlangan variant indekslari, savollar tartibida
+  answered   Int       @default(0)
+  startedAt  DateTime  @default(now())
+  finishedAt DateTime?
+  correct    Int       @default(0)
+  score      Int       @default(0)
+  level      Int       @default(0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([score])
 }

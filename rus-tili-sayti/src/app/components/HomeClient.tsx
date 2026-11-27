@@ -344,6 +344,21 @@ export default function HomeClient({ counts }: { counts: Counts }) {
           </Link>
         </div>
 
+        {/* Daraja imtihoni */}
+        <Link
+          href="/imtihon"
+          className="mt-3 flex items-center gap-3 rounded-2xl border border-indigo-200 bg-gradient-to-br from-indigo-50 to-white p-3.5 transition active:scale-[0.98]"
+        >
+          <span className="text-3xl">🎯</span>
+          <span className="flex-1">
+            <span className="block font-extrabold text-indigo-900">Daraja imtihoni</span>
+            <span className="block text-xs leading-snug text-indigo-800/80">
+              Qanday darajada ekanligingizni sinaymiz. Faqat bir marta!
+            </span>
+          </span>
+          <span className="text-xl font-bold text-indigo-700">→</span>
+        </Link>
+
         {/* So'z Poygasi — o'yin */}
         <Link
           href="/yugur"
